@@ -1,0 +1,60 @@
+---
+output: 
+  github_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    fig.align="center",
+    fig.width = 6,
+    fig.height = 4)
+```
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# hydflood3
+
+[![pipeline status](https://git.aqualogy.de/arnd/hydflood3/badges/master/pipeline.svg)](https://git.aqualogy.de/arnd/hydflood3/commits/master)
+
+The R package **hydflood3** is designed to compute flood extent and duration 
+along German federal waterways Elbe and Rhine.
+
+## Installation
+
+**hydflood3** is not currently available from CRAN, but you can install the 
+development version from BfG's gitbucket server with:
+
+```{r install_git, eval = FALSE}
+install.packages("devtools")
+library(devtools)
+devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood3.git")
+```
+
+## Usage
+
+The package **hydflood3** is build around the packages `raster` and `hyd1d`.
+
+```{r library, error = FALSE, message = FALSE, warning = FALSE, include = FALSE}
+# standard library path for the installed local packages
+R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
+lib <- paste0("~/R/", R_version, "/")
+library(hyd1d, lib.loc = lib)
+
+# set english locale to produce english plot labels
+Sys.setlocale(category = "LC_MESSAGES", locale = "en_US")
+```
+
+```{r usage, eval = TRUE, error = FALSE, warning = FALSE, message = FALSE}
+# load the package
+library(hyd1d)
+library(hydflood3)
+
+# import the raster data and create a raster stack
+
+# compute a water level
+wldf <- waterLevel(wldf, TRUE)
+
+# and plot it
+plotShiny(wldf, TRUE, TRUE, TRUE)
+```

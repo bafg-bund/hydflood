@@ -1,0 +1,14 @@
+# ignore specific files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rd2pdf*
+*.dat
+*.Rd
+
+# ignore directories and files
+/build
+/public
+/inst/doc
+/README_files/figure-markdown_github/Thumbs.db

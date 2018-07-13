@@ -1,0 +1,14 @@
+^\.git/$
+^.*\.Rproj$
+^\.Rproj\.user$
+^build$
+^data-raw$
+^public$
+^README_files$
+^README\.Rmd$
+^pkgdown$
+^_install\.R$
+^\.gitlab-ci\.yml$
+^vignettes/Thumbs\.db$
+^_build\.R$
+^docs$
