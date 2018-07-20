@@ -1,0 +1,28 @@
+title: hydflood3
+url: https://arnd.aqualogy.de/hydflood3
+destination: public
+template:
+  params:
+    bootswatch: cosmo
+reference:
+  - title: Functions
+    desc: Functions to compute flood extent and duration
+    contents:
+      - "`flood3`"
+  - title: Datasets
+    desc: Datasets included in hydflood3
+    contents:
+      - "`spdf.active_floodplain_elbe`"
+      - "`spdf.active_floodplain_rhein`"
+navbar:
+  left:
+    - text: "How To"
+      menu:
+      - text: "Get Started (EN)"
+        href: articles/hydflood3.html
+    - text: Reference
+      href: reference/index.html
+  right:
+    - text: BfG
+      href: http://www.bafg.de
+

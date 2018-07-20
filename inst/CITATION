@@ -1,0 +1,18 @@
+citHeader("To cite hydflood3 in publications, please use:")
+
+citEntry(entry = "Article",
+  title        = "Compute 1D water levels along German federal waterways with {hyd1d}",
+  author       = personList(as.person("Arnd Weber")),
+  journal      = "Hydrologie & Wasserbewirtschaft",
+  year         = "2018",
+  volume       = "1",
+  number       = "1",
+  pages        = "1--2",
+  url          = "https://arnd.aqualogy.de/hydflood3/",
+
+  textVersion  =
+  paste("Arnd Weber (2018): ",
+        "Compute 1D water levels along German federal waterways.",
+        "Hydrologie & Wasserbewirtschaft, 1(1, 1-11.",
+        "URL https://arnd.aqualogy.de/hydflood3.")
+)

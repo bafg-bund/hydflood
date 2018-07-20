@@ -1,52 +1,29 @@
----
-output: 
-  github_document
----
-
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-    echo = TRUE,
-    fig.align="center",
-    fig.width = 6,
-    fig.height = 4)
-```
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# hydflood3
+hydflood3
+=========
 
 [![pipeline status](https://git.aqualogy.de/arnd/hydflood3/badges/master/pipeline.svg)](https://git.aqualogy.de/arnd/hydflood3/commits/master)
 
-The R package **hydflood3** is designed to compute flood extent and duration 
-along German federal waterways Elbe and Rhine.
+The R package **hydflood3** is designed to compute flood extent and duration along German federal waterways Elbe and Rhine.
 
-## Installation
+Installation
+------------
 
-**hydflood3** is not currently available from CRAN, but you can install the 
-development version from BfG's gitbucket server with:
+**hydflood3** is not currently available from CRAN, but you can install the development version from BfG's gitbucket server with:
 
-```{r install_git, eval = FALSE}
+``` r
 install.packages("devtools")
 library(devtools)
 devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood3.git")
 ```
 
-## Usage
+Usage
+-----
 
 The package **hydflood3** is build around the packages `raster` and `hyd1d`.
 
-```{r library, error = FALSE, message = FALSE, warning = FALSE, include = FALSE}
-# standard library path for the installed local packages
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-library(hyd1d, lib.loc = lib)
-library(hydflood3, lib.loc = lib)
-
-# set english locale to produce english plot labels
-Sys.setlocale(category = "LC_MESSAGES", locale = "en_US")
-```
-
-```{r usage, eval = TRUE, error = FALSE, warning = FALSE, message = FALSE}
+``` r
 # load the package
 library(sp)
 library(raster)
@@ -72,3 +49,5 @@ fd <- flood3(x = x, seq = seq)
 colfunc <- colorRampPalette(c("red","yellow","springgreen","royalblue"))
 plot(fd, col = colfunc(length(seq)))
 ```
+
+<img src="README_files/figure-markdown_github/usage-1.png" style="display: block; margin: auto;" />

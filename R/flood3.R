@@ -4,24 +4,66 @@
 #' @title Function to compute flood extent or flood duration along German 
 #'   federal waterways Elbe and Rhine
 #' 
-#' @description 
-#'
-#' @details
+#' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
+#'   duration for the active floodplains along German federal waterways Elbe 
+#'   and Rhine based on 1D water levels computed by \code{waterLevel()} or 
+#'   \code{waterLevelPegelonline()} provided by package \code{hyd1d}.
 #' 
-#' @param x
-#' @param start
-#' @param end
+#' @param x has to by type \code{RasterStack} and has to include both input 
+#'   RasterLayers \code{csa} (cross section areas) and \code{dem} (digital 
+#'   elevation model). To compute water levels along the River Elbe \code{x} 
+#'   has to be in the coordinate reference system (crs) 
+#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
+#'   for River Rhine in 
+#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
+#'   Other coordinate reference systems are not permitted.
+#' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
+#'   have length larger 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")}, 
+#'   values must be in the temporal range between 31 days ago (\code{Sys.time() 
+#'   - 2678400}) and now (\code{Sys.time()}). Then 
+#'   \code{waterLevelPegelonline()} is used internally for the computations. 
+#'   If \code{seq} is type \code{Date} values must be in the temporal range 
+#'   between 1990-01-01 and yesterday (\code{Sys.Date() - 1}) and 
+#'   \code{waterLevel()} 
+#' @param filename supplies an optional output filename and has to be type 
+#'   \code{character}.
+#' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
 #' 
-#' @return
+#' @return Raster* object with flood duration in the range of 
+#'   \code{[0, length(seq)]}.
 #' 
-#' @seealso \code{\link{plotShiny}}
-#'
-#' @references 
+#' @details Coming soon. \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}.
+#' 
+#' @seealso \code{\link[hyd1d]{waterLevel}}, 
+#'   \code{\link[hyd1d]{waterLevelPegelonline}}, 
+#'   \code{\link[raster]{writeRaster}}, 
+#'   \code{\link[raster]{rasterOptions}}
+#' 
+#' @references \insertAllCited{}
+#' 
+#' @examples \dontrun{
+#' library(hydflood3)
+#' 
+#' # import the raster data and create a raster stack
+#' csa <- raster(system.file("data-raw/raster.csa.tif"))
+#' dem <- raster(system.file("data-raw/raster.dem.tif"))
+#' x <- stack(csa, dem)
+#' names(x) <- c("csa", "dem")
+#' 
+#' # create a temporal sequence
+#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#' 
+#' # compute a flood duration
+#' fd <- flood3(x = x, seq = seq)
+#' }
 #' 
 #' @export
 #' 
-flood3 <- function(x, start, end) {
+flood3 <- function(x, seq, filename = '', ...) {
     
+    #####
+    # check requirements
+    ##
     # make parent environment accessible through the local environment
     e <- environment()
     p_env <- parent.env(e)
@@ -37,80 +79,293 @@ flood3 <- function(x, start, end) {
     } else {
         # class
         if (class(x) != "RasterStack") {
-            errors <- c(errors, paste0("Error ", l(errors), ": The 'x' ",
-                                       "argument has to be supplied."))
+            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
+                                       "type 'RasterStack'."))
         }
         # names
-        if (!(all(names(x) == c("csa", "dem")))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": names(x) ",
+        if (!(all(names(x)[1:2] == c("csa", "dem")))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": names(x)[1:2] ",
                                        "must be c('csa', 'dem')."))
         }
         
         # crs
-        crs_string <- crs(x, asText = TRUE)
-        if (!(grepl("+proj=utm", crs_string))) {
+        crs_string <- raster::crs(x, asText = TRUE)
+        etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
+        etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
+        
+        if ( !(raster::compareCRS(crs_string, etrs_1989_utm_32_string)) & 
+             !(raster::compareCRS(crs_string, etrs_1989_utm_33_string))) {
             errors <- c(errors, paste0("Error ", l(errors), ": The projection",
-                                       " of crs(x) must be 'utm'."))
-        }
-        if ((!(grepl("+zone=32", crs_string))) & 
-            (!(grepl("+zone=33", crs_string)))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": The zone",
-                                       " of crs(x) must be either 32 or 33."))
-        }
-        if (grepl("+zone=32", crs_string)) {
-            zone <- "32"
-            river <- "Rhein"
-        }
-        if (grepl("+zone=33", crs_string)) {
-            zone <- "33"
-            river <- "Elbe"
-        }
-        if (!(grepl("+ellps=GRS80", crs_string))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": The elipsoid",
-                                       " of crs(x) must be 'GRS80'."))
-        }
-        if (!(grepl("+units=m", crs_string))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": The unit",
-                                       " of crs(x) must be 'm'."))
-        }
-        if (!(grepl("+no_defs", crs_string))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": +no_defs",
-                                       " must be part of crs(x)."))
+                                       " of x must be either 'ETRS 1989 UTM 32",
+                                       "N' or 'ETRS 1989 UTM 33N'."))
+        } else {
+            if (raster::compareCRS(crs_string, etrs_1989_utm_32_string)) {
+                zone <- "32"
+                river <- "Rhein"
+            } else if (raster::compareCRS(crs_string, 
+                                          etrs_1989_utm_33_string)) {
+                zone <- "33"
+                river <- "Elbe"
+            } else {
+                stop(errors)
+            }
         }
         
         # check position
-        if ('river' %in% ls()){
+        if (exists("river")) {
             # access the spdf.active_floodplain_* data
-            active_floodplain <- paste0("spdf.active_floodplain_", river)
+            active_floodplain <- paste0("spdf.active_floodplain_", 
+                                        tolower(river))
             if (exists(active_floodplain, where = p_env)){
                 get(active_floodplain, envir = p_env)
             } else {
                 utils::data(active_floodplain)
             }
-            
-            
+            if (river == "Elbe") {
+                l.over <- sp::over(extent2polygon(x), 
+                                   spdf.active_floodplain_elbe,
+                                   returnList = TRUE)
+                if (! (length(l.over) > 0)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
+                                               "NOT overlap with the active fl",
+                                               "oodplain of River Elbe."))
+                }
+            } else if (river == "Rhein") {
+                l.over <- sp::over(extent2polygon(x), 
+                                   spdf.active_floodplain_rhein,
+                                   returnList = TRUE)
+                if (! (length(l.over) > 0)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
+                                               "NOT overlap with the active fl",
+                                               "oodplain of River Rhine."))
+                }
+            }
+        }
+    }
+    
+    ## seq
+    if (missing(seq)) {
+        errors <- c(errors, paste0("Error ", l(errors), ": The 'seq' ",
+                                   "argument has to be supplied."))
+    } else {
+        # class
+        if (! (all(class(seq) == "Date")) &
+            ! (all(class(seq) == c("POSIXct", "POSIXt")))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'seq' must be",
+                                       " either type 'Date' or c('POSIXct', 'P",
+                                       "OSIXt')."))
+        }
+        # length
+        if (length(seq) < 1L) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'seq' must ha",
+                                       "ve length larger 0."))
+        }
+        # NA and possible range
+        if (any(is.na(seq))){
+            errors <- c(errors, paste0("Error ", l(errors), ": 'seq' or elem",
+                                       "ents of it must not be NA."))
+        } else {
+            time_min <- trunc(Sys.time() - as.difftime(31, units = "days"),
+                              units = "days")
+            if (all(class(seq) == c("POSIXct", "POSIXt"))) {
+                if (any(seq < time_min)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": Values ",
+                                               "of 'seq' must be between ",
+                                               format(time_min, "%Y-%m-%d"),
+                                               " 00:00:00 and now, if type of ",
+                                               "'seq' is c('POSIXct', 'POSIXt'",
+                                               ")."))
+                }
+                type_date <- FALSE
+            }
+            if (all(class(seq) == "Date")) {
+                if (any(seq < as.Date("1990-01-01")) |
+                    any(seq > Sys.Date() - 1)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": Val",
+                                               "ues of 'seq' must be betwe",
+                                               "en 1990-01-01 and yesterda",
+                                               "y."))
+                }
+                type_date <- TRUE
+            }
         }
     }
     
     
+    ## filename
+    if (! missing(filename)) {
+        if (class(filename) != "character") {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'filename' must",
+                                       " be type 'character'."))
+        }
+        if (length(filename) != 1) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'filename' must",
+                                       " have length 1."))
+        }
+    }
     
+    #####
+    # error messages
+    if (l(errors) != "1") {
+        stop(paste0(errors, collapse="\n  "))
+    }
     
-    return(fd)
+    #####
+    # preprocessing
+    #####
+    # individual raster needed for the processing
+    csa <- x$csa
+    dem <- x$dem
+    
+    # out template
+    out <- raster::raster(csa)
+    
+    # describe out's data attributes
+    attributes <- out@data@attributes
+    attributes <- append(attributes, paste0("flood duration computed by hydflo",
+                                            "od3::flood3() for the following t",
+                                            "emporal sequence of type '", 
+                                            class(seq), "' with length ",
+                                            length(seq), ":"))
+    attributes <- append(attributes, seq)
+    out@data@attributes <- attributes
+    
+    # water level template
+    waterlevel <- raster::raster(dem)
+    
+    # initialize the WaterLevelDataFrame
+    station_int <- raster::unique(csa)
+    wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
+                                               time = as.POSIXct(NA),
+                                               station_int = station_int)
+    
+    # check memory requirements
+    big <- ! raster::canProcessInMemory(out, 4)
+    filename <- raster::trim(filename)
+    if (big & filename == '') {
+        filename <- raster::rasterTmpFile()
+    }
+    if (filename != '') {
+        out <- raster::writeStart(out, filename, ...)
+        todisk <- TRUE
+    } else {
+        vv <- matrix(ncol = nrow(out), nrow = ncol(out))
+        todisk <- FALSE
+    }
+    
+    #####
+    # processing
+    ## 
+    # compute all water levels through a loop over all time steps
+    wldfs <- vector(mode = "list", length = length(seq))
+    j <- 1
+    for (i in seq) {
+        if (type_date) {
+            time <- as.POSIXct(format(as.Date(i, as.Date("1970-01-01")), 
+                                      "%Y-%m-%d"), tz = "CET")
+            wldf <- wldf_initial
+            setTime(wldf) <- time
+            wldfs[[j]] <- hyd1d::waterLevel(wldf)
+        } else {
+            time <- i
+            wldf <- wldf_initial
+            setTime(wldf) <- time
+            wldfs[[j]] <- hyd1d::waterLevelPegelonline(wldf)
+        }
+        j <- j + 1
+    }
+    
+    ##
+    # raster processing
+    bs <- raster::blockSize(csa)
+    pb <- raster::pbCreate(bs$n, ...)
+    
+    if (todisk) {
+        for (i in 1:bs$n) {
+            # vectorize cross section areas (integer)
+            v_csa <- raster::getValues(csa, row = bs$row[i], nrows = bs$nrows[i])
+            # get unique stations for the csa subset
+            v_stations <- stats::na.omit(unique(v_csa))
+            # copy v_csa to v_fd to create a template results vector with the 
+            # same size and type
+            v_fd <- rep(0, length(v_csa))
+            
+            # vectorize digital elevation model (numeric)
+            v_dem <- raster::getValues(dem, row = bs$row[i], nrows = bs$nrows[i])
+            # copy v_dem to v_fwl to create a template vector with the same 
+            # size and type
+            v_wl <- rep(-999, length(v_csa))
+            
+            # loop over all time steps
+            for (j in 1:length(seq)) {
+                # transfer the water level info to v_wl
+                for (a_station in v_stations) {
+                    v_wl[v_csa == a_station] <- 
+                               wldfs[[j]]$w[wldfs[[j]]$station_int == a_station]
+                }
+                
+                # compare the water level raster to the dem
+                v_fd[v_dem < v_wl] = v_fd[v_dem < v_wl] + 1
+            }
+            
+            # transfer NA's
+            v_fd[is.na(v_csa) | is.na(v_dem)] <- NA
+            
+            # write the resulting flood durations into out
+            out <- raster::writeValues(out, v_fd, bs$row[i])
+            raster::pbStep(pb, i)
+        }
+        out <- raster::writeStop(out)
+    } else {
+        for (i in 1:bs$n) {
+            # vectorize cross section areas (integer)
+            v_csa <- raster::getValues(csa, row = bs$row[i], nrows = bs$nrows[i])
+            # get unique stations for the csa subset
+            v_stations <- stats::na.omit(unique(v_csa))
+            # copy v_csa to v_fd to create a template results vector with the 
+            # same size and type
+            v_fd <- rep(0, length(v_csa))
+            
+            # vectorize digital elevation model (numeric)
+            v_dem <- raster::getValues(dem, row = bs$row[i], nrows = bs$nrows[i])
+            # copy v_dem to v_fwl to create a template vector with the same 
+            # size and type
+            v_wl <- rep(-999, length(v_csa))
+            
+            # loop over all time steps
+            for (j in 1:length(seq)) {
+                # transfer the water level info to v_wl
+                for (a_station in v_stations) {
+                    v_wl[v_csa == a_station] <- 
+                        wldfs[[j]]$w[wldfs[[j]]$station_int == a_station]
+                }
+                
+                # compare the water level raster to the dem
+                v_fd[v_dem < v_wl] = v_fd[v_dem < v_wl] + 1
+            }
+            
+            # transfer NA's
+            v_fd[is.na(v_csa) | is.na(v_dem)] <- NA
+            
+            cols <- bs$row[i]:(bs$row[i] + bs$nrows[i]-1)
+            vv[,cols] <- matrix(v_fd, nrow = out@ncols)
+            raster::pbStep(pb, i)
+        }
+        out <- raster::setValues(out, as.vector(vv))
+    }
+    raster::pbClose(pb)
+    return(out)
 }
 
-
-#' @examples
-require(hyd1d)
-require(sp)
-require(rgdal)
-require(raster)
-#require(hydflood3)
-
-csa <- raster(system.file("data-raw/raster.csa.tif"))
-dem <- raster(system.file("data-raw/raster.dem.tif"))
-
-csa <- raster("data-raw/raster.csa.tif")
-dem <- raster("data-raw/raster.dem.tif")
-
-x <- stack(csa, dem)
-names(x) <- c("csa", "dem")
+# function to convert a rasters extent to a polygon
+extent2polygon <- function(x) {
+    e <- raster::extent(x)
+    df.corners <- data.frame(x = c(e@xmin, e@xmax, e@xmax, e@xmin, e@xmin),
+                             y = c(e@ymin, e@ymin, e@ymax, e@ymax, e@ymin))
+    ma.corners <- as.matrix(df.corners)
+    p.polygon <- sp::Polygon(ma.corners, FALSE)
+    p.polygons <- sp::Polygons(list(p.polygon), ID = "1")
+    sp.polygon <- sp::SpatialPolygons(list(p.polygons), 
+                                      proj4string = raster::crs(x))
+    return(sp.polygon)
+}

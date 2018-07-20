@@ -2,7 +2,7 @@
 # _build.R
 #
 # author: arnd.weber@bafg.de
-# date:   21.06.2018
+# date:   20.07.2018
 #
 # purpose: 
 #   - build the repository version of hyd1d
@@ -35,14 +35,13 @@ dir.create(downloads, verbose, TRUE)
 write("#####", stdout())
 write(" load packages", stdout())
 require(devtools, lib.loc = lib)
-require(DBI, lib.loc = lib)
-require(RPostgreSQL, lib.loc = lib)
+require(sp, lib.loc = lib)
+require(raster, lib.loc = lib)
+require(rgdal, lib.loc = lib)
 require(knitr, lib.loc = lib)
 require(rmarkdown, lib.loc = lib)
 require(pkgdown, lib.loc = lib)
-
-# source hyd1d-internal to obtain the credentials function
-source("R/hyd1d-internal.R")
+require(hyd1d, lib.loc = lib)
 
 #####
 # assemble variables and create output directories
@@ -65,16 +64,11 @@ sessionInfo()
 #   sourced scripts
 write("#####", stdout())
 write(" data-raw", stdout())
-source("data-raw/data_date_gauging_data.R")
-for (a_file in rev(list.files("data-raw", pattern = "data_df.*",
+for (a_file in rev(list.files("data-raw", pattern = "data_spdf.*",
                               full.names = TRUE))) {
     source(a_file)
 }
 rm(a_file)
-
-# unload superfluous packages
-detach("package:RPostgreSQL", unload = TRUE)
-detach("package:DBI", unload = TRUE)
 
 #####
 # minimal devtools workflow
@@ -87,29 +81,6 @@ devtools::load_all(".")
 write("#####", stdout())
 write(" document", stdout())
 devtools::document(".")
-
-# postprocess package documentation
-today <- strftime(Sys.Date(), "%Y-%m-%d")
-
-# date_gauging_data
-x <- readLines("man/date_gauging_data.Rd")
-y <- gsub('$RDO_DATE_GAUGING_DATA$', today, x, fixed = TRUE)
-cat(y, file = "man/date_gauging_data.Rd", sep="\n")
-
-# df.gauging_station_data
-x <- readLines("man/df.gauging_station_data.Rd")
-y <- gsub('$RDO_NROW_DF.GAUGING_STATION_DATA$',
-          RDO_NROW_DF.GAUGING_STATION_DATA, x, fixed = TRUE)
-cat(y, file = "man/df.gauging_station_data.Rd", sep="\n")
-
-# df.flys
-x <- readLines("man/df.flys.Rd")
-y <- gsub('$RDO_NROW_DF.FLYS$', RDO_NROW_DF.FLYS, x,
-          fixed = TRUE)
-cat(y, file = "man/df.flys.Rd", sep="\n")
-
-# clean up
-rm(x, y, today) #, RDO_NROW_DF.GAUGING_STATION_DATA, RDO_NROW_DF.FLYS)
 
 #####
 # build vignettes
@@ -133,7 +104,7 @@ devtools::build(".", path = build, vignettes = FALSE, manual = FALSE)
 #####
 # create public/downloads directory and copy hyd1d_*.tar.gz-files into it
 from <- list.files(path = build,
-                   pattern = "hyd1d\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
+                   pattern = "hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
                    full.names = TRUE)
 file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
 
@@ -143,7 +114,7 @@ write("#####", stdout())
 write(" install from source", stdout())
 
 pkg_files <- list.files(path = build,
-                        pattern = paste0("hyd1d\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]",
+                        pattern = paste0("hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]",
                                          "\\.tar\\.gz"))
 
 for (a_file in pkg_files) {
@@ -174,7 +145,7 @@ for (a_file in pkg_files) {
 write("#####", stdout())
 write(" export the documentation as pdf", stdout())
 
-system(paste0("R CMD Rd2pdf . --output=", downloads, "/hyd1d.pdf --no-preview ",
+system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-preview ",
               "--force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding=UTF",
               "-8"))
 
@@ -234,14 +205,14 @@ write(" web", stdout())
 
 if (Sys.info()["nodename"] == "hpc-service" & 
     Sys.info()["user"] == "WeberA" & R_version == "3.5.0") {
-    system("cp -rp public/3.5.0/* /home/WeberA/public_html/hyd1d/")
+    system("cp -rp public/3.5.0/* /home/WeberA/public_html/hydflood3/")
     system(paste0("[ -d /home/WeberA/freigaben/AG/R/server/server_admin/packag",
-                  "e_sources ] || cp -rp public/3.5.0/downloads/hyd1d_*.tar.gz",
+                  "e_sources ] || cp -rp public/3.5.0/downloads/hydflood3_*.tar.gz",
                   " /home/WeberA/freigaben/AG/R/server/server_admin/package_so",
                   "urces"))
 } else if (Sys.info()["nodename"] == "up" & 
            Sys.info()["user"] == "gitlab-runner" & R_version == "3.5.0") {
-    system("cp -rp public/3.5.0/* ~/public_html/hyd1d/")
+    system("cp -rp public/3.5.0/* ~/public_html/hydflood3/")
 }
 
 q("no")

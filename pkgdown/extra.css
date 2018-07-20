@@ -1,0 +1,14 @@
+#tocnav ul.nav li a {
+    font-weight: bold;
+}
+
+#tocnav ul.nav li ul.nav li a {
+    margin-left: 15px;
+    padding-left: 15px;
+    font-weight: normal;
+}
+
+.navbar-right li a {
+    padding: 1px 0 1px;
+    margin: 0;
+}

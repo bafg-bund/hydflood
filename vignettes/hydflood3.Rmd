@@ -1,0 +1,126 @@
+---
+title: "hydflood3"
+author: "Arnd Weber"
+date: "`r Sys.Date()`"
+output:
+  html_vignette:
+    toc: yes
+    toc_depth: 3
+bibliography: ../inst/REFERENCES.bib
+csl: ../vignettes/apa_modified.csl
+vignette: |
+  %\VignetteIndexEntry{hyd1d} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.align="center",
+    fig.width = 7,
+    fig.height = 4, 
+    root.dir = "vignettes"
+)
+```
+
+<!-- Indent in html version TOC
+     obtained from: 
+     https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+     -->
+
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'padding-left': num_ul * 5px, 'box-shadow': none});
+  });
+
+});
+</script>
+
+<!-- numbering for figures and tables-->
+
+```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
+# standard library path for the installed local packages
+R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
+lib <- paste0("~/R/", R_version, "/")
+require(hyd1d, lib.loc = lib)
+require(hydflood3, lib.loc = lib)
+
+# set english locale to produce english plot labels
+Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")
+
+# Determine the output format of the document
+outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+
+# Figure and Table Caption Numbering, for HTML do it manually
+capTabNo <- 1
+capFigNo <- 1
+
+# Function to add the Table Number
+capTab <- function(x){
+    if(outputFormat == 'html'){
+        x <- paste0("**Tab. ", capTabNo, "**: ", x)
+        capTabNo <<- capTabNo + 1
+    }
+    return(x)
+}
+
+# Function to add the Figure Number
+capFig <- function(x){
+    if(outputFormat == 'html'){
+        x <- paste0("**Fig. ", capFigNo, "**: ", x)
+        capFigNo <<- capFigNo + 1
+    }
+    return(x)
+}
+```
+
+<BR>
+
+# Purpose
+
+**hydflood3** is an R package designed to compute flood extent and duration 
+along the German federal waterways Elbe and Rhine.
+
+<BR>
+
+# Use
+
+## Installation
+
+The package **hydflood3** is not available from CRAN at the moment. To install 
+the recent developmental version from the GitBucket server of the Federal Institute 
+of Hydrology (BfG) execute the following commands: 
+
+```{r install_git, eval = FALSE}
+install.packages("devtools")
+library(devtools)
+devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood3.git")
+```
+
+Afterwards **hydflood3** can be loaded like every other R package with the 
+following command: 
+
+```{r library, eval = TRUE, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE}
+# standard library path for the installed local packages
+R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
+lib <- paste0("~/R/", R_version, "/")
+library(hydflood3, lib.loc = lib)
+```
+
+```{r library_print, eval = FALSE, echo = TRUE}
+library(hydflood3)
+```
+
+# References
+
+---
+nocite: | 
+  @brunotte_flussauen_2009
+  @bfn_auenzustandsbericht_2009
+...
+

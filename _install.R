@@ -32,13 +32,13 @@ for (a_package in packages) {
 }
 
 # update.packages
-#update.packages(lib.loc = lib, ask = FALSE)
+update.packages(lib.loc = lib, ask = FALSE)
 
 # install the local package
-#require(devtools, lib.loc = lib)
-#devtools::install(".", reload = FALSE, quick = TRUE, 
-#                  args = paste0("--library=", lib), quiet = quiet, 
-#                  dependencies = FALSE)
+require(devtools, lib.loc = lib)
+devtools::install(".", reload = FALSE, quick = TRUE, 
+                  args = paste0("--library=", lib), quiet = quiet, 
+                  dependencies = FALSE)
 
 # exit
 q("no")

@@ -1,17 +1,19 @@
 Package: hydflood3
 Type: Package
-Title: Compute flooded areas and flood duration 
+Title: Compute flood extent and duration along German federal waterways Elbe 
+    and Rhine
 Version: 0.1.0
-Date: 2018-07-13
+Date: 2018-07-20
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
-                    comment = c(ORCID = "0000-0002-5973-2770"))
-Description: hydflood3 extends the functionalities of INFORM, a GIS modelling 
-    framework for ArcGIS for Desktop written in Python. The S4 class
-    WaterLevelDataFrame, included in hyd1d, enables the computation and 
-    visualisation of 1D water level information along the German federal 
-    waterways Elbe and Rhine based on the FLYS3 database and a gauging database 
-    derived from data from the BfG Wiski and http://pegelonline.wsv.de.
+                    comment = c(ORCID = "0000-0002-5973-2770")))
+Description: hydflood3 extends the functionalities of hyd1d, an R package to 
+    interpolate 1D water level and gauging data, to raster based GIS processing. 
+    hydflood3 adopts strategies originally developed for INFORM, an 
+    ArcGIS-based hydro-ecological modelling framework, to compute flood extent 
+    and duration. It does not provide a full, physical hydraulic modelling 
+    algorythm, but a simplified, near realtime GIS approach for flood 
+    modelling.
 Depends: R (>= 3.2.0)
 Imports: methods, hyd1d, rgdal, sp, raster, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2
@@ -21,26 +23,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Collate:
-    'Class-WaterLevelDataFrame.R'
-    'WaterLevelDataFrame-methods.R'
     'data.R'
-    'getGaugingDataW.R'
-    'getPegelonlineW.R'
-    'hyd1d-internal.R'
-    'hyd1d.R'
-    'plotShiny.R'
-    'read.R'
-    'updateGaugingData.R'
-    'waterLevel.R'
-    'waterLevelFlut1.R'
-    'waterLevelFlys3.R'
-    'waterLevelFlys3InterpolateX.R'
-    'waterLevelFlys3InterpolateY.R'
-    'waterLevelFlys3Seq.R'
-    'waterLevelPegelonline.R'
-    'write.R'
+    'flood3.R'
+    'hydflood3.R'
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: https://apps.bafg.de/gitbucket/webera/hydflood3/issues
-URL: http://hpc-service.bafg.de/r-packages/hydflood3/index.html, 
+URL: http://hpc-service.bafg.de/~WeberA/hydflood3/index.html, 
     https://apps.bafg.de/gitbucket/webera/hydflood3

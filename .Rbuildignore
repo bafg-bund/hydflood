@@ -12,3 +12,4 @@
 ^vignettes/Thumbs\.db$
 ^_build\.R$
 ^docs$
+^_pkgdown\.yml$
