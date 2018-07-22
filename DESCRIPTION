@@ -15,7 +15,7 @@ Description: hydflood3 extends the functionalities of hyd1d, an R package to
     algorythm, but a simplified, near realtime GIS approach for flood 
     modelling.
 Depends: R (>= 3.2.0)
-Imports: methods, hyd1d, rgdal, sp, raster, Rdpack
+Imports: methods, hyd1d, rgdal, sp, raster, rgeos, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2
 RdMacros: Rdpack
 License: GPL-2
