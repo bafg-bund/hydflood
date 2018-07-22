@@ -21,7 +21,7 @@ dir.create(lib, verbose, TRUE)
 
 # install dependencies
 packages <- c("hyd1d", "rgdal", "sp", "raster", "rgeos", "Rdpack", "knitr",  
-              "rmarkdown", devtools", "pkgdown", "roxygen2")
+              "rmarkdown", "devtools", "pkgdown", "roxygen2")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages(lib.loc = lib)[, "Package"])) {
