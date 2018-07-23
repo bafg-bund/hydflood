@@ -12,7 +12,7 @@
 #' @param x has to by type \code{RasterStack} and has to include both input 
 #'   RasterLayers \code{csa} (cross section areas) and \code{dem} (digital 
 #'   elevation model). To compute water levels along the River Elbe \code{x} 
-#'   has to be in the coordinate reference system (crs) 
+#'   has to be in the coordinate reference system 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for River Rhine in 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
@@ -32,14 +32,15 @@
 #' @return Raster* object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
-#' @details Coming soon. \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}.
+#' @details Coming soon.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}}, 
-#'   \code{\link[hyd1d]{waterLevelPegelonline}}, 
+#'   \code{\link[hyd1d]{waterLevel}{waterLevelPegelonline}}, 
 #'   \code{\link[raster]{writeRaster}}, 
 #'   \code{\link[raster]{rasterOptions}}
 #' 
-#' @references \insertAllCited{}
+#' @references 
+#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}
 #' 
 #' @examples \dontrun{
 #' library(hydflood3)
