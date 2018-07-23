@@ -51,6 +51,7 @@ Sys.setlocale(category = "LC_MESSAGES", locale = "en_US")
 library(sp)
 library(raster)
 library(rgdal)
+library(rgeos)
 library(hyd1d)
 library(hydflood3)
 
@@ -69,6 +70,5 @@ seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
 fd <- flood3(x = x, seq = seq)
 
 # and plot it
-colfunc <- colorRampPalette(c("red","yellow","springgreen","royalblue"))
-plot(fd, col = colfunc(length(seq)))
+plot(fd)
 ```
