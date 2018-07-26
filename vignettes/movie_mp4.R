@@ -32,10 +32,10 @@ dir.create(out_dir, verbose, TRUE)
 
 # convert the jpg-files to an mp4 video
 system(paste0("ffmpeg -y -framerate 1 -i ", out_dir, "flood3_%03d.jpg -c:v ",
-              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3.mp4"))
+              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3-1fps.mp4"))
 
 system(paste0("ffmpeg -y -framerate 2 -i ", out_dir, "flood3_%03d.jpg -c:v ",
-              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3_2fps.mp4"))
+              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3-2fps.mp4"))
 
 # quit R
 q("no")
