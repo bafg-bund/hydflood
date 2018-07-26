@@ -18,7 +18,7 @@ module list
 #---------------------------------------------------------------
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
-MODELEXE="/opt/i4/R-3.5.1/bin/R"
+MODELEXE="/opt/i4/R-3.5.1/bin/Rscript"
 MODELSCRIPT="vignettes/movie_jpg.R"
 
 #----------------------------------------------------------------
