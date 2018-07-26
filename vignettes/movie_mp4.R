@@ -10,6 +10,7 @@
 #   - combine this sequence to an mpeg4-video
 #
 ################################################################################
+args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 1) {
     stop("One argument must be supplied (year)!\n", 
          call. = FALSE)
