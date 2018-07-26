@@ -268,7 +268,7 @@ flood3 <- function(x, seq, filename = '', ...) {
             setTime(wldf) <- time
             wldfs[[j]] <- hyd1d::waterLevel(wldf)
         } else {
-            time <- i
+            time <- as.POSIXct(i, origin = "1970-01-01 00:00:00")
             wldf <- wldf_initial
             setTime(wldf) <- time
             wldfs[[j]] <- hyd1d::waterLevelPegelonline(wldf)
