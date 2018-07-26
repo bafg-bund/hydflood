@@ -9,6 +9,7 @@
 #   - combine this sequence to an mpeg4-video using 'movie_mp4.R'
 #
 ################################################################################
+args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 3) {
     stop("Three argument must be supplied (date_min, date_max, id)!\n", 
          call. = FALSE)
