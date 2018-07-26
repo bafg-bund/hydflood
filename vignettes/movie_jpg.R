@@ -1,14 +1,22 @@
 ################################################################################
-# movie_2017.R
+# movie_jpg.R
 #
 # author: arnd.weber@bafg.de
-# date:   24.07.2018
+# date:   26.07.2018
 #
 # purpose:
 #   - plot a sequence of 3D plots with water level data near Dessau
-#   - combine this sequence to an mpeg4-video
+#   - combine this sequence to an mpeg4-video using 'movie_mp4.R'
 #
 ################################################################################
+if (length(args) != 3) {
+    stop("Three argument must be supplied (date_min, date_max, id)!\n", 
+         call. = FALSE)
+} else {
+    date_min <- as.POSIXct(args[1])
+    date_max <- as.POSIXct(args[2])
+    j <- as.numeric(args[3])
+}
 
 # configure output
 verbose <- TRUE
@@ -19,7 +27,8 @@ R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
 lib <- paste0("~/R/", R_version, "/")
 
 # output paths
-dir.create("vignettes/movie/2017", verbose, TRUE)
+out_dir <- paste0("vignettes/movie/", strftime(date_min, "%Y"),"/")
+dir.create(out_dir, verbose, TRUE)
 
 #####
 # load the packages
@@ -42,30 +51,25 @@ add.alpha <- function(col, alpha=1){
               rgb(x[1], x[2], x[3], alpha=alpha))  
 }
 
-# color function for the DEM
-colfunc <- colorRampPalette(c("saddlebrown", "yellow", "darkgreen"))
+# color function for the DEM and WL
+dem_colfunc <- colorRampPalette(c("saddlebrown", "yellow", "darkgreen"))
+wl_colfunc <- colorRampPalette(c("darkblue", "cornflowerblue"))
 
 #####
 # GIS data
 ##
-# tif conversion
-#raster.dem <- raster("data-raw/raster.dem_dessau.tif")
-#writeRaster(raster.dem, filename = "data-raw/raster.dem_dessau_tmp.tif", 
-#            overwrite=TRUE)
-#
-#raster.csa <- raster("data-raw/raster.csa_dessau.tif")
-#writeRaster(raster.csa, filename = "data-raw/raster.csa_dessau_tmp.tif")
-
 # visualisation extent
-ext <- extent(309200, 309700, 5749600, 5749800)
+ext <- extent(309000, 310000, 5749000, 5750000)
+#ext <- extent(309200, 309700, 5749600, 5749800)
 
 ##
 # import and convert raster data
 #raster.dem <- raster("data-raw/raster.dem_dessau.tif")
 raster.dem <- raster("data-raw/raster.dem.tif")
 raster.dem <- raster::crop(raster.dem, ext)
-zlim <- c(floor(minValue(raster.dem)/10)*10, 
-          ceiling(maxValue(raster.dem)/10)*10)
+
+# get rid of some dem artefacts
+raster.dem[raster.dem > 65] <- 65
 
 df.dem <- as.data.frame(raster.dem, xy = TRUE, na.rm = FALSE)
 ma.dem <- as.matrix(raster.dem)
@@ -93,8 +97,8 @@ wldf_template <- WaterLevelDataFrame(river = "Elbe", time = as.POSIXct(NA),
 
 #####
 # 3D setting
-phi <- 15
-theta <- -80
+phi <- 30
+theta <- -60 #-80
 lphi <- 120
 ltheta <- 30
 
@@ -102,8 +106,6 @@ ltheta <- 30
 # loop over a sequence of 1 year
 ##
 # create the sequence
-date_min <- as.POSIXct("2017-01-01")
-date_max <- as.POSIXct("2017-12-31")
 seq <- seq(date_min, date_max, "days")
 
 # subset df.gauging_data for w plotting
@@ -119,13 +121,12 @@ df.gd$wl <- pnp + df.gd$w/100
 
 ##
 # loop
-j <- 1
-for (h in seq) {
+#j <- 1
+for (h in seq[j]) {
     
     i <- as.POSIXct.numeric(h, tz = "CET", origin = "1970-01-01 00:00:00")
     
-    out_file <- paste0("vignettes/movie/2017/flood3_", sprintf("%03d", j), 
-                       ".jpg")
+    out_file <- paste0(out_dir, "flood3_", sprintf("%03d", j), ".jpg")
     if (file.exists(out_file)) {
         # write output
         write(paste0(strftime(i, "%d.%m.%Y"), ": ", out_file, 
@@ -156,6 +157,22 @@ for (h in seq) {
     ma.wl[ma.wl <= ma.dem] <- NA
     raster.wl[raster.wl <= raster.dem] <- NA
     
+    # assemble countours for the surface3D plot of ma.wl
+    wls <- as.numeric(levels(as.factor(ma.wl)))
+    wls.contours <- numeric()
+    for (a_wl in 1:length(wls)) {
+        if (a_wl == 1) {
+            wls.contours <- append(wls.contours, wls[a_wl] - 
+                                                 (wls[a_wl + 1] - wls[a_wl])/2)
+            wls.contours <- append(wls.contours, (wls[a_wl] + wls[a_wl + 1])/2)
+        } else if (a_wl == length(wls)) {
+            wls.contours <- append(wls.contours, wls[a_wl] + 
+                                       (wls[a_wl] - wls[a_wl - 1])/2)
+        } else {
+            wls.contours <- append(wls.contours, (wls[a_wl] + wls[a_wl + 1])/2)
+        }
+    }
+    
     # query wl at hectometers a
     spdf.temp <- raster::extract(x = raster.wl, 
                                  y = sp.hectometer, 
@@ -174,21 +191,36 @@ for (h in seq) {
     
     # plot w sequence
     plot(x = df.gd$date, y = df.gd$wl, 
-         type = "l", xlab = "Datum", 
-         ylab = "W am Pegel Dessau (m über NHN (DHHN92)",
+         type = "l", xlab = NA, 
+         ylab = "W am Pegel Dessau (m über NHN (DHHN92))",
          col = "darkblue")
     abline(h = mw, lty = 3, col = 1)
-    boxed.labels(as.Date("2017-08-15"), mw, "MW", cex = 0.8, border = FALSE)
+    boxed.labels(as.Date("2002-11-15"), mw, "MW", cex = 0.8, border = FALSE)
     points(as.Date(i), df.gd$wl[which(df.gd$date == as.Date(i))], 
            cex = 1, pch = 21, col = "darkblue", bg = "darkblue")
     
     # plot3D
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.dem, 
-            zlim = zlim, expand = 10, col = colfunc(20), box = FALSE,
+            col = dem_colfunc(69 - 45), 
+            clim = c(45, 69),
+            colkey = list(length = 0.3,
+                          width = 0.4,
+                          shift = 0.2), 
+            clab = c("m über NHN", "(DHHN92)", "", "DGM"),
+            zlim = c(10, 69), expand = 10, box = FALSE,
             scale = FALSE, plot = TRUE, phi = phi, theta = theta,
-            lighting = TRUE, lphi = lphi, ltheta = ltheta)
-    persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl, add = TRUE, 
-            col = add.alpha("blue", 0.5))
+            lighting = TRUE, lphi = lphi, ltheta = ltheta, shade = 0.5)
+    persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl, 
+            add = TRUE, 
+            col = add.alpha(wl_colfunc(20), 0.5),
+            colkey = list(length = 0.3,
+                          width = 0.4,
+                          shift = -0.2), 
+            clab = c("Wasserspiegel"),
+            image = list(side = "zmin"),
+            contour = list(levels = wls.contours,
+                           col = "white",
+                           labels = NA))
     scatter3D(x = coordinates(spdf.temp_hec)[,2], 
               y = - coordinates(spdf.temp_hec)[,1], 
               z = spdf.temp_hec@data$wl, 
@@ -197,7 +229,9 @@ for (h in seq) {
     text3D(x = coordinates(spdf.temp_hec)[,2], 
            y = - coordinates(spdf.temp_hec)[,1], 
            z = spdf.temp_hec@data$wl + 2, 
-           label = spdf.temp_hec@data$M100, col = "grey", add = TRUE)
+           label = spdf.temp_hec@data$M100, 
+           col = "grey", cex = 0.7, 
+           add = TRUE)
     
     # title
     title(strftime(i, "%d.%m.%Y"), outer = TRUE, line = -2, font = 1)
@@ -209,11 +243,6 @@ for (h in seq) {
     j <- j + 1
     
 }
-
-# convert the jpg-file to an mp4 video
-system(paste0("ffmpeg -y -framerate 1 -i vignettes/movie/2017/flood3_%03d.jpg ",
-              "-c:v libx264 -r 30 -pix_fmt yuv420p vignettes/movie/2017/",
-              "flood3.mp4"))
 
 # quit R
 q("no")
