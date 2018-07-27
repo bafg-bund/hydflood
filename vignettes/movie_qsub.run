@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N movie_qsub.out
+#PBS -N vignettes/movie/2002/movie_qsub.out
 #PBS -M arnd.weber@bafg.de
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
