@@ -9,21 +9,36 @@
 #   - combine this sequence to an mpeg4-video using 'movie_mp4.R'
 #
 ################################################################################
+
+#####
+# argument input
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 3) {
-    stop("Three argument must be supplied (date_min, date_max, id)!\n", 
-         call. = FALSE)
+    stop("Three argument must be supplied (date_min, date_max, id)!\n",
+        call. = FALSE)
 } else {
     date_min <- as.POSIXct(args[1])
     date_max <- as.POSIXct(args[2])
     j <- as.numeric(args[3])
+    year <- strftime(date_min, "%Y")
 }
 
 # # testing
 # date_min <- as.POSIXct("2002-01-01")
-# date_max <- as.POSIXct("2002-01-02")
+# date_max <- as.POSIXct("2002-12-31")
 # j <- 1
+# year <- strftime(date_min, "%Y")
 
+#####
+# 3D setting
+phi <- 17
+theta <- -130 #-70 #-80
+lphi <- 120
+ltheta <- 30
+zmin <- 0
+zmax <- 65
+
+#####
 # configure output
 verbose <- TRUE
 quiet <- !verbose
@@ -33,7 +48,7 @@ R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
 lib <- paste0("~/R/", R_version, "/")
 
 # output paths
-out_dir <- paste0("vignettes/movie/", strftime(date_min, "%Y"),"/")
+out_dir <- paste0("vignettes/movie/", year,"/")
 dir.create(out_dir, verbose, TRUE)
 
 #####
@@ -66,7 +81,7 @@ wl_colfunc <- colorRampPalette(c("darkblue", "cornflowerblue"))
 ##
 # visualisation extent
 ext <- extent(309000, 310000, 5749000, 5750000)
-#ext <- extent(309200, 309700, 5749600, 5749800)
+# ext <- extent(309200, 309700, 5749600, 5749800)
 
 ##
 # import and convert raster data
@@ -95,20 +110,43 @@ spdf.hectometer <- crop(spdf.hectometer, ext)
 sp.hectometer <- SpatialPoints(spdf.hectometer, 
                                proj4string = crs(raster.dem))
 
+##
+# import csa polygons
+spdf.csa <- readOGR("data-raw", "doc_csa_dessau", 
+                    verbose = verbose, pointDropZ = TRUE)
+spdf.csa <- crop(spdf.csa, ext)
+
+df.csa_borders <- data.frame(x0 = numeric(), y0 = numeric(), z0 = numeric(), 
+                             x1 = numeric(), y1 = numeric(), z1 = numeric())
+
+for (k in 1:nrow(spdf.csa)) {
+    # convert SpatialPolygonsDataFrame to matrix with coordinates
+    ma.polygon <- spdf.csa@polygons[[k]]@Polygons[[1]]@coords
+    
+    # construct df to collect coordinate results
+    n_coords <- nrow(ma.polygon) - 2
+    df.csa_borders_temp <- data.frame(x0 = rep(as.numeric(NA), n_coords), 
+                                      y0 = rep(as.numeric(NA), n_coords), 
+                                      z0 = rep(zmin+0.001, n_coords), 
+                                      x1 = rep(as.numeric(NA), n_coords), 
+                                      y1 = rep(as.numeric(NA), n_coords), 
+                                      z1 = rep(zmin+0.001, n_coords))
+    
+    for (l in 1:n_coords) {
+        df.csa_borders_temp$x0[l] <- ma.polygon[l, "x"]
+        df.csa_borders_temp$y0[l] <- ma.polygon[l, "y"]
+        df.csa_borders_temp$x1[l] <- ma.polygon[l + 1, "x"]
+        df.csa_borders_temp$y1[l] <- ma.polygon[l + 1, "y"]
+    }
+    
+    df.csa_borders <- rbind(df.csa_borders, df.csa_borders_temp)
+}
+
 #####
 # wldf
 station_int <- unique(raster.csa)
 wldf_template <- WaterLevelDataFrame(river = "Elbe", time = as.POSIXct(NA),
                                      station_int = station_int)
-
-#####
-# 3D setting
-phi <- 17
-theta <- -130 #-70 #-80
-lphi <- 120
-ltheta <- 30
-zmin <- 10
-zmax <- 65
 
 #####
 # loop over a sequence of 1 year
@@ -129,7 +167,7 @@ df.gd$wl <- pnp + df.gd$w/100
 
 ##
 # loop
-#j <- 1
+# j <- 1
 for (h in seq[j]) {
     
     i <- as.POSIXct.numeric(h, tz = "CET", origin = "1970-01-01 00:00:00")
@@ -165,22 +203,6 @@ for (h in seq[j]) {
     ma.wl[ma.wl <= ma.dem] <- NA
     raster.wl[raster.wl <= raster.dem] <- NA
     
-    # assemble countours for the surface3D plot of ma.wl
-    wls <- as.numeric(levels(as.factor(ma.wl)))
-    wls.contours <- numeric()
-    for (a_wl in 1:length(wls)) {
-        if (a_wl == 1) {
-            wls.contours <- append(wls.contours, wls[a_wl] - 
-                                                 (wls[a_wl + 1] - wls[a_wl])/2)
-            wls.contours <- append(wls.contours, (wls[a_wl] + wls[a_wl + 1])/2)
-        } else if (a_wl == length(wls)) {
-            wls.contours <- append(wls.contours, wls[a_wl] + 
-                                       (wls[a_wl] - wls[a_wl - 1])/2)
-        } else {
-            wls.contours <- append(wls.contours, (wls[a_wl] + wls[a_wl + 1])/2)
-        }
-    }
-    
     # query wl at hectometers a
     spdf.temp <- raster::extract(x = raster.wl, 
                                  y = sp.hectometer, 
@@ -199,13 +221,16 @@ for (h in seq[j]) {
     
     # plot w sequence
     plot(x = df.gd$date, y = df.gd$wl, 
-         type = "l", xlab = NA, 
+         type = "l", xlab = NA, xaxt = "n",
          ylab = "W am Pegel Dessau (m über NHN (DHHN92))",
          col = "darkblue")
     abline(h = mw, lty = 3, col = 1)
-    boxed.labels(as.Date("2002-11-15"), mw, "MW", cex = 0.8, border = FALSE)
+    boxed.labels(as.Date(paste0(year, "-11-15")), mw, "MW", cex = 0.8, border = FALSE)
     points(as.Date(i), df.gd$wl[which(df.gd$date == as.Date(i))], 
            cex = 1, pch = 21, col = "darkblue", bg = "darkblue")
+    axis.Date(1, at = seq(as.Date(paste0(year, "-01-01")), 
+                          as.Date(paste0(year, "-12-31")), by="months"), 
+              format="%d.%m.%Y")
     
     # plot3D
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.dem, 
@@ -218,18 +243,19 @@ for (h in seq[j]) {
             zlim = c(zmin, zmax), expand = 10, box = FALSE,
             scale = FALSE, plot = TRUE, phi = phi, theta = theta,
             lighting = TRUE, lphi = lphi, ltheta = ltheta, shade = 0.5)
-    persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl, 
-            add = TRUE, 
+    persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl,
+            add = TRUE,
             col = add.alpha(wl_colfunc(20), 0.5),
             clim = c(54, 60.3),
             colkey = list(length = 0.3,
                           width = 0.4,
-                          shift = -0.2), 
+                          shift = -0.2),
             clab = c("Wasserspiegel"),
-            image = list(side = "zmin"),
-            contour = list(levels = wls.contours,
-                           col = "white",
-                           labels = NA))
+            image = list(side = "zmin"))
+    segments3D(x0 = df.csa_borders$y0, y0 = -df.csa_borders$x0, 
+               z0 = df.csa_borders$z0, x1 = df.csa_borders$y1, 
+               y1 = -df.csa_borders$x1, z1 = df.csa_borders$z1, 
+               add = TRUE, lty = 1, lwd = 1, col = "white")
     scatter3D(x = coordinates(spdf.temp_hec)[,2], 
               y = - coordinates(spdf.temp_hec)[,1], 
               z = spdf.temp_hec@data$wl, 
