@@ -53,25 +53,45 @@ test_that("x", {
     expect_error(flood3(x = y, seq = seq), 
                  "x must be either 'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N'.")
     
-    #crs(y) <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m")
-    #crs(y) <- sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m")
-    #expect_error(flood3(x = y, seq = seq), 
-    # identicalCRS(x, y) is not TRUE
-    
     # overlap of x
+    #crs(y) <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+    #crs(y) <- sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
+    #expect_error(flood3(x = y, seq = seq), 
     
     # seq missing
     expect_error(flood3(x), "The 'seq' argument has to be supplied.")
     
     # seq class
+    expect_error(flood3(x, c("a", "b")), 
+                 "'seq' must be either type 'Date' or c('POSIXct', 'POSIXt').",
+                 fixed = TRUE)
     
     # seq length
+    expect_error(flood3(x, numeric()), 
+                        "'seq' must have length larger 0.")
     
     # seq NA
+    expect_error(flood3(x, as.Date(NA)), 
+                 "'seq' or elements of it must not be NA.")
     
     # seq range Date
+    seq <- seq(as.Date("1988-12-21"), as.Date("1988-12-22"), by = "days")
+    expect_error(flood3(x, seq), 
+                 "'seq' must be between 1990-01-01 and yesterday")
+    seq <- seq(as.Date("2050-12-21"), as.Date("2050-12-22"), by = "days")
+    expect_error(flood3(x, seq), 
+                 "'seq' must be between 1990-01-01 and yesterday")
     
-    # seq range POSIX
+    # seq range POSIX 
+    now <- Sys.time()
+    seq <- c(now - 3600, now - 3600 * 2)
+    expect_equal(class(flood3(x, seq))[1], "RasterLayer")
+    
+    months_ago <- now - 3600 * 24 * 30 * 2
+    seq <- c(months_ago - 3600, months_ago - 3600 * 2)
+    expect_error(flood3(x, seq), 
+                 "00:00:00 and now, if type of 'seq' is c('POSIXct', 'POSIXt')",
+                 fixed = TRUE)
     
     # filename class
     expect_error(flood3(x, seq, 1), "'filename' must be type 'character'.")
