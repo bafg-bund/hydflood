@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N vignettes/movie/2002/movie_qsub.out
+#PBS -N movie_qsub.out
 #PBS -M arnd.weber@bafg.de
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
@@ -18,8 +18,8 @@ module list
 #---------------------------------------------------------------
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
-MODELEXE="/opt/i4/R-3.5.1/bin/Rscript"
-MODELSCRIPT="vignettes/movie_jpg.R"
+MODELEXE=/opt/i4/R-3.5.1/bin/Rscript
+MODELSCRIPT=vignettes/movie_jpg.R
 
 #----------------------------------------------------------------
 # Output of job information
