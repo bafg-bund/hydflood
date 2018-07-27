@@ -2,7 +2,7 @@
 # movie_jpg.R
 #
 # author: arnd.weber@bafg.de
-# date:   26.07.2018
+# date:   27.07.2018
 #
 # purpose:
 #   - plot a sequence of 3D plots with water level data near Dessau
@@ -18,6 +18,11 @@ if (length(args) != 3) {
     date_max <- as.POSIXct(args[2])
     j <- as.numeric(args[3])
 }
+
+# # testing
+# date_min <- as.POSIXct("2002-01-01")
+# date_max <- as.POSIXct("2002-01-02")
+# j <- 1
 
 # configure output
 verbose <- TRUE
@@ -70,7 +75,7 @@ raster.dem <- raster("data-raw/raster.dem.tif")
 raster.dem <- raster::crop(raster.dem, ext)
 
 # get rid of some dem artefacts
-raster.dem[raster.dem > 65] <- 65
+raster.dem[raster.dem > 62] <- 62
 
 df.dem <- as.data.frame(raster.dem, xy = TRUE, na.rm = FALSE)
 ma.dem <- as.matrix(raster.dem)
@@ -98,10 +103,12 @@ wldf_template <- WaterLevelDataFrame(river = "Elbe", time = as.POSIXct(NA),
 
 #####
 # 3D setting
-phi <- 30
-theta <- -60 #-80
+phi <- 17
+theta <- -130 #-70 #-80
 lphi <- 120
 ltheta <- 30
+zmin <- 10
+zmax <- 65
 
 #####
 # loop over a sequence of 1 year
@@ -130,7 +137,7 @@ for (h in seq[j]) {
     out_file <- paste0(out_dir, "flood3_", sprintf("%03d", j), ".jpg")
     if (file.exists(out_file)) {
         # write output
-        write(paste0(strftime(i, "%d.%m.%Y"), ": ", out_file, 
+        write(paste0(strftime(i, "%d.%m.%Y"), ": ", out_file,
                      " existiert bereits"), stdout())
         
         # increase counter j
@@ -203,17 +210,18 @@ for (h in seq[j]) {
     # plot3D
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.dem, 
             col = dem_colfunc(69 - 45), 
-            clim = c(45, 69),
+            clim = c(48, 62),
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = 0.2), 
             clab = c("m über NHN", "(DHHN92)", "", "DGM"),
-            zlim = c(10, 69), expand = 10, box = FALSE,
+            zlim = c(zmin, zmax), expand = 10, box = FALSE,
             scale = FALSE, plot = TRUE, phi = phi, theta = theta,
             lighting = TRUE, lphi = lphi, ltheta = ltheta, shade = 0.5)
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl, 
             add = TRUE, 
             col = add.alpha(wl_colfunc(20), 0.5),
+            clim = c(54, 60.3),
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = -0.2), 
