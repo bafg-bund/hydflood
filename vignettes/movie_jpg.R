@@ -21,6 +21,7 @@ if (length(args) != 3) {
     date_max <- as.POSIXct(args[2])
     j <- as.numeric(args[3])
     year <- strftime(date_min, "%Y")
+    year_p <- as.character(as.numeric(year) + 1)
 }
 
 # # testing
@@ -28,6 +29,7 @@ if (length(args) != 3) {
 # date_max <- as.POSIXct("2002-12-31")
 # j <- 1
 # year <- strftime(date_min, "%Y")
+# year_p <- as.character(as.numeric(year) + 1)
 
 #####
 # 3D setting
@@ -127,10 +129,10 @@ for (k in 1:nrow(spdf.csa)) {
     n_coords <- nrow(ma.polygon) - 2
     df.csa_borders_temp <- data.frame(x0 = rep(as.numeric(NA), n_coords), 
                                       y0 = rep(as.numeric(NA), n_coords), 
-                                      z0 = rep(zmin+0.001, n_coords), 
+                                      z0 = rep(zmin + 0.001, n_coords), 
                                       x1 = rep(as.numeric(NA), n_coords), 
                                       y1 = rep(as.numeric(NA), n_coords), 
-                                      z1 = rep(zmin+0.001, n_coords))
+                                      z1 = rep(zmin + 0.001, n_coords))
     
     for (l in 1:n_coords) {
         df.csa_borders_temp$x0[l] <- ma.polygon[l, "x"]
@@ -202,6 +204,8 @@ for (h in seq[j]) {
     
     ma.wl[ma.wl <= ma.dem] <- NA
     raster.wl[raster.wl <= raster.dem] <- NA
+    ma.wl_contour <- ma.wl
+    ma.wl_contour[!is.na(ma.wl_contour)] <- 0
     
     # query wl at hectometers a
     spdf.temp <- raster::extract(x = raster.wl, 
@@ -221,21 +225,30 @@ for (h in seq[j]) {
     
     # plot w sequence
     plot(x = df.gd$date, y = df.gd$wl, 
-         type = "l", xlab = NA, xaxt = "n",
+         type = "l", ylim = c(53, 61), xlab = NA, xaxt = "n",
          ylab = "W am Pegel Dessau (m über NHN (DHHN92))",
          col = "darkblue")
     abline(h = mw, lty = 3, col = 1)
     boxed.labels(as.Date(paste0(year, "-11-15")), mw, "MW", cex = 0.8, border = FALSE)
     points(as.Date(i), df.gd$wl[which(df.gd$date == as.Date(i))], 
            cex = 1, pch = 21, col = "darkblue", bg = "darkblue")
-    axis.Date(1, at = seq(as.Date(paste0(year, "-01-01")), 
-                          as.Date(paste0(year, "-12-31")), by="months"), 
-              format="%d.%m.%Y")
+    axis.Date(1, at = as.Date(paste0(year, c("-02-01", "-03-01", "-04-01",
+                                             "-05-01", "-06-01", "-08-01", 
+                                             "-09-01", "-10-01", "-11-01",
+                                             "-12-01"))), 
+              tck = -0.02, labels = FALSE)
+    axis.Date(1, at = c(as.Date(paste0(year, "-01-01")), 
+                        as.Date(paste0(year, "-07-01")), 
+                        as.Date(paste0(year_p, "-01-01"))), format = "%d.%m.", 
+              tck = -0.05, labels = TRUE)
+    axis(2, at = c(53, 55, 57, 59, 61), tck = -0.02, labels = FALSE)
+    box()
     
     # plot3D
+    # dem
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.dem, 
-            col = dem_colfunc(69 - 45), 
-            clim = c(48, 62),
+            col = dem_colfunc((62 - 50)*2), 
+            clim = c(50, 62),
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = 0.2), 
@@ -243,6 +256,7 @@ for (h in seq[j]) {
             zlim = c(zmin, zmax), expand = 10, box = FALSE,
             scale = FALSE, plot = TRUE, phi = phi, theta = theta,
             lighting = TRUE, lphi = lphi, ltheta = ltheta, shade = 0.5)
+    # water level
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl,
             add = TRUE,
             col = add.alpha(wl_colfunc(20), 0.5),
@@ -250,22 +264,54 @@ for (h in seq[j]) {
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = -0.2),
-            clab = c("Wasserspiegel"),
-            image = list(side = "zmin"))
+            clab = c("Wasserspiegel")) #,
+            #image = list(side = "zmin"))
+    persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl_contour,
+            add = TRUE,
+            colvar = ma.wl, 
+            col = wl_colfunc(20), 
+            colkey = FALSE,
+            clim = c(54, 60.3))
+    # water level contours
     segments3D(x0 = df.csa_borders$y0, y0 = -df.csa_borders$x0, 
                z0 = df.csa_borders$z0, x1 = df.csa_borders$y1, 
                y1 = -df.csa_borders$x1, z1 = df.csa_borders$z1, 
                add = TRUE, lty = 1, lwd = 1, col = "white")
-    scatter3D(x = coordinates(spdf.temp_hec)[,2], 
-              y = - coordinates(spdf.temp_hec)[,1], 
-              z = spdf.temp_hec@data$wl, 
+    # hectometer
+    id_kilo <- which(spdf.temp_hec@data$M100 == 260 |
+                     spdf.temp_hec@data$M100 == 260.5)
+    scatter3D(x = coordinates(spdf.temp_hec)[id_kilo, 2], 
+              y = - coordinates(spdf.temp_hec)[id_kilo, 1], 
+              z = spdf.temp_hec@data$wl[id_kilo], 
               type = "p", pch = 21, col = "black", bg = "grey", cex = 1.5, 
               add = TRUE)
-    text3D(x = coordinates(spdf.temp_hec)[,2], 
-           y = - coordinates(spdf.temp_hec)[,1], 
-           z = spdf.temp_hec@data$wl + 2, 
-           label = spdf.temp_hec@data$M100, 
-           col = "grey", cex = 0.7, 
+    scatter3D(x = coordinates(spdf.temp_hec)[-id_kilo, 2], 
+              y = - coordinates(spdf.temp_hec)[-id_kilo, 1], 
+              z = spdf.temp_hec@data$wl[-id_kilo], 
+              type = "p", pch = 21, col = "black", bg = "grey", cex = 0.8, 
+              add = TRUE)
+    text3D(x = coordinates(spdf.temp_hec)[id_kilo, 2], 
+           y = - coordinates(spdf.temp_hec)[id_kilo, 1], 
+           z = spdf.temp_hec@data$wl[id_kilo] + 2, 
+           label = spdf.temp_hec@data$M100[id_kilo], 
+           col = "black", cex = 0.7, font = 2,
+           add = TRUE)
+    # hectometer in contours
+    scatter3D(x = coordinates(spdf.temp_hec)[id_kilo, 2], 
+              y = - coordinates(spdf.temp_hec)[id_kilo, 1], 
+              z = rep(zmin + 0.001, length(id_kilo)), 
+              type = "p", pch = 21, col = "black", bg = "grey", cex = 1.5, 
+              add = TRUE)
+    scatter3D(x = coordinates(spdf.temp_hec)[-id_kilo, 2], 
+              y = - coordinates(spdf.temp_hec)[-id_kilo, 1], 
+              z = rep(zmin + 0.001, length(spdf.temp_hec@data$wl[-id_kilo])), 
+              type = "p", pch = 21, col = "black", bg = "grey", cex = 0.8, 
+              add = TRUE)
+    text3D(x = coordinates(spdf.temp_hec)[id_kilo, 2], 
+           y = - coordinates(spdf.temp_hec)[id_kilo, 1], 
+           z = rep(zmin + 0.001, length(id_kilo)) + 2, 
+           label = spdf.temp_hec@data$M100[id_kilo], 
+           col = "white", cex = 0.7, font = 2,
            add = TRUE)
     
     # title
