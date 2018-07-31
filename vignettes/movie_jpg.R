@@ -229,7 +229,8 @@ for (h in seq[j]) {
          ylab = "W am Pegel Dessau (m über NHN (DHHN92))",
          col = "darkblue")
     abline(h = mw, lty = 3, col = 1)
-    boxed.labels(as.Date(paste0(year, "-11-15")), mw, "MW", cex = 0.8, border = FALSE)
+    boxed.labels(as.Date(paste0(year, "-11-15")), mw, "MW", cex = 0.8, 
+                 border = FALSE)
     points(as.Date(i), df.gd$wl[which(df.gd$date == as.Date(i))], 
            cex = 1, pch = 21, col = "darkblue", bg = "darkblue")
     axis.Date(1, at = as.Date(paste0(year, c("-02-01", "-03-01", "-04-01",
