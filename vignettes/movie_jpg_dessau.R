@@ -1,8 +1,8 @@
 ################################################################################
-# movie_jpg.R
+# movie_jpg_dessau.R
 #
 # author: arnd.weber@bafg.de
-# date:   27.07.2018
+# date:   01.08.2018
 #
 # purpose:
 #   - plot a sequence of 3D plots with water level data near Dessau
@@ -50,7 +50,7 @@ R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
 lib <- paste0("~/R/", R_version, "/")
 
 # output paths
-out_dir <- paste0("vignettes/movie/", year,"/")
+out_dir <- paste0("vignettes/movie/dessau/", year,"/")
 dir.create(out_dir, verbose, TRUE)
 
 #####
