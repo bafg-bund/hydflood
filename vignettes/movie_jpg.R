@@ -205,7 +205,7 @@ for (h in seq[j]) {
     ma.wl[ma.wl <= ma.dem] <- NA
     raster.wl[raster.wl <= raster.dem] <- NA
     ma.wl_contour <- ma.wl
-    ma.wl_contour[!is.na(ma.wl_contour)] <- 0
+    ma.wl_contour[!is.na(ma.wl_contour)] <- zmin
     
     # query wl at hectometers a
     spdf.temp <- raster::extract(x = raster.wl, 
