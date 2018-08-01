@@ -6,9 +6,11 @@
 .Rd2pdf*
 *.dat
 *.Rd
+*/Thumbs.db
 
 # ignore directories and files
 /build
+/data-raw/Thumbs.db
 /public
 /man
 /inst/doc
