@@ -27,7 +27,7 @@ R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
 lib <- paste0("~/R/", R_version, "/")
 
 # output paths
-out_dir <- paste0("vignettes/movie/", year,"/")
+out_dir <- paste0("vignettes/movie/lenzen/", year,"/")
 dir.create(out_dir, verbose, TRUE)
 
 # convert the jpg-files to an mp4 video

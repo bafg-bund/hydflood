@@ -19,7 +19,7 @@ module list
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
 MODELEXE=/opt/i4/R-3.5.1/bin/Rscript
-MODELSCRIPT=vignettes/movie_jpg.R
+MODELSCRIPT=vignettes/movie_jpg_dessau.R
 
 #----------------------------------------------------------------
 # Output of job information
@@ -39,7 +39,7 @@ echo -e "\nModel output:"
 echo -e "------------------------------------------\n"
 echo $MODELEXE" "$MODELSCRIPT" "$PBS_ARRAYID
 
-$MODELEXE $MODELSCRIPT "2002-01-01" "2002-12-31" $PBS_ARRAYID > vignettes/movie/2002/flood3_`printf "%03d" $PBS_ARRAYID`.log 2>&1 
+$MODELEXE $MODELSCRIPT "2002-01-01" "2002-12-31" $PBS_ARRAYID > vignettes/movie/dessau/2002/flood3_`printf "%03d" $PBS_ARRAYID`.log 2>&1 
 
 #----------------------------------------------------------------
 # EOF

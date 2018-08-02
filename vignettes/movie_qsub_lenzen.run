@@ -1,0 +1,47 @@
+#!/bin/bash
+#PBS -N movie_qsub.out
+#PBS -M arnd.weber@bafg.de
+#PBS -j oe
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=00:30:00
+#---------------------------------------------------------------
+# !!! job will be executed in directoy of job submission !!!
+#---------------------------------------------------------------
+cd $PBS_O_WORKDIR
+
+#---------------------------------------------------------------
+# set module environment on the compute nodes
+#---------------------------------------------------------------
+module add i4/applications/R-3.5.1
+module list
+
+#---------------------------------------------------------------
+# set major binaries ( MPI executable, model executable, etc )
+#---------------------------------------------------------------
+MODELEXE=/opt/i4/R-3.5.1/bin/Rscript
+MODELSCRIPT=vignettes/movie_jpg_lenzen.R
+
+#----------------------------------------------------------------
+# Output of job information
+#----------------------------------------------------------------
+echo -e "\nJob: $PBS_JOBNAME   (JobID: $PBS_JOBID)" 
+echo "=========================================="
+echo "Number of nodes requested: "$PBS_NUM_NODES
+echo "Number of cores requested: "$PBS_NUM_PPN
+echo "Time: `date`"
+echo "Running on master node: `hostname`"
+echo "PATH: `echo $PATH`"
+echo "LD_LIBRARY_PATH: `echo $LD_LIBRARY_PATH`"
+echo -e "Current directory: `pwd`"
+echo "ARRAYID: "$PBS_ARRAYID
+echo "=========================================="
+echo -e "\nModel output:"
+echo -e "------------------------------------------\n"
+echo $MODELEXE" "$MODELSCRIPT" "$PBS_ARRAYID
+
+$MODELEXE $MODELSCRIPT "2013-01-01" "2013-12-31" $PBS_ARRAYID > vignettes/movie/lenzen/2013/flood3_`printf "%03d" $PBS_ARRAYID`.log 2>&1 
+
+#----------------------------------------------------------------
+# EOF
+#----------------------------------------------------------------
+
