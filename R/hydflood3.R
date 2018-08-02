@@ -7,7 +7,6 @@
 #' @description To be done...
 #' 
 #' @importFrom Rdpack reprompt
-#' @import methods
 #' @import stats
 #' @import hyd1d
 #'

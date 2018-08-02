@@ -2,6 +2,5 @@
 
 export(flood3)
 import(hyd1d)
-import(methods)
 import(stats)
 importFrom(Rdpack,reprompt)
