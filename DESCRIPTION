@@ -16,12 +16,13 @@ Description: hydflood3 extends the functionalities of hyd1d, an R package to
     modelling.
 Depends: R (>= 3.2.0)
 Imports: stats, hyd1d, rgdal, sp, raster, rgeos, Rdpack
-Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, plot3D, plotrix
+Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
+    plotrix
 RdMacros: Rdpack
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Collate:
     'data.R'
     'flood3.R'
