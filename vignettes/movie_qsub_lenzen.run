@@ -1,9 +1,9 @@
 #!/bin/bash
-#PBS -N movie_qsub.out
+#PBS -N movie_qsub_lenzen.out
 #PBS -M arnd.weber@bafg.de
 #PBS -j oe
 #PBS -l nodes=1:ppn=1
-#PBS -l walltime=00:30:00
+#PBS -l walltime=01:00:00
 #---------------------------------------------------------------
 # !!! job will be executed in directoy of job submission !!!
 #---------------------------------------------------------------
@@ -38,6 +38,8 @@ echo "=========================================="
 echo -e "\nModel output:"
 echo -e "------------------------------------------\n"
 echo $MODELEXE" "$MODELSCRIPT" "$PBS_ARRAYID
+
+mkdir -p vignettes/movie/lenzen/2013/
 
 $MODELEXE $MODELSCRIPT "2013-01-01" "2013-12-31" $PBS_ARRAYID > vignettes/movie/lenzen/2013/flood3_`printf "%03d" $PBS_ARRAYID`.log 2>&1 
 
