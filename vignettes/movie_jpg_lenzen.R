@@ -280,7 +280,7 @@ for (h in seq[j]) {
             colvar = ma.wl, 
             col = wl_colfunc(20), 
             colkey = FALSE,
-            clim = c(13.5, 21))
+            clim = c(13, 22))
     # water level contours
     segments3D(x0 = df.csa_borders$y0, y0 = -df.csa_borders$x0, 
                z0 = df.csa_borders$z0, x1 = df.csa_borders$y1, 
@@ -320,7 +320,7 @@ for (h in seq[j]) {
               add = TRUE)
     text3D(x = coordinates(spdf.temp_hec)[id_kilo_text, 2], 
            y = - coordinates(spdf.temp_hec)[id_kilo_text, 1], 
-           z = spdf.temp_hec@data$wl[id_kilo_text] + 2, 
+           z = spdf.temp_hec@data$wl[id_kilo_text] + 5, 
            label = spdf.temp_hec@data$M100[id_kilo_text], 
            col = "black", cex = 0.7, font = 2,
            add = TRUE)
@@ -337,9 +337,9 @@ for (h in seq[j]) {
               add = TRUE)
     text3D(x = coordinates(spdf.temp_hec)[id_kilo_text, 2], 
            y = - coordinates(spdf.temp_hec)[id_kilo_text, 1], 
-           z = rep(zmin + 0.001, length(id_kilo_text)) + 2, 
+           z = rep(zmin + 0.001, length(id_kilo_text)) + 5, 
            label = spdf.temp_hec@data$M100[id_kilo_text], 
-           col = "white", cex = 0.7, font = 2,
+           col = "black", cex = 0.7, font = 2,
            add = TRUE)
     
     # title
