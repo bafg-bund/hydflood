@@ -208,9 +208,9 @@ if (Sys.info()["nodename"] == "hpc-service" &
     Sys.info()["user"] == "WeberA" & R_version == "3.5.0") {
     system("cp -rp public/3.5.0/* /home/WeberA/public_html/hydflood3/")
     system(paste0("[ -d /home/WeberA/freigaben/AG/R/server/server_admin/packag",
-                  "e_sources ] || cp -rp public/3.5.0/downloads/hydflood3_*.tar.gz",
-                  " /home/WeberA/freigaben/AG/R/server/server_admin/package_so",
-                  "urces"))
+                  "e_sources ] && cp -rp public/3.5.0/downloads/hydflood3_*.tar",
+                  ".gz /home/WeberA/freigaben/AG/R/server/server_admin/package",
+                  "_sources"))
 } else if (Sys.info()["nodename"] == "up" & 
            Sys.info()["user"] == "gitlab-runner" & R_version == "3.5.0") {
     system("cp -rp public/3.5.0/* ~/public_html/hydflood3/")
