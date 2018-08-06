@@ -235,7 +235,7 @@ flood3 <- function(x, seq, filename = '', ...) {
     waterlevel <- raster::raster(dem)
     
     # initialize the WaterLevelDataFrame
-    station_int <- raster::unique(csa)
+    station_int <- as.integer(raster::unique(csa))
     wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
                                                time = as.POSIXct(NA),
                                                station_int = station_int)
@@ -297,6 +297,10 @@ flood3 <- function(x, seq, filename = '', ...) {
             # size and type
             v_wl <- rep(-999, length(v_csa))
             
+            # handle NA's
+            id_na <- is.na(v_csa) | is.na(v_dem) 
+            id_nona <- !id_na
+            
             # loop over all time steps
             for (j in 1:length(seq)) {
                 # transfer the water level info to v_wl
@@ -306,11 +310,12 @@ flood3 <- function(x, seq, filename = '', ...) {
                 }
                 
                 # compare the water level raster to the dem
-                v_fd[v_dem < v_wl] = v_fd[v_dem < v_wl] + 1
+                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <- 
+                    v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] + 1
             }
             
             # transfer NA's
-            v_fd[is.na(v_csa) | is.na(v_dem)] <- NA
+            v_fd[id_na] <- NA
             
             # write the resulting flood durations into out
             out <- raster::writeValues(out, v_fd, bs$row[i])
@@ -333,6 +338,10 @@ flood3 <- function(x, seq, filename = '', ...) {
             # size and type
             v_wl <- rep(-999, length(v_csa))
             
+            # handle NA's
+            id_na <- is.na(v_csa) | is.na(v_dem) 
+            id_nona <- !id_na
+            
             # loop over all time steps
             for (j in 1:length(seq)) {
                 # transfer the water level info to v_wl
@@ -342,11 +351,12 @@ flood3 <- function(x, seq, filename = '', ...) {
                 }
                 
                 # compare the water level raster to the dem
-                v_fd[v_dem < v_wl] = v_fd[v_dem < v_wl] + 1
+                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <- 
+                    v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] + 1
             }
             
             # transfer NA's
-            v_fd[is.na(v_csa) | is.na(v_dem)] <- NA
+            v_fd[id_na] <- NA
             
             cols <- bs$row[i]:(bs$row[i] + bs$nrows[i]-1)
             vv[,cols] <- matrix(v_fd, nrow = out@ncols)
