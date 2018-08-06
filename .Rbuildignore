@@ -10,6 +10,7 @@
 ^_install\.R$
 ^\.gitlab-ci\.yml$
 ^vignettes/Thumbs\.db$
+^vignettes/movie$
 ^_build\.R$
 ^docs$
 ^_pkgdown\.yml$
