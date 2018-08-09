@@ -21,10 +21,10 @@
 #'   have length larger 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")}, 
 #'   values must be in the temporal range between 31 days ago (\code{Sys.time() 
 #'   - 2678400}) and now (\code{Sys.time()}). Then 
-#'   \code{waterLevelPegelonline()} is used internally for the computations. 
-#'   If \code{seq} is type \code{Date} values must be in the temporal range 
-#'   between 1990-01-01 and yesterday (\code{Sys.Date() - 1}) and 
-#'   \code{waterLevel()} 
+#'   \code{waterLevelPegelonline()} is used internally for the water level 
+#'   computations. If \code{seq} is type \code{Date} values must be in the 
+#'   temporal range between 1990-01-01 and yesterday (\code{Sys.Date() - 1}) 
+#'   and \code{waterLevel()} is used internally.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
@@ -32,7 +32,13 @@
 #' @return Raster* object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
-#' @details Coming soon.
+#' @details For every time step provided in \code{seq} \code{flood3()} computes 
+#'   a 1D water level along the requested river section. This 1D water level is 
+#'   transfered to a \code{wl} (water level) RasterLayer, which is in fact a 
+#'   copy of the \code{csa} (cross section areas) RasterLayer, and then 
+#'   compared to the \code{dem} (digital elevation model) RasterLayer. Where the 
+#'   \code{wl} RasterLayer is higher than the \code{dem} RasterLayer flood 
+#'   duration is increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}}, 
 #'   \code{\link[hyd1d]{waterLevel}{waterLevelPegelonline}}, 
