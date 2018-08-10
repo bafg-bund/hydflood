@@ -1,7 +1,7 @@
 Package: hydflood3
 Type: Package
-Title: Compute flood extent and duration along German federal waterways Elbe 
-    and Rhine
+Title: Algorythms to compute flood extent and duration along German federal 
+    waterways Elbe and Rhine
 Version: 0.1.0
 Date: 2018-07-20
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
