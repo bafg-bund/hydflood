@@ -118,9 +118,3 @@ library(hydflood3)
 
 # References
 
----
-nocite: | 
-  @brunotte_flussauen_2009
-  @bfn_auenzustandsbericht_2009
-...
-
