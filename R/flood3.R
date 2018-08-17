@@ -41,7 +41,6 @@
 #'   duration is increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}}, 
-#'   \code{\link[hyd1d]{waterLevel}{waterLevelPegelonline}}, 
 #'   \code{\link[raster]{writeRaster}}, 
 #'   \code{\link[raster]{rasterOptions}}
 #' 
@@ -52,10 +51,9 @@
 #' library(hydflood3)
 #' 
 #' # import the raster data and create a raster stack
-#' csa <- raster(system.file("data-raw/raster.csa.tif"))
-#' dem <- raster(system.file("data-raw/raster.dem.tif"))
-#' x <- stack(csa, dem)
-#' names(x) <- c("csa", "dem")
+#' crs <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+#' x <- hydRasterStack(ext = c(309000, 310000, 5749000, 5750000), 
+#'                     crs = crs)
 #' 
 #' # create a temporal sequence
 #' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -85,14 +83,14 @@ flood3 <- function(x, seq, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (class(x) != "RasterStack") {
+        if (class(x) != "hydRasterStack") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
-                                       "type 'RasterStack'."))
+                                       "type 'hydRasterStack'."))
         }
         # names
-        if (!(all(names(x)[1:2] == c("csa", "dem")))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": names(x)[1:2] ",
-                                       "must be c('csa', 'dem')."))
+        if (!(all(names(x) == c("dem", "csa")))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": names(x) ",
+                                       "must be c('dem', 'csa')."))
         }
         
         # crs
@@ -129,19 +127,19 @@ flood3 <- function(x, seq, filename = '', ...) {
                 utils::data(active_floodplain)
             }
             if (river == "Elbe") {
-                l.over <- sp::over(extent2polygon(x), 
+                l.over <- sp::over(rasterextent2polygon(x), 
                                    spdf.active_floodplain_elbe,
                                    returnList = TRUE)
-                if (! (length(l.over) > 0)) {
+                if (! (length(unlist(l.over)) > 0)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": x does ",
                                                "NOT overlap with the active fl",
                                                "oodplain of River Elbe."))
                 }
             } else if (river == "Rhein") {
-                l.over <- sp::over(extent2polygon(x), 
+                l.over <- sp::over(rasterextent2polygon(x), 
                                    spdf.active_floodplain_rhein,
                                    returnList = TRUE)
-                if (! (length(l.over) > 0)) {
+                if (! (length(unlist(l.over)) > 0)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": x does ",
                                                "NOT overlap with the active fl",
                                                "oodplain of River Rhine."))
@@ -197,7 +195,6 @@ flood3 <- function(x, seq, filename = '', ...) {
             }
         }
     }
-    
     
     ## filename
     if (! missing(filename)) {
@@ -374,15 +371,3 @@ flood3 <- function(x, seq, filename = '', ...) {
     return(out)
 }
 
-# function to convert a rasters extent to a polygon
-extent2polygon <- function(x) {
-    e <- raster::extent(x)
-    df.corners <- data.frame(x = c(e@xmin, e@xmax, e@xmax, e@xmin, e@xmin),
-                             y = c(e@ymin, e@ymin, e@ymax, e@ymax, e@ymin))
-    ma.corners <- as.matrix(df.corners)
-    p.polygon <- sp::Polygon(ma.corners, FALSE)
-    p.polygons <- sp::Polygons(list(p.polygon), ID = "1")
-    sp.polygon <- sp::SpatialPolygons(list(p.polygons), 
-                                      proj4string = raster::crs(x))
-    return(sp.polygon)
-}
