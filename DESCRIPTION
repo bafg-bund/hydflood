@@ -15,7 +15,7 @@ Description: hydflood3 extends the functionalities of hyd1d, an R package to
     algorythm, but a simplified, near realtime GIS approach for flood 
     modelling.
 Depends: R (>= 3.2.0)
-Imports: stats, hyd1d, rgdal, sp, raster, rgeos, Rdpack
+Imports: stats, hyd1d, rgdal, sp, raster, rgeos, Rdpack, methods
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
     plotrix
 RdMacros: Rdpack
@@ -24,9 +24,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
 Collate:
+    'Class-hydRasterStack.R'
     'data.R'
     'flood3.R'
     'hydflood3.R'
+    'hydflood3-internal.R'
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: https://apps.bafg.de/gitbucket/webera/hydflood3/issues
