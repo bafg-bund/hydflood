@@ -1,8 +1,12 @@
-require("rgdal")
-require("sp")
-
 # store spdf.active_floodplain_rhein as external dataset
 if (!(file.exists("data/spdf.active_floodplain_rhein.rda"))) {
+    
+    if (!exists("lib")){
+        v <- R.Version()
+        lib <- paste0("~/R/", paste(sep = ".", v$major, v$minor))
+    }
+    require("rgdal", lib.loc = lib)
+    require("sp", lib.loc = lib)
     
     # import
     spdf.active_floodplain_rhein <- readOGR(dsn = "data-raw", 
