@@ -8,14 +8,8 @@ context("flood3")
 test_that("Elbe", {
     
     # Elbe
-    #csa <- raster(system.file("data-raw/raster.csa.tif", package = "hydflood3"))
-    #dem <- raster(system.file("data-raw/raster.dem.tif", package = "hydflood3"))
-    csa <- raster("~/hydflood3/data-raw/raster.csa.tif")
-    dataType(csa) <- "INT4U"
-    dem <- raster("~/hydflood3/data-raw/raster.dem.tif")
-    
-    x <- stack(csa, dem)
-    names(x) <- c("csa", "dem")
+    x <- hydRasterStack(filename_dem = "~/hydflood3/data-raw/raster.dem.tif", 
+                        filename_csa = "~/hydflood3/data-raw/raster.csa.tif")
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -36,28 +30,8 @@ test_that("Elbe", {
     expect_error(flood3(seq = seq), "The 'x' argument has to be supplied.")
     
     # x class
-    expect_error(flood3(x = dem, seq = seq), "'x' must be type 'RasterStack'")
-    expect_error(flood3(x = dem, seq = seq), 
-                 "names(x)[1:2] must be c('csa', 'dem')",
-                 fixed = TRUE)
-    
-    # names of x
-    y <- x
-    names(y) <- c("a", "b")
-    expect_error(flood3(x = y, seq = seq), 
-                 "names(x)[1:2] must be c('csa', 'dem')",
-                 fixed = TRUE)
-    
-    # crs of x
-    names(y) <- c("csa", "dem")
-    crs(y) <- sp::CRS("+init=epsg:25831")
-    expect_error(flood3(x = y, seq = seq), 
-                 "x must be either 'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N'.")
-    
-    # overlap of x
-    #crs(y) <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-    #crs(y) <- sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
-    #expect_error(flood3(x = y, seq = seq), 
+    expect_error(flood3(x = x$dem, seq = seq), 
+                 "'x' must be type 'hydRasterStack'")
     
     # seq missing
     expect_error(flood3(x), "The 'seq' argument has to be supplied.")
@@ -107,12 +81,10 @@ test_that("Elbe", {
 test_that("Rhein", {
     
     # Rhein
-    csa <- raster("~/hydflood3/data-raw/raster.csa_plittersdorf.tif")
-    dataType(csa) <- "INT4U"
-    dem <- raster("~/hydflood3/data-raw/raster.dem_plittersdorf.tif")
-    
-    x <- stack(csa, dem)
-    names(x) <- c("csa", "dem")
+    x <- hydRasterStack(filename_dem = 
+                            "~/hydflood3/data-raw/raster.dem_plittersdorf.tif", 
+                        filename_csa = 
+                            "~/hydflood3/data-raw/raster.csa_plittersdorf.tif")
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -133,23 +105,8 @@ test_that("Rhein", {
     expect_error(flood3(seq = seq), "The 'x' argument has to be supplied.")
     
     # x class
-    expect_error(flood3(x = dem, seq = seq), "'x' must be type 'RasterStack'")
-    expect_error(flood3(x = dem, seq = seq), 
-                 "names(x)[1:2] must be c('csa', 'dem')",
-                 fixed = TRUE)
-    
-    # names of x
-    y <- x
-    names(y) <- c("a", "b")
-    expect_error(flood3(x = y, seq = seq), 
-                 "names(x)[1:2] must be c('csa', 'dem')",
-                 fixed = TRUE)
-    
-    # crs of x
-    names(y) <- c("csa", "dem")
-    crs(y) <- sp::CRS("+init=epsg:25831")
-    expect_error(flood3(x = y, seq = seq), 
-                 "x must be either 'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N'.")
+    expect_error(flood3(x = x$dem, seq = seq), 
+                 "'x' must be type 'hydRasterStack'")
     
     # overlap of x
     #crs(y) <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
