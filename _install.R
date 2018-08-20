@@ -22,7 +22,7 @@ dir.create(lib, verbose, TRUE)
 # install dependencies
 packages <- c("hyd1d", "rgdal", "sp", "raster", "rgeos", "Rdpack", "knitr",  
               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
-              "plot3D", "plotrix")
+              "plot3D", "plotrix", "shiny", "leaflet", "leaflet.extras")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages(lib.loc = lib)[, "Package"])) {
@@ -43,3 +43,4 @@ devtools::install(".", reload = FALSE, quick = TRUE,
 
 # exit
 q("no")
+
