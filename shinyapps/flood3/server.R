@@ -10,47 +10,111 @@ library(hydflood3, lib.loc = lib)
 
 function(input, output, session) {
     
+    # responsive df.from_to_reactive
+    df.from_to_reactive <- reactive({
+        id <- which(df.from_to$river == input$river)
+        df.from_to_sel <- df.from_to[id, ]
+        return(df.from_to_sel)
+    })
+    
     # responsive menu
     observe({
-        id <- which(df.from_to$river == input$river)
+        # based on input$river
+        df.from_to_sel <- df.from_to_reactive()
         
+        # modify df.from_to_sel based on map bounds
+        if (nrow(stationInBounds()) > 0) {
+            df.from_to_sel$from <- min(stationInBounds()$station)
+            df.from_to_sel$to <-  max(stationInBounds()$station)
+        }
+        
+        # update the slider
         updateSliderInput(session,
                           inputId = "from_to",
                           label   = "Kilometer (von - bis):",
-                          min     = df.from_to$from[id],
-                          max     = df.from_to$to[id],
-                          value   = c(df.from_to$from[id],
-                                      df.from_to$to[id]),
+                          min     = df.from_to_sel$from_val,
+                          max     = df.from_to_sel$to_val,
+                          value   = c(df.from_to_sel$from,
+                                      df.from_to_sel$to),
                           step    = 0.1
         )
     })
     
     output$map <- renderLeaflet({
-        leaflet() %>% addTiles() %>% 
-            fitBounds(min(c(coor.e$lon, coor.r$lon)), 
-                      min(c(coor.e$lat, coor.r$lat)), 
-                      max(c(coor.e$lon, coor.r$lon)), 
-                      max(c(coor.e$lat, coor.r$lat)))
-        # setView(lng = -93.85, lat = 37.45, zoom = 4)
+        leaflet() %>% addTiles()
+    })
+    
+    # A reactive expression that returns the set of hectometers that are
+    # in bounds or in selected river or river section right now
+    stationInBounds <- reactive({
+        if (is.null(input$map_bounds))
+            return(spdf.h[FALSE,])
+        bounds <- input$map_bounds
+        latRng <- range(bounds$north, bounds$south)
+        lngRng <- range(bounds$east, bounds$west)
+        
+        if (input$river != "Bitte wählen Sie!") {
+            subset(spdf.h,
+                   latitude >= latRng[1] & latitude <= latRng[2] &
+                   longitude >= lngRng[1] & longitude <= lngRng[2] &
+                   river == input$river & 
+                   station >= input$from_to[1] & station <= input$from_to[2])
+        } else {
+            subset(spdf.h,
+                   latitude >= latRng[1] & latitude <= latRng[2] &
+                   longitude >= lngRng[1] & longitude <= lngRng[2])
+        }
     })
     
     observe({
          l <- leafletProxy("map")
-         l %>% clearShapes()
          if (input$river == "Elbe") {
+             l %>% removeShape(layerId = c("afe", "afr"))
              l %>% addPolygons(lng = coor.e$lon, lat = coor.e$lat,
-                               label = "Elbe", color = "black", weight = 2,
-                               fill = TRUE, fillColor = "lightblue", fillOpacity = 0.6)
+                               label = "Elbe", color = "blue", weight = 2,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.6, layerId = "afe")
              l %>% addPolygons(lng = coor.r$lon, lat = coor.r$lat,
-                               label = "Rhein", color = "blue", weight = 1,
-                               fill = TRUE, fillColor = "lightblue", fillOpacity = 0.2)
+                               label = "Rhein", color = "blue", weight = 0.5,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.2, layerId = "afr")
+         } else if (input$river == "Rhein") {
+             l %>% removeShape(layerId = c("afe", "afr"))
+             l %>% addPolygons(lng = coor.e$lon, lat = coor.e$lat,
+                               label = "Elbe", color = "blue", weight = 0.5,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.2, layerId = "afe")
+             l %>% addPolygons(lng = coor.r$lon, lat = coor.r$lat,
+                               label = "Rhein", color = "blue", weight = 2,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.6, layerId = "afr")
          } else {
+             l %>% removeShape(layerId = c("afe", "afr"))
              l %>% addPolygons(lng = coor.e$lon, lat = coor.e$lat,
-                               label = "Elbe", color = "blue", weight = 1,
-                               fill = TRUE, fillColor = "lightblue", fillOpacity = 0.2)
+                               label = "Elbe", color = "blue", weight = 2,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.6, layerId = "afe")
              l %>% addPolygons(lng = coor.r$lon, lat = coor.r$lat,
-                               label = "Rhein", color = "black", weight = 2,
-                               fill = TRUE, fillColor = "lightblue", fillOpacity = 0.6)
+                               label = "Rhein", color = "blue", weight = 2,
+                               fill = TRUE, fillColor = "lightblue", 
+                               fillOpacity = 0.6, layerId = "afr")
+         }
+         
+         if (nrow(stationInBounds()) != 0) {
+             l %>% removeMarkerCluster(layerId = "station")
+             l %>% flyToBounds(extent(stationInBounds())@xmin, 
+                               extent(stationInBounds())@ymin, 
+                               extent(stationInBounds())@xmax, 
+                               extent(stationInBounds())@ymax)
+             l %>% addMarkers(lng = stationInBounds()$longitude[c(1, nrow(stationInBounds()))],
+                              lat = stationInBounds()$latitude[c(1, nrow(stationInBounds()))],
+                              label = as.character(stationInBounds()$station[c(1, nrow(stationInBounds()))]),
+                              layerId = "station")
+         } else {
+             l %>% fitBounds(extent(spdf.h)@xmin, 
+                             extent(spdf.h)@ymin, 
+                             extent(spdf.h)@xmax, 
+                             extent(spdf.h)@ymax)
          }
          
          l %>% addDrawToolbar(targetGroup = "test",
@@ -62,19 +126,10 @@ function(input, output, session) {
                              editOptions = editToolbarOptions(selectedPathOptions = selectedPathOptions()))
     })
     
-    # A reactive expression that returns the set of station_int that are
-    # in bounds right now
-    # station_intInBounds <- reactive({
-    #     if (is.null(input$map_bounds))
-    #         return(station_int[FALSE,])
-    #     bounds <- input$map_bounds
-    #     latRng <- range(bounds$north, bounds$south)
-    #     lngRng <- range(bounds$east, bounds$west)
-    #     
-    #     subset(station_int,
-    #            latitude >= latRng[1] & latitude <= latRng[2] &
-    #                longitude >= lngRng[1] & longitude <= lngRng[2])
-    # })
+    observe(length(input$map_draw_all_features) == 0, {
+        output$area <- renderText(paste0("Grenzen Sie den Berechnungsabschnitt",
+                                         " ein!"))
+    })
     
     #https://github.com/bhaskarvk/leaflet.extras/blob/master/inst/examples/shiny/draw-events/app.R
     # Start of Drawing
