@@ -23,21 +23,24 @@ bootstrapPage(
                       inputId  = "river",
                       label    = "Fluss:",
                       choices  = rivers,
-                      selected = "Elbe"
+                      selected = "Bitte wählen Sie!"
                   ),
                   
-                  sliderInput(
-                      inputId = "from_to", 
-                      label   = "Abschnitt (von km - bis km):",
-                      min     = df.from_to$from[1],
-                      max     = df.from_to$to[1],
-                      value   = c(df.from_to$from[1], df.from_to$to[1]),
-                      step    = 0.1
-                  ),
+                  conditionalPanel("input.river != 'Bitte wählen Sie!'",
+                      sliderInput(
+                          inputId = "from_to", 
+                          label   = "Abschnitt (von km - bis km):",
+                          min     = df.from_to$from_val[1],
+                          max     = df.from_to$to_val[1],
+                          value   = c(df.from_to$from[1], df.from_to$to[1]),
+                          step    = 0.1
+                      ),
+                      
+                      p("Fläche:"),
+                      
+                      textOutput("area")
+                  )
                   
-                  p("Fläche:"),
-                  
-                  textOutput("area"),
                   
                   # conditional ...
                   # conditionalPanel(
@@ -69,14 +72,9 @@ bootstrapPage(
                   #          "Email mit einem Link für den Download der Ergebnis",
                   #          "se.")),
                   # 
-                  submitButton(text = "Start der Berechung")
-                  
-                  
-                  # conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-                  #                  # Only prompt for threshold when coloring or sizing by superzip
-                  #                  numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-                  # ),
-                  # 
-                  # plotOutput("scatterCollegeIncome", height = 250)
+                  # conditionalPanel(
+                  #     "input.email_validate == TRUE", 
+                  #     submitButton(text = "Start der Berechung")
+                  # )
     )
 )
