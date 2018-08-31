@@ -1,0 +1,7 @@
+Title: flood3() function
+Description: Start a computation with flood3() interactively.
+License: GPL-3
+Author: Arnd Weber
+DisplayMode: None
+Tags: R, R Shiny, hydflood3, flood3()
+Type: Shiny
