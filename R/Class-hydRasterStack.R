@@ -584,6 +584,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     #         raster.csa <- raster::crop(raster.csa, ext_int, filename = tmp_csa)
     #     }
     # }
+    
     if (!file_exists_csa) {
         
         # download the packages csa_file, if it has not yet been stored locally,
@@ -597,7 +598,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                           ".active_floodplain_", tolower(river), "_csa.rda")
             utils::download.file(url, csa_file, quiet = TRUE)
         }
-        load(csa_file, envir = parent.env(environment()))
+        load(csa_file)
         
         if (river == "Elbe") {
             assign("spdf.active_floodplain_csa", 
@@ -688,7 +689,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                               ".rda")
                 utils::download.file(url, csa_file, quiet = TRUE)
             }
-            load(csa_file, envir = parent.env(environment()))
+            load(csa_file)
             
             if (river == "Elbe") {
                 assign("spdf.active_floodplain_csa", 
@@ -773,6 +774,22 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                 } else {
                     raster.dem <- raster::crop(merge_rasters$x, y = ext_int)
                 }
+            }
+        }
+    }
+    
+    # extend raster.dem with NA's, if it smaller than ext
+    if (extent(raster.dem) <= ext) {
+        if (file_create_dem) {
+            raster.dem <- raster::extend(raster.dem, y = ext, value = NA, 
+                                         filename = filename_dem, ...)
+        } else {
+            if (!in_memory) {
+                tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
+                raster.dem <- raster::extend(raster.dem, y = ext, value = NA, 
+                                             filename = tmp_dem)
+            } else {
+                raster.dem <- raster::extend(raster.dem, y = ext, value = NA)
             }
         }
     }
