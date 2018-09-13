@@ -2,7 +2,7 @@
 # processing.R
 #
 # author: arnd.weber@bafg.de
-# date:   31.08.2018
+# date:   12.09.2018
 #
 # purpose: 
 #   - compute flood3 based on the input parameters stored in args
@@ -43,6 +43,7 @@ wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 # capture args, load input data and prepare result directories
 path <- commandArgs(trailingOnly = TRUE)[[1]]
 #path <- "in_process/7f199JoieFF0VFJQrKZk.RData"
+#path <- "in_process/hy86051lzdb61phjalce.RData"
 id <- gsub(".RData", "", unlist(strsplit(path, "/"))[2])
 
 # load data
@@ -52,22 +53,22 @@ load(path)
 # prepare the computation inputs
 ###
 # x
-ext <- extent(res$extent)
-crs <- crs(res$crs)
+ext <- extent(l.res$extent)
+crs <- crs(l.res$crs)
 x <- hydRasterStack(ext = ext, crs = crs)
 
 # seq
-seq <- seq.Date(from = as.Date(res$seq_from_to[1]), 
-                to = as.Date(res$seq_from_to[2]),
+seq <- seq.Date(from = as.Date(l.res$seq_from_to[1]), 
+                to = as.Date(l.res$seq_from_to[2]),
                 by = "days")
 
 # create a directory for results
 dir.create(paste0("processed/", id), FALSE, TRUE)
 
 # filename 
-filename <- paste0("processed/", id, "/", res$river, "_", 
-                   paste0(res$extent, collapse = "-"), "_",
-                   paste0(res$seq_from_to, collapse = "-"), ".tif")
+filename <- paste0("processed/", id, "/", l.res$river, "_", 
+                   paste0(l.res$extent, collapse = "-"), "_",
+                   paste0(l.res$seq_from_to, collapse = "-"), ".tif")
 filename_xml <- paste0(filename, ".xml")
 filename_msg <- gsub(".tif", ".msg", filename)
 filename_zip <- paste0("www/downloads/", id, ".zip")
@@ -85,7 +86,7 @@ m <- new("inspireSettings")
 # add title and abstract
 m@ResourceTitle <- "Überflutungsdauer nach hydflood3::flood3()"
 m@ResourceAbstract <- paste0("Dieser Rasterdatensatz der Überflutungsdau",
-                             "er eines Teiles der aktiven ", res$river, "-aue ",
+                             "er eines Teiles der aktiven ", l.res$river, "-aue ",
                              "ist mittels des R-Paketes hydflood3 ber",
                              "echnet. Der Datensatz hat eine räumliche A",
                              "uflösung von 1 Meter und weißt Werte zwisc",
@@ -107,7 +108,7 @@ m@ResourceCreationDateType<-"Date of last revision"
 
 m@Version                <- paste0("hydflood3, version ", 
                                    packageVersion("hydflood3"))
-m@TemporalExtent         <- c(res$seq_from_to[1], res$seq_from_to[2])
+m@TemporalExtent         <- c(l.res$seq_from_to[1], l.res$seq_from_to[2])
 
 # compute the bounding box
 sp.ext <- extent2polygon(x = ext, crs = crs)
@@ -179,6 +180,7 @@ write(paste0("Mit freundlichen Grüßen\nIm Auftrag\nIhre BfG\n\n"),
 # zip the tif, xml and msg file for downloading
 wd_old <- getwd()
 setwd(paste0(wd_old, "/processed/", id))
+system(paste0("mv ", wd_old, "/in_process/", id, ".RData ."))
 zip(zipfile = paste0(id, ".zip"), files = list.files())
 setwd(wd_old)
 system(paste0("mv ", getwd(), "/processed/", id, "/", id, ".zip ", getwd(), 
@@ -186,7 +188,12 @@ system(paste0("mv ", getwd(), "/processed/", id, "/", id, ".zip ", getwd(),
 
 #####
 # send an email with the download link
-system(paste0("mail -s 'Shiny-Service: flood3()' ", res$email, " < ", 
+system(paste0("mail -s '[shiny-flood3]: Berechnung abgeschlossen' ", l.res$email, " < ", 
               filename_msg))
 
+#####
+# clean up 
+
+#####
+# quit R
 q("no")
