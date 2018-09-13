@@ -205,7 +205,7 @@ methods::setClass(
 #'   Supported file types are the ’native’ raster package format and 
 #'   those that can be read via rgdal (see \code{\link[rgdal]{readGDAL}}).
 #' 
-#' @param ext optional argument of type \code{\link[raster]{Extent}}. If neither 
+#' @param ext optional argument of type \code{\link[raster]{extent}}. If neither 
 #'   \code{filename_dem} nor \code{filename_csa} are specified, \code{extent} is 
 #'   required to download the respective data and generate temporary dem and csa
 #'   datasets. If either \code{filename_dem} or \code{filename_csa} or both are
@@ -427,9 +427,9 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         ext_int <- ext_int_ras
     }
     if (!missing(ext) & is.logical(ext_int_ras)) {
-        if (class(ext) != "Extent") {
+        if (class(ext) != "extent") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'ext' must ",
-                                       "be type 'Extent'."))
+                                       "be type 'extent'."))
         } else {
             ext_int <- ext
         }
@@ -779,7 +779,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     }
     
     # extend raster.dem with NA's, if it smaller than ext
-    if (extent(raster.dem) <= ext) {
+    if (raster::extent(raster.dem) <= ext) {
         if (file_create_dem) {
             raster.dem <- raster::extend(raster.dem, y = ext, value = NA, 
                                          filename = filename_dem, ...)
