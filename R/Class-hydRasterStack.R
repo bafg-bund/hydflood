@@ -779,17 +779,18 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     }
     
     # extend raster.dem with NA's, if it smaller than ext
-    if (raster::extent(raster.dem) <= ext) {
+    if (raster::extent(raster.dem) <= ext_int) {
         if (file_create_dem) {
-            raster.dem <- raster::extend(raster.dem, y = ext, value = NA, 
+            raster.dem <- raster::extend(raster.dem, y = ext_int, value = NA, 
                                          filename = filename_dem, ...)
         } else {
             if (!in_memory) {
                 tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-                raster.dem <- raster::extend(raster.dem, y = ext, value = NA, 
-                                             filename = tmp_dem)
+                raster.dem <- raster::extend(raster.dem, y = ext_int, 
+                                             value = NA, filename = tmp_dem)
             } else {
-                raster.dem <- raster::extend(raster.dem, y = ext, value = NA)
+                raster.dem <- raster::extend(raster.dem, y = ext_int, 
+                                             value = NA)
             }
         }
     }
