@@ -32,8 +32,8 @@ test_that("General tests", {
     }
     
     # the same extents and crs, but different data sources
-    filename_dem <- "data-raw/raster.dem.tif"
-    filename_csa <- "data-raw/raster.csa.tif"
+    filename_dem <- "~/hydflood3/data-raw/raster.dem.tif"
+    filename_csa <- "~/hydflood3/data-raw/raster.csa.tif"
     ext_csa <- extent(raster(filename_csa))
     crs_csa <- crs(raster(filename_csa))
     expect_equal(dim(hydRasterStack(filename_dem = filename_dem, 
