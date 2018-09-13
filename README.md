@@ -28,16 +28,13 @@ The package **hydflood3** is build around the packages `raster` and `hyd1d`.
 library(sp)
 library(raster)
 library(rgdal)
+library(rgeos)
 library(hyd1d)
 library(hydflood3)
 
 # import the raster data and create a raster stack
-#csa <- raster(system.file("data-raw/raster.csa.tif"))
-#dem <- raster(system.file("data-raw/raster.dem.tif"))
-csa <- raster("data-raw/raster.csa.tif")
-dem <- raster("data-raw/raster.dem.tif")
-x <- stack(csa, dem)
-names(x) <- c("csa", "dem")
+x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",
+                    filename_csa = "data-raw/raster.csa.tif")
 
 # create a temporal sequence
 seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -46,8 +43,7 @@ seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
 fd <- flood3(x = x, seq = seq)
 
 # and plot it
-colfunc <- colorRampPalette(c("red","yellow","springgreen","royalblue"))
-plot(fd, col = colfunc(length(seq)))
+plot(fd)
 ```
 
 <img src="README_files/figure-markdown_github/usage-1.png" style="display: block; margin: auto;" />
