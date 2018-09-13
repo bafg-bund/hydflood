@@ -167,6 +167,13 @@ if (!(file.exists("README.md"))) {
 pkgdown::build_site(".", examples = TRUE, preview = FALSE, document = FALSE, 
                     override = list(destination = public), new_process = FALSE)
 
+if (file.exists("_pkgdown.yml")) {
+    file.remove("_pkgdown.yml")
+}
+if (dir.exists("docs")) {
+    unlink("docs", TRUE, TRUE)
+}
+
 # insert the BfG logo into the header
 files <- list.files(path = public, pattern = "*[.]html",
                     all.files = TRUE, full.names = FALSE, recursive = TRUE,
