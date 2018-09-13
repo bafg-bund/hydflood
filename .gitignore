@@ -17,3 +17,5 @@
 /README_files/figure-markdown_github/Thumbs.db
 /vignettes/movie
 /.Renviron
+/shinyapps/flood3/data/df.gauging_data_latest.rda
+/shinyapps/flood3/scripts/cleanup.log

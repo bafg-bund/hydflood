@@ -1,19 +1,24 @@
-library(shiny, lib.loc = lib)
-library(shinyjs, lib.loc = lib)
-library(leaflet, lib.loc = lib)
-library(leaflet.extras, lib.loc = lib)
-library(sp, lib.loc = lib)
-library(raster, lib.loc = lib)
-library(rgdal, lib.loc = lib)
-library(rgeos, lib.loc = lib)
-library(hyd1d, lib.loc = lib)
-library(hydflood3, lib.loc = lib)
-library(htmltools, lib.loc = lib)
-library(sendmailR, lib.loc = lib)
+################################################################################
+# server.R
+################################################################################
 
 function(input, output, session) {
     
-    # leaflet background map
+    # reactive values to control the UI and finally the computation
+    res <- reactiveValues(
+        river = NA_character_, 
+        from_to = c(NA_real_, NA_real_), 
+        river_from_to = c(NA_real_, NA_real_), 
+        extent = c(NA_real_, NA_real_, NA_real_, NA_real_), 
+        crs = NA_character_, 
+        seq_from_to = c(NA_character_, NA_character_), 
+        df.gd = data.frame(), 
+        gs = NA_character_,
+        email = NA_character_, 
+        random = NA_character_,
+        restored = FALSE
+    )
+    
     output$map <- renderLeaflet({
         leaflet() %>% addTiles() %>% 
             setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)), 
@@ -26,29 +31,10 @@ function(input, output, session) {
                       lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat)))
     })
     
-    # reactive values to trigger menu items
-    menu_elements <- reactiveValues(
-        river = 0, 
-        from_to = 0, 
-        area = 0, 
-        seq = 0, 
-        email = 0, 
-        submit = 0
-    )
-    
-    # reactive values to trigger the computation
-    res_elements <- reactiveValues(
-        river = NA_character_,
-        crs = NA_character_,
-        extent = c(NA_real_, NA_real_, NA_real_, NA_real_), 
-        seq_from_to = c(NA_character_, NA_character_), 
-        email = NA_character_ 
-    )
-    
     #####
     # create menu item 1
     observe({
-        if (is.null(input$river) | menu_elements$river == 0) {
+        if (is.na(res$river)) {
             output$river <- renderUI(
                 selectInput(
                     inputId  = "river",
@@ -58,13 +44,15 @@ function(input, output, session) {
                 )
             )
         } else {
-            if (menu_elements$area == 0) {
+            if (res$restored){
                 output$river <- renderUI(
-                    selectInput(
-                        inputId  = "river",
-                        label    = "Fluss:",
-                        choices  = rivers,
-                        selected = res_elements$river
+                    disabled(
+                        selectInput(
+                            inputId  = "river",
+                            label    = "Fluss:",
+                            choices  = rivers,
+                            selected = res$river
+                        )
                     )
                 )
             } else {
@@ -73,254 +61,208 @@ function(input, output, session) {
                         inputId  = "river",
                         label    = "Fluss:",
                         choices  = rivers,
-                        selected = res_elements$river
+                        selected = res$river
                     )
                 )
-                disable("river")
             }
         }
     }, priority = 10)
     
     #####
-    # respond to menu item 1: river
+    # respond to menu item 1: input$river and set res$river
+    ###
+    # set res$river
+    observeEvent(input$river, {
+        if (input$river != "Bitte wählen Sie!") {
+            res$river <- input$river
+        } else {
+            res$river <- NA_character_
+        }
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+    
     ###
     # responsive datasets
     ##
     # responsive df.from_to
     df.from_to_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(df.from_to[FALSE, ])
         } else {
-            return(df.from_to[which(df.from_to$river == input$river), ])
+            return(df.from_to[which(df.from_to$river == res$river), ])
         }
     })
     
     # responsive crs
     crs_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(NULL)
-        } else if (input$river == "Elbe") {
-            return(CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))
-        } else if (input$river == "Rhein") {
-            return(CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))
         } else {
-            return(NULL)
+            if (res$river == "Elbe") {
+                return(CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))
+            } else {
+                return(CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))
+            }
         }
     })
     
     crs_comp_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(NULL)
-        } else if (input$river != "Bitte wählen Sie!") {
-            return(df.crs_comp$crs[which(df.crs_comp$river == input$river)])
         } else {
-            return(NULL)
+            return(df.crs_comp$crs[which(df.crs_comp$river == res$river)])
         }
     })
     
     # responsive active floodplains in WGS 1984
     spdf.af_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(NULL)
-        } else if (input$river == "Elbe") {
-            return(spdf.afe)
-        } else if (input$river == "Rhein") {
-            return(spdf.afr)
         } else {
-            return(NULL)
+            if (res$river == "Elbe") {
+                return(spdf.afe)
+            } else {
+                return(spdf.afr)
+            } 
         }
     })
     
     # responsive active floodplains in ETRS
     spdf.af_etrs_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(NULL)
-        } else if (input$river == "Elbe") {
-            return(spdf.active_floodplain_elbe)
-        } else if (input$river == "Rhein") {
-            return(spdf.active_floodplain_rhein)
         } else {
-            return(NULL)
+            if (res$river == "Elbe") {
+                return(spdf.active_floodplain_elbe)
+            } else {
+                return(spdf.active_floodplain_rhein)
+            } 
         }
     })
     
-    # responsive spdf.gs
-    spdf.gs_reactive <- reactive({
-        if (is.null(input$river)) {
+    # responsive spdf.gsd
+    spdf.gsd_reactive <- reactive({
+        if (is.na(res$river)) {
             return(NULL)
-        } else if (input$river != "Bitte wählen Sie!") {
-            return(spdf.gs[which(spdf.gs$river == toupper(input$river)), ])
         } else {
-            return(NULL)
+            return(spdf.gsd[which(spdf.gsd$river == 
+                                      toupper(res$river)), ])
         }
     })
     
     ###
-    # observe changes of input$river
-    ##
-    # background and rV: menu_elements
-    observe({
-        if (!is.null(input$river)){
-            if (input$river == 'Bitte wählen Sie!') {
-                # base map
-                l <- leafletProxy("map") %>%
-                    fitBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)),
-                              lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)),
-                              lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)),
-                              lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat)))
-                
-                # rV menu elements
-                menu_elements$river <- 0
-                menu_elements$from_to <- 0
-                menu_elements$area <- 0
-                menu_elements$seq <- 0
-                menu_elements$email <- 0
-                menu_elements$submit <- 0
-                
-                enable("river")
-                enable("from_to")
-                
-            } else {
-                menu_elements$river <- 1
-                menu_elements$from_to <- 0
-                menu_elements$area <- 0
-                menu_elements$seq <- 0
-                menu_elements$email <- 0
-                menu_elements$submit <- 0
-            }
-        }
-    }, priority = 10)
-    
+    # observe changes of res$river and depending elements
     ##
     # active floodplain polygons
     observe({
         
         l <- leafletProxy("map")
         
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                              label = "Elbe", color = "blue", weight = 2,
+                              label = "Elbe", color = "blue", weight = 5,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe")
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 2,
+                              label = "Rhein", color = "blue", weight = 5,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr")
         } else {
-            if (input$river == "Elbe") {
+            if (res$river == "Elbe") {
                 l %>% removeShape(layerId = c("afr"))
                 l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                                  label = "Elbe", color = "blue", weight = 2,
+                                  label = "Elbe", color = "blue", weight = 5,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afe")
-            } else if (input$river == "Rhein") {
-                l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
-                                  fill = TRUE, fillColor = "lightblue", 
-                                  fillOpacity = 0.6, layerId = "afr")
             } else {
-                l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                                  label = "Elbe", color = "blue", weight = 2,
-                                  fill = TRUE, fillColor = "lightblue", 
-                                  fillOpacity = 0.6, layerId = "afe")
+                l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
+                                  label = "Rhein", color = "blue", weight = 5,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afr")
             }
         }
-    })
+    }, priority = 5)
     
     ##
     # gauging stations
-    observeEvent(spdf.gs_reactive(), {
+    observe({
         
         l <- leafletProxy("map")
         l %>% clearGroup(group = "gs")
         
-        if (!is.null(spdf.gs_reactive())){
+        if (!is.na(res$river)){
             l %>% addCircles(lng = ~longitude, 
                              lat = ~latitude, 
                              label = htmlEscape(~gauging_station), 
                              popup = htmlEscape(~gauging_station), 
-                             color = "black", opacity = 1, 
+                             group = "gs", color = "black", opacity = 1, 
                              fillColor = "yellow", fillOpacity = 1, 
-                             group = "gs",
-                             data = spdf.gs_reactive())
+                             data = spdf.gsd_reactive())
         }
-    })
+    }, priority = 5)
     
     #####
-    # create or update menu item 2
+    # create or update the basic settings of menu item 2
     observe({
-        if (menu_elements$river == 0 & menu_elements$from_to == 0) {
+        if (is.na(res$river)) {
             output$from_to <- renderUI("")
-        } else if (menu_elements$river == 1 & menu_elements$from_to == 0) {
-            isolate(
+        } else {
+            if (res$restored) {
+                output$from_to <- renderUI({
+                    disabled(
+                        sliderInput(
+                            inputId = "from_to",
+                            label   = "Abschnitt (von km - bis km):",
+                            min     = res$river_from_to[1],
+                            max     = res$river_from_to[2],
+                            value   = c(res$river_from_to[1], 
+                                        res$river_from_to[2]),
+                            step    = 0.1
+                        )
+                    )
+                })
+            } else {
+                res$river_from_to <- c(df.from_to_reactive()$from_val, 
+                                       df.from_to_reactive()$to_val) 
                 output$from_to <- renderUI({
                     sliderInput(
                         inputId = "from_to",
                         label   = "Abschnitt (von km - bis km):",
-                        min     = df.from_to_reactive()$from_val,
-                        max     = df.from_to_reactive()$to_val,
-                        value   = c(df.from_to_reactive()$from, 
-                                    df.from_to_reactive()$to),
+                        min     = res$river_from_to[1],
+                        max     = res$river_from_to[2],
+                        value   = c(res$river_from_to[1], 
+                                    res$river_from_to[2]),
                         step    = 0.1
                     )
                 })
-            )
-        } else {
-            if (menu_elements$river == 1 & menu_elements$from_to == 1) {
-                output$from_to <- renderUI({
-                    sliderInput(session,
-                                inputId = "from_to",
-                                label   = "Kilometer (von - bis):",
-                                min     = df.from_to_reactive()$from_val,
-                                max     = df.from_to_reactive()$to_val,
-                                value   = c(res_elements$from_to[1],
-                                            res_elements$from_to[2]),
-                                step    = 0.1)
-                })
-            }
-            
-            if (menu_elements$area == 1) {
-                disable("from_to")
             }
         }
-    })
-    
-    ##
-    # # update the sliderInput for menu 2
-    # observe({
-    #     updateSliderInput(session,
-    #                       inputId = "from_to",
-    #                       label   = "Kilometer (von - bis):",
-    #                       min     = df.from_to_reactive()$from_val,
-    #                       max     = df.from_to_reactive()$to_val,
-    #                       value   = c(df.from_to_reactive()$from,
-    #                                   df.from_to_reactive()$to),
-    #                       step    = 0.1
-    #     )
-    # })
+    }, priority = 10)
     
     #####
-    # respond to menu item 2: from_to
+    # respond to menu item 1: input$river and set res$river
+    ###
+    # set res$river
+    observeEvent(input$from_to, {
+        res$from_to <- input$from_to
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+    
     ###
     # responsive datasets
     ##
     # responsive spdf.station
     spdf.station_reactive <- reactive({
-        if (is.null(input$river)) {
+        if (is.na(res$river)) {
             return(spdf.station[FALSE, ])
-        } else if (!is.null(input$river) & all(is.na(input$from_to))) { 
-            return(spdf.station[which(spdf.station$river == input$river), ])
-        } else if (!is.null(input$river) & !any(is.na(input$from_to))) {
-            return(spdf.station[
-                       which(spdf.station$river == input$river &
-                             spdf.station$station >= input$from_to[1] &
-                             spdf.station$station <= input$from_to[2]), ])
         } else {
-            return(spdf.station)
+            if (!all(is.na(res$from_to))) {
+                return(spdf.station[
+                    which(spdf.station$river == res$river &
+                              spdf.station$station >= res$from_to[1] &
+                              spdf.station$station <= res$from_to[2]), ])
+            } else {
+                return(spdf.station)
+            }
         }
     })
     
@@ -340,41 +282,16 @@ function(input, output, session) {
         }
     })
     
-    # modify rV: menu_elements
-    observeEvent(input$from_to, {
-        browser()
-        if (input$from_to[1] != df.from_to_reactive()$from_val) {
-            menu_elements$from_to <- 1
-            menu_elements$area <- 0
-            menu_elements$seq <- 0
-            menu_elements$email <- 0
-            menu_elements$submit <- 0
-        } else if (input$from_to[2] != df.from_to_reactive()$to_val) {
-            menu_elements$from_to <- 1
-            menu_elements$area <- 0
-            menu_elements$seq <- 0
-            menu_elements$email <- 0
-            menu_elements$submit <- 0
-        } else {
-            menu_elements$from_to <- 0
-            menu_elements$area <- 0
-            menu_elements$seq <- 0
-            menu_elements$email <- 0
-            menu_elements$submit <- 0
-        }
-    }, ignoreInit = TRUE)
-    
     # reactive boolean, wether drawing toolbar should be enabled
     draw_reactive <- reactive({
-        if(menu_elements$river == 1   &
-           menu_elements$from_to == 1 &
-           menu_elements$area == 0    &
-           menu_elements$seq == 0     &
-           menu_elements$email == 0   &
-           menu_elements$submit == 0) {
-            return(TRUE)
-        } else {
+        if (is.na(res$river)) {
             return(FALSE)
+        } else {
+           if (!all(is.na(res$from_to)) & !res$restored) {
+                return(TRUE)
+            } else {
+                return(FALSE)
+            }
         }
     })
     
@@ -394,6 +311,36 @@ function(input, output, session) {
                 circleMarkerOptions = FALSE, singleFeature = TRUE,
                 editOptions = editToolbarOptions(
                     selectedPathOptions = selectedPathOptions(), remove = TRUE))
+        } else {
+            if (res$restored) {
+                
+                # capture ETRS extent
+                extent_etrs <- extent(res$extent)
+                sp.extent_etrs <- as(extent_etrs, "SpatialPolygons")
+                crs(sp.extent_etrs) <- CRS(res$crs)
+                
+                output$area <- renderUI({
+                    tagList(
+                        h4("Berechnungsgebiet"),
+                        p(paste0("Fläche: ", 
+                                 round(area(sp.extent_etrs) / 10000, 2),
+                                 " ha (", extent_etrs@xmax - extent_etrs@xmin, 
+                                 " x ", extent_etrs@ymax - extent_etrs@ymin, 
+                                 " m)")),
+                        splitLayout(
+                            disabled(numericInput("res_xmin", "xmin", 
+                                                  extent_etrs@xmin)),
+                            disabled(numericInput("res_xmax", "xmax", 
+                                                  extent_etrs@xmax))),
+                        splitLayout(
+                            disabled(numericInput("res_ymin", "ymin", 
+                                                  extent_etrs@ymin)),
+                            disabled(numericInput("res_ymax", "ymax", 
+                                                  extent_etrs@ymax))),
+                        p("")
+                    )
+                })
+            }
         }
     })
     
@@ -500,10 +447,10 @@ function(input, output, session) {
                                      extent_etrs@ymax))
                     o[[length(o) + 1]] <- p("")
                     o[[length(o) + 1]] <- splitLayout(
-                                              actionButton("area_modify", 
-                                                           "Gebiet ändern"),
-                                              actionButton("area_confirm", 
-                                                           "Gebiet bestätigen"))
+                        actionButton("area_modify", 
+                                     "Gebiet ändern"),
+                        actionButton("area_confirm", 
+                                     "Gebiet bestätigen"))
                 }
             }
         } else if (length(input.features) > 1) {
@@ -538,6 +485,16 @@ function(input, output, session) {
             } else {
                 return(NULL)
             }
+        } else if (!(all(is.na(res$extent)))) {
+            # capture ETRS extent
+            extent_etrs <- extent(res$extent)
+            sp.area_etrs <- as(extent_etrs, "SpatialPolygons")
+            crs(sp.area_etrs) <- CRS(res$crs)
+            
+            # transform it to WGS84 and return the coordinates as data.frame
+            sp.area <- spTransform(sp.area_etrs, CRSobj = crs)
+            ma <- sp.area@polygons[[1]]@Polygons[[1]]@coords
+            return(data.frame(lng = ma[, 1], lat = ma[, 2]))
         } else {
             return(NULL)
         }
@@ -559,7 +516,7 @@ function(input, output, session) {
             e <- extent(
                 SpatialPolygons(
                     list(Polygons(
-                            list(Polygon(df.coor_area_reactive())), ID = 1)), 
+                        list(Polygon(df.coor_area_reactive())), ID = 1)), 
                     proj4string = crs_reactive()))
             l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
                             lat1 = e@ymin - (e@ymax - e@ymin) / 3,
@@ -627,23 +584,23 @@ function(input, output, session) {
                                                    extent_etrs@xmax - 
                                                        extent_etrs@xmin, " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                                              numericInput("xmin", "xmin", 
-                                                           extent_etrs@xmin),
-                                              numericInput("xmax", "xmax", 
-                                                           extent_etrs@xmax))
+                        numericInput("xmin", "xmin", 
+                                     extent_etrs@xmin),
+                        numericInput("xmax", "xmax", 
+                                     extent_etrs@xmax))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
                                                    extent_etrs@ymax - 
                                                        extent_etrs@ymin, " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                                              numericInput("ymin", "ymin", 
-                                                           extent_etrs@ymin),
-                                              numericInput("ymax", "ymax", 
-                                                           extent_etrs@ymax))
+                        numericInput("ymin", "ymin", 
+                                     extent_etrs@ymin),
+                        numericInput("ymax", "ymax", 
+                                     extent_etrs@ymax))
                     o[[length(o) + 1]] <- p("")
                     o[[length(o) + 1]] <- splitLayout(
-                                              actionButton("area_modify", 
-                                                           "Gebiet ändern"),
-                                              p(""))
+                        actionButton("area_modify", 
+                                     "Gebiet ändern"),
+                        p(""))
                     o[[length(o) + 1]] <- p("")
                     
                 } else if (area(sp.extent) <= 25000000) {
@@ -734,10 +691,8 @@ function(input, output, session) {
     observeEvent(input$area_confirm, {
         
         # modify rV
-        menu_elements$area <- 1
-        res_elements$river <- input$river
-        res_elements$crs <- as.character(crs_reactive())
-        res_elements$extent <- c(input$xmin, input$xmax, input$ymin, input$ymax)
+        res$extent <- c(input$xmin, input$xmax, input$ymin, input$ymax)
+        res$crs <- as.character(crs_reactive())
         
         # modify map
         l <- leafletProxy("map")
@@ -746,10 +701,10 @@ function(input, output, session) {
             l %>% removeDrawToolbar(clearFeatures = TRUE)
             l %>% removeShape(layerId = c("area_tmp", "area"))
             l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
-                              lat = df.coor_area_reactive()$lat,
-                              color = "black", weight = 5,
+                              lat = df.coor_area_reactive()$lat, 
+                              color = "black", weight = 5, 
                               fillColor = "lightblue", 
-                              fillOpacity = 0.7,
+                              fillOpacity = 0.7, 
                               layerId = "area")
             e <- extent(
                 SpatialPolygons(
@@ -765,10 +720,9 @@ function(input, output, session) {
         # modify UI
         disable("river")
         disable("from_to")
-        #removeUI("from_to")
         
         # capture ETRS extent
-        extent_etrs <- extent(input$xmin, input$xmax, input$ymin, input$ymax)
+        extent_etrs <- extent(res$extent)
         sp.extent_etrs <- as(extent_etrs, "SpatialPolygons")
         crs(sp.extent_etrs) <- crs_reactive()
         
@@ -797,18 +751,17 @@ function(input, output, session) {
     })
     
     ############################################################################
-    
     #####
     # respond to menu item 3: area
     ###
     # enable menu 4
-    observeEvent(menu_elements$area, {
-        if (menu_elements$area ==  1) {
+    observeEvent(res$crs, {
+        if (!is.na(res$crs)) {
             output$seq <- renderUI({
                 tagList(h4("Berechnungszeitraum"),
                         
                         dateRangeInput(
-                            inputId = "seq",
+                            inputId = "seq_from_to",
                             label = NULL,
                             start = "2017-01-01",
                             end = "2017-12-31",
@@ -837,46 +790,46 @@ function(input, output, session) {
     # uppermost gauging station in area or next upstream to area
     gs_reactive <- reactive({
         # upper most computation-relevant gauging_station
-        if (! is.null(menu_elements$area)) {
-            if (menu_elements$area == 1) {
-                # convert extent to SpatialPolygons.*
-                extent_etrs <- extent(res_elements$extent)
-                sp.area_etrs_valid <- as(extent_etrs, 'SpatialPolygons')
-                crs(sp.area_etrs_valid) <- crs_reactive()
-                sp.area_valid <- spTransform(sp.area_etrs_valid, crs)
-                
-                # get gauging stations in sp.area_valid
-                l.gs <- over(sp.area_valid, spdf.gs, returnList = TRUE)
-                
-                if (nrow(l.gs[[1]]) < 1) {
-                    l.station <- over(sp.area_valid, spdf.station, 
-                                      returnList = TRUE)
-                    if (nrow(l.station[[1]]) < 1) {
-                        return(NULL)
-                    } else {
-                        min_station <- min(l.station[[1]]$station)
-                        ids <- numeric()
-                        id_up <- which(spdf.gs$river == toupper(input$river) &
-                                       spdf.gs$km_qps <= min_station)
-                        if (length(id_up) > 0) {ids <- append(ids, max(id_up))}
-                        id_do <- which(spdf.gs$river == toupper(input$river) &
-                                       spdf.gs$km_qps > min_station)
-                        if (length(id_do) > 0) {ids <- append(ids, id_do)}
-                        spdf.gs_sel <- spdf.gs[ids, ]
-                        
-                        id <- which.min(abs(spdf.gs_sel$km_qps - min_station))
-                        
-                        if (length(id) == 1) {
-                            return(spdf.gs_sel$gauging_station[id])
-                        } else {
-                            return(NULL)
-                        }
-                    }
+        if (!is.na(res$crs)) {
+            
+            # convert extent to SpatialPolygons.*
+            extent_etrs <- extent(res$extent)
+            sp.area_etrs_valid <- as(extent_etrs, 'SpatialPolygons')
+            crs(sp.area_etrs_valid) <- crs_reactive()
+            sp.area_valid <- spTransform(sp.area_etrs_valid, crs)
+            
+            # get gauging stations in sp.area_valid
+            l.gsd <- over(sp.area_valid, spdf.gsd, returnList = TRUE)
+            
+            if (nrow(l.gsd[[1]]) < 1) {
+                l.station <- over(sp.area_valid, spdf.station, 
+                                  returnList = TRUE)
+                if (nrow(l.station[[1]]) < 1) {
+                    return(NULL)
                 } else {
-                    df.gs <- l.gs[[1]]
-                    id <- which(spdf.gs$km_qps == min(spdf.gs$km_qps))
-                    return(df.gs$gauging_station[id])
+                    min_station <- min(l.station[[1]]$station)
+                    ids <- numeric()
+                    id_up <- which(spdf.gsd@data$river == toupper(res$river) &
+                                       spdf.gsd@data$km_qps <= min_station)
+                    if (length(id_up) > 0) {ids <- append(ids, max(id_up))}
+                    id_do <- which(spdf.gsd@data$river == toupper(res$river) &
+                                       spdf.gsd@data$km_qps > min_station)
+                    if (length(id_do) > 0) {ids <- append(ids, min(id_do))}
+                    spdf.gsd_sel <- spdf.gsd[ids, ]
+                    
+                    id <- which.min(abs(spdf.gsd_sel@data$km_qps - min_station))
+                    
+                    if (length(id) == 1) {
+                        return(spdf.gsd_sel@data$gauging_station[id])
+                    } else {
+                        return(NULL)
+                    }
                 }
+            } else {
+                spdf.gsd_sel <- l.gsd[[1]]
+                id <- which(spdf.gsd@data$km_qps == 
+                                min(spdf.gsd_sel@data$km_qps))
+                return(spdf.gsd@data$gauging_station[id])
             }
         }
     })
@@ -886,7 +839,8 @@ function(input, output, session) {
         if (is.null(gs_reactive())) {
             return(NULL)
         } else {
-            df.gsd[which(df.gsd$gauging_station == gs_reactive()), "pnp"]
+            spdf.gsd@data$pnp[which(spdf.gsd@data$gauging_station == 
+                                        gs_reactive())]
         }
     })
     
@@ -896,8 +850,8 @@ function(input, output, session) {
             df.gd[FALSE, ]
         } else {
             df.gd[which(df.gd$gauging_station == gs_reactive() &
-                            df.gd$date >= input$seq[1] &
-                            df.gd$date <= input$seq[2]), ]
+                        df.gd$date >= as.Date(res$seq_from_to[1]) &
+                        df.gd$date <= as.Date(res$seq_from_to[2])), ]
         }
     })
     
@@ -907,63 +861,62 @@ function(input, output, session) {
     ##
     observeEvent(input$seq_confirm, {
         
-        menu_elements$seq <- 1
-        res_elements$seq_from_to <- as.character(input$seq)
+        res$seq_from_to <- as.character(input$seq_from_to)
         
-        if (all(c(menu_elements$river, menu_elements$from_to, 
-                  menu_elements$area, menu_elements$seq) == c(1, 1, 1, 1))) {
-            
-            output$seq <- renderUI({
-                tagList(
-                    h4("Berechnungszeitraum"),
-                    disabled(
-                        dateRangeInput(
-                            inputId = "seq",
-                            label = NULL,
-                            start = input$seq[1],
-                            end = input$seq[2],
-                            min = "1990-01-01",
-                            max = as.character(Sys.Date() - 1),
-                            format = "dd.mm.yyyy",
-                            startview = "year",
-                            weekstart = 1,
-                            language = "de",
-                            separator = " bis "
-                        )
+        output$seq <- renderUI({
+            tagList(
+                h4("Berechnungszeitraum"),
+                disabled(
+                    dateRangeInput(
+                        inputId = "seq_from_to",
+                        label = NULL,
+                        start = res$seq_from_to[1],
+                        end = res$seq_from_to[2],
+                        min = "1990-01-01",
+                        max = as.character(Sys.Date() - 1),
+                        format = "dd.mm.yyyy",
+                        startview = "year",
+                        weekstart = 1,
+                        language = "de",
+                        separator = " bis "
                     )
                 )
-            })
+            )
+        })
+        
+        if (nrow(df.gd_reactive()) > 0) {
             
-            if (nrow(df.gd_reactive()) > 0) {
-                output$seq_gs <- renderPlot({
-                    date_min <- min(df.gd_reactive()$date)
-                    date_max <- max(df.gd_reactive()$date)
-                    par(oma = c(1, 1, 1, 1), mar = c(1, 4, 1.5, 1), cex = 0.8)
-                    plot(x = df.gd_reactive()$date,
-                         y = (df.gd_reactive()$w / 100) + pnp_reactive(), xlab = "",
-                         ylab = "m über NHN (DHHN 92)", xaxt = "n", type = "l",
-                         col = "darkblue", main = paste0("PEGEL: ", gs_reactive()))
-                    axis.Date(side = 1, at = c(date_min, date_max), 
-                              labels = c(strftime(date_min, "%d.%m.%Y"),
-                                         strftime(date_max, "%d.%m.%Y")))
-                    box()
-                }, width = 300, height = 150)
-            }
-            
-            output$email <- renderUI({
-                tagList(h4("Email"),
-                        
-                        textInput(
-                            inputId = "email",
-                            label = NULL
-                        ),
-                        
-                        splitLayout(p(""), 
-                                    actionButton("email_confirm", 
-                                                 "Email bestätigen"))
-                )
-            })
+            res$df.gd <- data.frame(x = df.gd_reactive()$date,
+                                    y = (df.gd_reactive()$w / 100) + 
+                                            pnp_reactive())
+            res$gs <- gs_reactive()
+            output$seq_gs <- renderPlot({
+                date_min <- min(df.gd_reactive()$date)
+                date_max <- max(df.gd_reactive()$date)
+                par(oma = c(1, 1, 1, 1), mar = c(1, 4, 1.5, 1), cex = 0.8)
+                plot(x = res$df.gd$x, y = res$df.gd$y, xlab = "",
+                     ylab = "m über NHN (DHHN 92)", xaxt = "n", type = "l",
+                     col = "darkblue", main = paste0("PEGEL: ", res$gs))
+                axis.Date(side = 1, at = c(date_min, date_max), 
+                          labels = c(strftime(date_min, "%d.%m.%Y"),
+                                     strftime(date_max, "%d.%m.%Y")))
+                box()
+            }, width = 300, height = 150)
         }
+        
+        output$email <- renderUI({
+            tagList(h4("Email"),
+                    
+                    textInput(
+                        inputId = "email",
+                        label = NULL
+                    ),
+                    
+                    splitLayout(p(""), 
+                                actionButton("email_confirm", 
+                                             "Email bestätigen"))
+            )
+        })
     })
     
     #####
@@ -973,54 +926,48 @@ function(input, output, session) {
     ##
     observeEvent(input$email_confirm, {
         
-        if (all(c(menu_elements$river, menu_elements$from_to, 
-                  menu_elements$area, menu_elements$seq) == c(1, 1, 1, 1))) {
+        if (isValidEmail(input$email)) {
             
-            if (isValidEmail(input$email)) {
-                
-                menu_elements$email <- 1
-                res_elements$email <- input$email
-                
-                output$email <- renderUI({
-                    tagList(
-                        h4("Email"),
-                        disabled(
-                            textInput(
-                                inputId = "email",
-                                label = NULL,
-                                value = input$email
-                            )
-                        )
-                    )
-                })
-                
-                output$submit <- renderUI({
-                    tagList(
-                        h4("Berechnung starten"),
-                        actionButton("submit_confirm", "Berechnung starten")
-                    )
-                })
-            } else {
-                
-                menu_elements$email <- 0
-                
-                output$email <- renderUI({
-                    tagList(
-                        h4("Email"),
-                        p(paste0("Die angegebene Emailadresse ist ungültig. Bi",
-                                 "tte passen Sie die Emailadresse an und versu",
-                                 "chen es erneut!")),
+            res$email <- input$email
+            
+            output$email <- renderUI({
+                tagList(
+                    h4("Email"),
+                    disabled(
                         textInput(
                             inputId = "email",
                             label = NULL,
-                            value = input$email
-                        ),
-                        splitLayout(p(""), 
-                                    actionButton("email_confirm", 
-                                                 "Email bestätigen"))
+                            value = res$email
+                        )
                     )
-                })
-            }
+                )
+            })
+            
+            output$submit <- renderUI({
+                tagList(
+                    h3("Berechnung"),
+                    splitLayout(p(""), 
+                                actionButton("submit_confirm", "Starten"))
+                )
+            })
+        } else {
+            
+            output$email <- renderUI({
+                tagList(
+                    h4("Email"),
+                    p(paste0("Die angegebene Emailadresse ist ungültig. Bi",
+                             "tte passen Sie die Emailadresse an und versu",
+                             "chen es erneut!")),
+                    textInput(
+                        inputId = "email",
+                        label = NULL,
+                        value = input$email
+                    ),
+                    splitLayout(p(""), 
+                                actionButton("email_confirm", 
+                                             "Email bestätigen"))
+                )
+            })
         }
     })
     
@@ -1030,138 +977,292 @@ function(input, output, session) {
     # 
     observeEvent(input$submit_confirm, {
         
-        if (all(c(menu_elements$river, menu_elements$from_to, 
-                  menu_elements$area, menu_elements$seq,
-                  menu_elements$email) == c(1, 1, 1, 1, 1))) {
-            
-            menu_elements$submit <- 1
+        # create random string for out and log files
+        if (is.na(res$random)) {
             
             # send a first email message
-            system(paste0("mail -s 'Shiny-Service: flood3()' ", 
-                          res_elements$email, " < processing/01_mail"))
+            system(paste0("mail -s '[shiny-flood3]: Berechnung gestartet' ", 
+                          res$email, " < scripts/01_mail"))
             
             # send.mail(from = "arnd.weber@bafg.de",
-            #           to = "arnd.weber@bafg.de", #c(res_elements$email),
+            #           to = "arnd.weber@bafg.de", #c(res$email),
             #           subject = "Shiny-Service: flood3()",
-            #           body = paste0("Sehr gerhte Nutzerin, sehr geehrter Nutze",
-            #                         "r,\n\nSoeben wurde ihre Berechnung der Üb",
-            #                         "erflutungsdauer wurde gestartet. Nach Abs",
-            #                         "chluss der Berechungen erhalten Sie erneu",
-            #                         "t eine Email mit einem Link zum Download ",
-            #                         "des Berechungsproduktes.\n\nMit freundlic",
-            #                         "hen Grüßen\nIm Auftrag\nIhre BfG"),
+            #           body = paste0("Sehr geerhte Nutzerin, sehr geehrter Nutz",
+            #                         "er,\n\nSoeben wurde ihre Berechnung der Ü",
+            #                         "berflutungsdauer wurde gestartet. Nach Ab",
+            #                         "schluss der Berechnungen erhalten Sie ern",
+            #                         "eut eine Email mit einem Link zum Downloa",
+            #                         "d des Berechnungsproduktes.\n\nMit freund",
+            #                         "lichen Grüßen\nIm Auftrag\nIhre BfG"),
             #           smtp = list(host.name = "host", port = 465,
             #                       user.name = "user",
             #                       passwd = "password", ssl = TRUE),
             #           authenticate = TRUE, send = TRUE, encoding = "utf-8")
             
-            
-            # store computation relevant information
-            isolate({
-                # create random string for out and log files
+            random <- randomString(length = 20)
+            while (file.exists(paste0("in_process/", random, ".RData")) |
+                   dir.exists(paste0("processed/", random))) {
                 random <- randomString(length = 20)
-                while (file.exists(paste0("in_process/", random, ".RData")) |
-                       dir.exists(paste0("processed/", random))) {
-                    random <- randomString(length = 20)
-                }
-                
-                out <- paste0("in_process/", random, ".RData")
-                log <- paste0("in_process/", random, ".log")
-                
-                # save reactive res_elements to out
-                res <- reactiveValuesToList(res_elements)
-                save(res, file = out)
-                
-                # trigger processing
-                system(paste0("nohup Rscript processing/processing.R ", 
-                              out, " > ", log, " 2>&1 &"))
-            })
+            }
+            res$random <- random
             
-            # message
-            output$submit <- renderUI({
-                tagList(
-                    h4("Die Berechnung wurde gestartet!"),
-                    p(paste0("Nach Abschluss dieser erhalten Sie eine weitere ",
-                             "Email mit einem Downloadlink des produzierten Ra",
-                             "sterdatensatzes."))
-                )
-            })
+            out <- paste0("in_process/", random, ".RData")
+            log <- paste0("in_process/", random, ".log")
             
-            # reset button
-            output$reset <- renderUI({
-                tagList(
-                    bookmarkButton(label = "Bookmark", 
-                                   title = "Setze ein Bookmark des Anwendungszustands", 
-                                   id = "bookmark"),
-                    actionButton("reset", "Weitere Berechung")
-                )
-            })
+            # save reactive res to out
+            l.res <- reactiveValuesToList(res)
+            save(l.res, file = out)
             
+            # trigger processing
+            system(paste0("nohup Rscript scripts/processing.R ", 
+                          out, " > ", log, " 2>&1 &"))
         }
+        
+        # message
+        if (file.exists(paste0("www/downloads/", res$random, ".zip"))) {
+            if (res$restored) {
+                output$submit <- renderUI({
+                    tagList(
+                        h3("Berechnung beendet"),
+                        p(paste0("Unter folgendem Link kann der Rasterdatensat",
+                                 "z der Überflutungsdauer heruntergeladen werd",
+                                 "en:")),
+                        a(id = "download",
+                          class = paste0("btn btn-default shiny-download-link ",
+                                         "shiny-bound-output"),
+                          href = paste0("http://", 
+                                        session$clientData$url_hostname, 
+                                        session$clientData$url_pathname, 
+                                        "downloads/", res$random, ".zip"), 
+                          icon = icon(name = "fa-download"), 
+                          "Download"),
+                        p(""),
+                        splitLayout(
+                            p(""),
+                            actionButton("reset", "Neue Berechnung")
+                        )
+                    )
+                })
+            } else {
+                output$submit <- renderUI({
+                    tagList(
+                        h3("Berechnung beendet"),
+                        p(paste0("Unter folgendem Link kann der Rasterdatensat",
+                                 "z der Überflutungsdauer heruntergeladen werd",
+                                 "en:")),
+                        a(id = "download",
+                          class = paste0("btn btn-default shiny-download-link ",
+                                         "shiny-bound-output"),
+                          href = paste0("http://", 
+                                        session$clientData$url_hostname, 
+                                        session$clientData$url_pathname, 
+                                        "downloads/", res$random, ".zip"), 
+                          icon = icon(name = "fa-download"), 
+                          "Download"),
+                        p(""),
+                        splitLayout(
+                            bookmarkButton(label = "Bookmark", 
+                                           title = paste0("Setze ein Bookmark ",
+                                                          "des Anwendungszusta",
+                                                          "nds"), 
+                                           id = "bookmark"),
+                            actionButton("reset", "Neue Berechnung")
+                        )
+                    )
+                })
+            }
+        } else {
+            if (res$restored) {
+                output$submit <- renderUI({
+                    tagList(
+                        h3("Berechnung gestartet"),
+                        p(paste0("Nach Abschluss dieser erhalten Sie eine weit",
+                                 "ere Email mit einem Downloadlink des produzi",
+                                 "erten Rasterdatensatzes.")),
+                        p(""),
+                        splitLayout(
+                            p(""),
+                            actionButton("reset", "Neue Berechnung")
+                        )
+                    )
+                })
+            } else {
+                output$submit <- renderUI({
+                    tagList(
+                        h3("Berechnung gestartet"),
+                        p(paste0("Nach Abschluss dieser erhalten Sie eine weit",
+                                 "ere Email mit einem Downloadlink des produzi",
+                                 "erten Rasterdatensatzes.")),
+                        p(""),
+                        splitLayout(
+                            bookmarkButton(label = "Bookmark", 
+                                           title = paste0("Setze ein Bookmark ",
+                                                          "des Anwendungszusta",
+                                                          "nds"), 
+                                           id = "bookmark"),
+                            actionButton("reset", "Neue Berechnung")
+                        )
+                    )
+                })
+            }
+        }
+        
     })
     
     #####
-    # respond to menu item 8: bookmark $| reset
+    # respond to menu item 8: bookmark &| reset &| download link
     ###
-    # 
+    # bookmark
     setBookmarkExclude(c("bookmark"))
     observeEvent(input$bookmark, {
         session$doBookmark()
     })
     
-    observeEvent(input$reset, {
-        
-        # update menus
-        updateSelectInput(session, 
-                          inputId  = "river",
-                          label    = "Fluss:",
-                          choices  = rivers,
-                          selected = "Bitte wählen Sie!"
-        )
-        
-        output$area <- renderUI({})
-        output$seq <- renderUI({})
-        output$seq_gs <- renderPlot({})
-        output$email <- renderUI({})
-        output$submit <- renderUI({})
-        output$reset <- renderUI({})
-        
-        # reset menu_elements
-        menu_elements$river <- 0
-        menu_elements$from_to <- 0
-        menu_elements$area <- 0
-        menu_elements$seq <- 0 
-        menu_elements$email <- 0
-        menu_elements$submit <- 0
-        
-        # reactivate js menu items
-        enable("river")
-        enable("from_to")
-        enable("area")
-        enable("seq")
-        #enable("email")
-        #enable("submit")
-        
-        # remove area polygons from map
-        l <- leafletProxy("map")
-        l %>% removeShape(layerId = c("area_tmp", "area"))
-        
-    })
-    
     # onBookmark
     onBookmark(function(state) {
-        state$menu_elements <- menu_elements
-        state$res_elements <- res_elements
+        state$values$res_river <- res$river
+        state$values$res_from_to <- res$from_to
+        state$values$res_river_from_to <- res$river_from_to
+        state$values$res_extent <- res$extent
+        state$values$res_crs <- res$crs
+        state$values$res_seq_from_to <- res$seq_from_to
+        state$values$res_df.gs <- res$df.gs
+        state$values$res_gs <- res$gs
+        state$values$res_email <- res$email
+        state$values$res_random <- res$random
     })
     
     # onRestore
     onRestore(function(state) {
-        menu_elements <- state$menu_elements
-        res_elements <- state$res_elements
+        res$river <- state$values$res_river
+        res$from_to <- state$values$res_from_to
+        res$river_from_to <- state$values$res_river_from_to
+        res$extent <- state$values$res_extent
+        res$crs <- state$values$res_crs
+        res$seq_from_to <- state$values$res_seq_from_to
+        res$df.gs <- state$values$res_df.gs
+        res$gs <- state$values$res_gs
+        res$email <- state$values$res_email
+        res$random <- state$values$res_random
+        res$restored <- TRUE
     })
     
     # onRestored
-    # onRestored(
-    #     
-    # )
+    onRestored(function(state) {
+        l <- leafletProxy("map")
+        
+        # define plotting order
+        l %>% addMapPane("af", zIndex = 410)
+        l %>% addMapPane("ufd", zIndex = 420)
+        l %>% addMapPane("area", zIndex = 430)
+        l %>% addMapPane("gs", zIndex = 440)
+        
+        # add active floodplain polygons
+        if (res$river == "Elbe") {
+            l %>% removeShape(layerId = c("afr"))
+            l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
+                              label = "Elbe", color = "blue", weight = 5,
+                              fill = TRUE, fillColor = "lightblue", 
+                              fillOpacity = 0.6, layerId = "afe",
+                              options = pathOptions(pane = "af"))
+        } else {
+            l %>% removeShape(layerId = c("afe"))
+            l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
+                              label = "Rhein", color = "blue", weight = 5,
+                              fill = TRUE, fillColor = "lightblue", 
+                              fillOpacity = 0.6, layerId = "afr",
+                              options = pathOptions(pane = "af"))
+        }
+        
+        # add gauging stations
+        l %>% addCircles(lng = ~longitude, 
+                         lat = ~latitude, 
+                         label = htmlEscape(~gauging_station), 
+                         popup = htmlEscape(~gauging_station), 
+                         group = "gs", color = "black", opacity = 1, 
+                         fillColor = "yellow", fillOpacity = 1, 
+                         data = spdf.gsd_reactive(),
+                         options = pathOptions(pane = "gs"))
+        
+        # add area and zoom to it
+        l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
+                          lat = df.coor_area_reactive()$lat, 
+                          color = "black", weight = 5, 
+                          fillColor = "lightblue", 
+                          fillOpacity = 0.7, 
+                          layerId = "area",
+                          options = pathOptions(pane = "area"))
+        e <- extent(
+            SpatialPolygons(
+                list(Polygons(
+                    list(Polygon(df.coor_area_reactive())), ID = 1)), 
+                proj4string = CRS(res$crs)))
+        l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
+                        lat1 = e@ymin - (e@ymax - e@ymin) / 3,
+                        lng2 = e@xmax + (e@xmax - e@xmin) / 3,
+                        lat2 = e@ymax + (e@ymax - e@ymin) / 3)
+        
+        # display the raster product, if it exists
+        geotiff <- paste0("processed/", res$random, "/", res$river, "_",
+                          paste0(res$extent, collapse = "-"), "_",
+                          paste0(res$seq_from_to, collapse = "-"), ".tif")
+        if (file.exists(geotiff)) {
+            r_etrs1989utmXn <- raster(geotiff)
+            r <- projectRaster(r_etrs1989utmXn, crs = crs, method = "ngb")
+            
+            ufd_col <- colorRampPalette(c("red", "yellow", "green", "darkblue"))
+            pal <- colorNumeric(palette = ufd_col(10),
+                                domain = values(r),
+                                na.color = "transparent")
+            
+            l %>% removeShape(layerId = c("area", "afe", "afr"))
+            if (res$river == "Elbe") {
+                l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
+                                  label = "Elbe", color = "blue", weight = 5,
+                                  fill = FALSE, layerId = "afe",
+                                  options = pathOptions(pane = "af"))
+            } else {
+                l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
+                                  label = "Rhein", color = "blue", weight = 5,
+                                  fill = FALSE, layerId = "afr",
+                                  options = pathOptions(pane = "af"))
+            }
+            l %>% addPolygons(lng = df.coor_area_reactive()$lng,
+                              lat = df.coor_area_reactive()$lat,
+                              color = "black", weight = 2, layerId = "area",
+                              fill = FALSE,
+                              options = pathOptions(pane = "area"))
+            l %>% addRasterImage(x = r, colors = pal, opacity = 1, 
+                                 project = FALSE)
+            l %>% addLegend("bottomleft", title = "Überflutungsdauer (d)",
+                            pal = pal, values = values(r), opacity = 1)
+                            # ,className = "leafletlegend"
+        }
+        
+    })
+    
+    ###
+    # reset
+    observeEvent(input$reset, {
+        
+        # reset res
+        res$river <- NA_character_
+        res$from_to <- c(NA_real_, NA_real_)
+        res$river_from_to <- c(NA_real_, NA_real_)
+        res$extent <- c(NA_real_, NA_real_, NA_real_, NA_real_)
+        res$crs <- NA_character_
+        res$seq_from_to <- c(NA_character_, NA_character_)
+        res$df.gs <- data.frame()
+        res$gs <- NA_character_
+        res$email <- NA_character_
+        res$random <- NA_character_
+        res$restored <- FALSE
+        
+        # reload the base URL via Javascript
+        shinyjs::runjs(paste0('window.location.href = "http://', 
+                              session$clientData$url_hostname, 
+                              session$clientData$url_pathname, '";'))
+        
+    })
+    
 }
