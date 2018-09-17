@@ -188,8 +188,8 @@ system(paste0("mv ", getwd(), "/processed/", id, "/", id, ".zip ", getwd(),
 
 #####
 # send an email with the download link
-system(paste0("mail -s '[shiny-flood3]: Berechnung abgeschlossen' ", l.res$email, " < ", 
-              filename_msg))
+system(paste0("mail -s '[shiny-flood3]: Berechnung abgeschlossen' ", 
+              l.res$email, " < ", filename_msg))
 
 #####
 # clean up 
