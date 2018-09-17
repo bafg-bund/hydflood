@@ -1,14 +1,16 @@
 title: hydflood3
-url: https://arnd.aqualogy.de/hydflood3
+url: https://hpc-service.bafg.de/~WeberA/hydflood3/index.html
 destination: public
 template:
   params:
     bootswatch: cosmo
 reference:
-  - title: Functions
-    desc: Functions to compute flood extent and duration
+  - title: "Class and functions"
+    desc: S4 Class and functions to compute flood extent and duration
     contents:
       - "`flood3`"
+      - "`hydRasterStack-class`"
+      - "`hydRasterStack`"
   - title: Datasets
     desc: Datasets included in hydflood3
     contents:
@@ -20,6 +22,10 @@ navbar:
       menu:
       - text: "Get Started (EN)"
         href: articles/hydflood3.html
+    - text: "ShinyApps"
+      menu:
+      - text: "flood3()"
+        href: http://hpc-service.bafg.de/shiny/WeberA/07-flood3/
     - text: Reference
       href: reference/index.html
   right:
