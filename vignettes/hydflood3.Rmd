@@ -93,8 +93,8 @@ along the German federal waterways Elbe and Rhine.
 ## Installation
 
 The package **hydflood3** is not available from CRAN at the moment. To install 
-the recent developmental version from the GitBucket server of the Federal Institute 
-of Hydrology (BfG) execute the following commands: 
+the recent developmental version from the GitBucket server of the Federal 
+Institute of Hydrology (BfG) execute the following commands: 
 
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
@@ -105,15 +105,68 @@ devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood3.git")
 Afterwards **hydflood3** can be loaded like every other R package with the 
 following command: 
 
-```{r library, eval = TRUE, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE}
-# standard library path for the installed local packages
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-library(hydflood3, lib.loc = lib)
-```
-
 ```{r library_print, eval = FALSE, echo = TRUE}
 library(hydflood3)
+```
+
+## Usage
+
+The package **hydflood3** is build around the packages `raster` and `hyd1d`.
+`hyd1d` internally provides gauging data for all gauging stations along River
+Rhine and Elbe operated by the waterway and navigation authorities. The package 
+`raster` provides the S4 class `RasterStack` upon which the S4 class 
+`hydRasterStack` is build. A `hydRasterStack` is simply a `RasterStack` 
+containing two `RasterLayer`s: One named `dem`, containing a digital elevation
+model, the other named `csa`, containing the cross section areas. These are 
+similar to stairs along the river axis, each step corresponding to a station
+of the 1D `WaterLevelDataFrame` computed by the `waterLevel` function of 
+package `hyd1d`. Originally, cross section area were derived from the cross
+sections used as input data to run the 1D hydraulic model SOBEK.
+
+To initialize such a `hydRasterStack` several possibilities are implemented in 
+the initializing homonymous function `hydRasterStack`. Either you
+provide a digital elevation model and cross section areas yourself as variables
+`filename_dem` and `filename_csa` or you provide only one of them or you simply 
+provide `ext` (an object of type `Extent`) and `crs` (an object of class `CRS`).
+Depending on the supplied coordinate reference system (supplied through either
+`filename_dem`, `filename_csa` or `crs`) the respective river is selected: For
+River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
+[25832](http://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
+River Elbe 'ETRS 1989 UTM 32N' (EPSG
+[25833](http://spatialreference.org/ref/epsg/25833/)). If you can't provide
+dem and csa yourself, `hydflood3` provides csa data internally and downloads
+the official digital elevation models of the waterway and navigation 
+authorities with 1 m spatial resolution. Therefore you definitely need internet
+access and, due to the data volume of the elevation data, your internet should 
+be fast or you should be patient.
+
+```{r init, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
+# import the raster data and create a raster stack
+x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",
+                    filename_csa = "data-raw/raster.csa.tif")
+```
+
+After initialing an object of type `hydRasterStack` everything else is straight 
+forward. Create a temporal sequence `seq`:
+
+```{r seq, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
+seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+```
+
+And supply both of them to the `flood3` function, which will do the computation 
+and return an 'INT4S' raster with counts how often the individual cell of the 
+`dem` was lower than the `csa` during the temporal sequence. For each time step
+of the temporal sequence the corresponding 1D `WaterLevelDataFrame` is computed, 
+joined to `csa` through the `station_int` column and compared to the `dem` so 
+that the possible values of the returned product range between 0 and 
+`length(seq)`:
+
+```{r usage, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
+# compute a flood duration
+fd <- flood3(x = x, seq = seq)
+
+# and plot it
+plot(fd)
 ```
 
 # References
