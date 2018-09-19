@@ -427,9 +427,9 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         ext_int <- ext_int_ras
     }
     if (!missing(ext) & is.logical(ext_int_ras)) {
-        if (class(ext) != "extent") {
+        if (class(ext) != "Extent") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'ext' must ",
-                                       "be type 'extent'."))
+                                       "be type 'Extent'."))
         } else {
             ext_int <- ext
         }
