@@ -82,7 +82,8 @@ test_that("General tests", {
         tmp_dem3 <- rasterTmpFile(prefix = "r_test_dem_")
         tmp_csa2 <- rasterTmpFile(prefix = "r_test_csa_")
         writeRaster(c$dem, tmp_dem2)
-        writeRaster(aggregate(raster(tmp_csa1), fact = 2), tmp_csa2)
+        writeRaster(raster::aggregate(raster(tmp_csa1), fact = 2), tmp_csa2,
+                    overwrite = TRUE)
         d <- c$dem
         crs(d) <- "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"
         writeRaster(d, tmp_dem3)
@@ -92,13 +93,13 @@ test_that("General tests", {
                      "extents of 'filename_dem' and 'filename_csa' have to mat")
         expect_error(hydRasterStack(filename_dem = tmp_dem2,
                                     filename_csa = tmp_csa2), 
-                     "extents of 'filename_dem' and 'filename_csa' have to match.")
+                     "extents of 'filename_dem' and 'filename_csa' have to mat")
         expect_error(hydRasterStack(filename_dem = tmp_dem2,
                                     filename_csa = tmp_csa2), 
-                     "resolutions of 'filename_dem' and 'filename_csa' have to ma")
+                     "resolutions of 'filename_dem' and 'filename_csa' have to")
         expect_error(hydRasterStack(filename_dem = tmp_dem3,
                                     filename_csa = tmp_csa2),
-                     "coordinate reference systems of 'filename_dem' and 'filename")
+                     "coordinate reference systems of 'filename_dem' and 'file")
         expect_error(hydRasterStack(ext = extent(d)), 
                      "The 'crs' argument has to be supplied.")
         expect_error(hydRasterStack(ext = extent(d), crs = 1), 
