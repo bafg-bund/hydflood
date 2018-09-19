@@ -214,6 +214,12 @@ write(" web", stdout())
 if (Sys.info()["nodename"] == "hpc-service" & 
     Sys.info()["user"] == "WeberA" & R_version == "3.5.0") {
     system("cp -rp public/3.5.0/* /home/WeberA/public_html/hydflood3/")
+    system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",
+                  "0 | xargs -0 chmod 0644"))
+    system(paste0("find /home/", user, "/public_html/hydflood3/ -type d -print",
+                  "0 | xargs -0 chmod 0755"))
+    system(paste0("chcon -R -t httpd_user_content_t /home/", user,
+                  "/public_html/"))
     system(paste0("[ -d /home/WeberA/freigaben/AG/R/server/server_admin/packag",
                   "e_sources ] && cp -rp public/3.5.0/downloads/hydflood3_*.tar",
                   ".gz /home/WeberA/freigaben/AG/R/server/server_admin/package",
