@@ -1,0 +1,7 @@
+Title: flood3() WMS services
+Description: display results of annual flood3() computations as interactive WMS
+License: GPL-3
+Author: Arnd Weber
+DisplayMode: None
+Tags: R, R Shiny, hydflood3, flood3(), WMS, web map service
+Type: Shiny
