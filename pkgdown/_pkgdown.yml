@@ -22,10 +22,14 @@ navbar:
       menu:
       - text: "Get Started (EN)"
         href: articles/hydflood3.html
+      - text: "Präsentation (DE)"
+        href: articles/presentation_DE.html
     - text: "ShinyApps"
       menu:
       - text: "flood3()"
         href: http://hpc-service.bafg.de/shiny/WeberA/07-flood3/
+      - text: "flood3()-WMS"
+        href: http://hpc-service.bafg.de/shiny/WeberA/08-flood3-wms/
     - text: Reference
       href: reference/index.html
   right:
