@@ -23,7 +23,7 @@ function(request) {
             draggable = TRUE, left = "auto", right = 20, width = 330, 
             top = 20, bottom = "auto", height = "auto", 
             
-            h2("hydflood3::flood3()"),
+            h2("flood3()-WMS"),
             
             #####
             # menu item 1: river
