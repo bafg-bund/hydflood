@@ -17,10 +17,10 @@ function(input, output, session) {
     # basemap
     output$map <- renderLeaflet({
         leaflet() %>% addTiles() %>% 
-            setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)) - 0.1, 
-                         lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)) - 0.1, 
-                         lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)) + 0.1, 
-                         lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat)) + 0.1) %>%
+            setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)) - 2, 
+                         lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)) - 2, 
+                         lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)) + 2, 
+                         lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat)) + 2) %>%
             fitBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)),
                       lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)),
                       lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)),
@@ -513,8 +513,8 @@ function(input, output, session) {
                                                    'enter></p><center><img wid',
                                                    'th="40%" style="" src="htt',
                                                    'p://hpc-service.bafg.de/sh',
-                                                   'iny/WeberA/08-flood3-wms/l',
-                                                   'egend.png"></center>'))
+                                                   'iny/WeberA/08-flood3wms/le',
+                                                   'gend.png"></center>'))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))
