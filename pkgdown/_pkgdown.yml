@@ -31,7 +31,7 @@ navbar:
       - text: "flood3()"
         href: http://hpc-service.bafg.de/shiny/WeberA/07-flood3/
       - text: "flood3()-WMS"
-        href: http://hpc-service.bafg.de/shiny/WeberA/08-flood3-wms/
+        href: http://hpc-service.bafg.de/shiny/WeberA/08-flood3wms/
   right:
     - text: BfG
       href: http://www.bafg.de
