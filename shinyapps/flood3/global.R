@@ -10,6 +10,7 @@ lib <- paste0("~/R/", R_version, "/")
 # load the necessary packages
 library(shiny, lib.loc = lib)
 library(shinyjs, lib.loc = lib)
+# library(shinycssloaders, lib.loc = lib)
 library(htmltools, lib.loc = lib)
 library(leaflet, lib.loc = lib)
 library(leaflet.extras, lib.loc = lib)

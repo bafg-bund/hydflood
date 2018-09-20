@@ -14,6 +14,10 @@ function(request) {
         
         useShinyjs(),
         
+        # withSpinner(
+        #     leafletOutput("map", width = "100%", height = "100%"), 
+        #     type = 4, color = "#00008b", size = 2, 
+        #     color.background = "#FFFFFF", proxy.height = "400px"),
         leafletOutput("map", width = "100%", height = "100%"),
         
         # Modified after https://github.com/rstudio/shiny-examples/blob/master/063-
