@@ -28,7 +28,8 @@ write("", stdout())
 # delete the expired zip files
 write("data-files", stdout())
 for (a_file in list.files("www/downloads", pattern = "*.zip")) {
-    if (file.mtime(paste0("www/downloads/", a_file)) < Sys.Date() - 8) {
+    if (file.mtime(paste0("www/downloads/", a_file)) < 
+        Sys.time() - 8 * 24 * 60 * 60) {
         # delete the zip file
         write(paste0("www/downloads/", a_file), stdout())
         unlink(paste0("www/downloads/", a_file), force = TRUE)
@@ -36,6 +37,7 @@ for (a_file in list.files("www/downloads", pattern = "*.zip")) {
         # delete the *.tif, *.tif.xml and *.msg
         id <- gsub(".zip", "", a_file)
         for (b_file in list.files(paste0("processed/", id, "/"))) {
+            if (endsWith(".RData", b_file)) {next}
             write(paste0("processed/", id, "/", b_file), stdout())
             unlink(paste0("processed/", id, "/", b_file), force = TRUE)
         }
