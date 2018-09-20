@@ -69,6 +69,7 @@ dir.create(paste0("processed/", id), FALSE, TRUE)
 filename <- paste0("processed/", id, "/", l.res$river, "_", 
                    paste0(l.res$extent, collapse = "-"), "_",
                    paste0(l.res$seq_from_to, collapse = "-"), ".tif")
+filename_wgs84 <- gsub(".tif", "_wgs84.tif", filename)
 filename_xml <- paste0(filename, ".xml")
 filename_msg <- gsub(".tif", ".msg", filename)
 filename_zip <- paste0("www/downloads/", id, ".zip")
@@ -77,6 +78,8 @@ filename_zip_msg <- paste0("downloads/", id, ".zip")
 #####
 # compute
 f <- flood3(x = x, seq = seq, filename = filename)
+f_wgs84 <- projectRaster(f, crs = wgs84, method = "ngb", 
+                         filename = filename_wgs84)
 
 #####
 # create INSPIRE, ISO 19139, GGinA-conform metadata
@@ -181,7 +184,8 @@ write(paste0("Mit freundlichen Grüßen\nIm Auftrag\nIhre BfG\n\n"),
 wd_old <- getwd()
 setwd(paste0(wd_old, "/processed/", id))
 system(paste0("mv ", wd_old, "/in_process/", id, ".RData ."))
-zip(zipfile = paste0(id, ".zip"), files = list.files())
+zip(zipfile = paste0(id, ".zip"), 
+    files = list.files()[!endsWith(list.files(), "_wgs84.tif")])
 setwd(wd_old)
 system(paste0("mv ", getwd(), "/processed/", id, "/", id, ".zip ", getwd(), 
               "/", filename_zip))
