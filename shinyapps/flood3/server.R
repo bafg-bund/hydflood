@@ -21,10 +21,10 @@ function(input, output, session) {
     
     output$map <- renderLeaflet({
         leaflet() %>% addTiles() %>% 
-            setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)), 
-                         lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)), 
-                         lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)), 
-                         lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat))) %>%
+            setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)) - 2, 
+                         lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)) - 2, 
+                         lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)) + 2, 
+                         lat2 = max(c(df.coor.afe$lat, df.coor.afr$lat)) + 2) %>%
             fitBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)),
                       lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)),
                       lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)),
@@ -159,24 +159,24 @@ function(input, output, session) {
         
         if (is.na(res$river)) {
             l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                              label = "Elbe", color = "blue", weight = 5,
+                              label = "Elbe", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe")
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 5,
+                              label = "Rhein", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr")
         } else {
             if (res$river == "Elbe") {
                 l %>% removeShape(layerId = c("afr"))
                 l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                                  label = "Elbe", color = "blue", weight = 5,
+                                  label = "Elbe", color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afe")
             } else {
                 l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 5,
+                                  label = "Rhein", color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afr")
             }
@@ -407,7 +407,7 @@ function(input, output, session) {
                     
                     l <- leafletProxy("map")
                     l %>% addPolygons(lng = ma[,1], lat = ma[,2],
-                                      color = "black", weight = 5,
+                                      color = "black", weight = 2,
                                       fillColor = "lightblue", 
                                       fillOpacity = 0.7,
                                       layerId = "area_tmp")
@@ -509,7 +509,7 @@ function(input, output, session) {
             l %>% removeShape(layerId = c("area_tmp"))
             l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
                               lat = df.coor_area_reactive()$lat,
-                              color = "black", weight = 5,
+                              color = "black", weight = 2,
                               fillColor = "lightblue", 
                               fillOpacity = 0.7,
                               layerId = "area_temp")
@@ -702,7 +702,7 @@ function(input, output, session) {
             l %>% removeShape(layerId = c("area_tmp", "area"))
             l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
                               lat = df.coor_area_reactive()$lat, 
-                              color = "black", weight = 5, 
+                              color = "black", weight = 2, 
                               fillColor = "lightblue", 
                               fillOpacity = 0.7, 
                               layerId = "area")
@@ -1161,14 +1161,14 @@ function(input, output, session) {
         if (res$river == "Elbe") {
             l %>% removeShape(layerId = c("afr"))
             l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                              label = "Elbe", color = "blue", weight = 5,
+                              label = "Elbe", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe",
                               options = pathOptions(pane = "af"))
         } else {
             l %>% removeShape(layerId = c("afe"))
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 5,
+                              label = "Rhein", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr",
                               options = pathOptions(pane = "af"))
@@ -1187,7 +1187,7 @@ function(input, output, session) {
         # add area and zoom to it
         l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
                           lat = df.coor_area_reactive()$lat, 
-                          color = "black", weight = 5, 
+                          color = "black", weight = 2, 
                           fillColor = "lightblue", 
                           fillOpacity = 0.7, 
                           layerId = "area",
@@ -1205,11 +1205,9 @@ function(input, output, session) {
         # display the raster product, if it exists
         geotiff <- paste0("processed/", res$random, "/", res$river, "_",
                           paste0(res$extent, collapse = "-"), "_",
-                          paste0(res$seq_from_to, collapse = "-"), ".tif")
+                          paste0(res$seq_from_to, collapse = "-"), "_wgs84.tif")
         if (file.exists(geotiff)) {
-            r_etrs1989utmXn <- raster(geotiff)
-            r <- projectRaster(r_etrs1989utmXn, crs = crs, method = "ngb")
-            
+            r <- raster(geotiff)
             ufd_col <- colorRampPalette(c("red", "yellow", "green", "darkblue"))
             pal <- colorNumeric(palette = ufd_col(10),
                                 domain = values(r),
@@ -1218,12 +1216,12 @@ function(input, output, session) {
             l %>% removeShape(layerId = c("area", "afe", "afr"))
             if (res$river == "Elbe") {
                 l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
-                                  label = "Elbe", color = "blue", weight = 5,
+                                  label = "Elbe", color = "blue", weight = 2,
                                   fill = FALSE, layerId = "afe",
                                   options = pathOptions(pane = "af"))
             } else {
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 5,
+                                  label = "Rhein", color = "blue", weight = 2,
                                   fill = FALSE, layerId = "afr",
                                   options = pathOptions(pane = "af"))
             }
@@ -1236,7 +1234,6 @@ function(input, output, session) {
                                  project = FALSE)
             l %>% addLegend("bottomleft", title = "Überflutungsdauer (d)",
                             pal = pal, values = values(r), opacity = 1)
-                            # ,className = "leafletlegend"
         }
         
     })
