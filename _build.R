@@ -211,22 +211,21 @@ if (!(file.exists(paste0(public, "/bfg_logo.jpg")))){
 write("#####", stdout())
 write(" web", stdout())
 
-if (Sys.info()["nodename"] == "hpc-service" & 
-    Sys.info()["user"] == "WeberA" & R_version == "3.5.0") {
-    system("cp -rp public/3.5.0/* /home/WeberA/public_html/hydflood3/")
+host <- Sys.info()["nodename"]
+user <- Sys.info()["user"]
+if (host == "hpc-service" & user == "WeberA" & R_version == "3.5.0") {
+    system(paste0("cp -rp public/", R_version, "/* /home/", user, 
+                  "/public_html/hydflood3/"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",
                   "0 | xargs -0 chmod 0644"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type d -print",
                   "0 | xargs -0 chmod 0755"))
     system(paste0("chcon -R -t httpd_user_content_t /home/", user,
                   "/public_html/"))
-    system(paste0("[ -d /home/WeberA/freigaben/AG/R/server/server_admin/packag",
-                  "e_sources ] && cp -rp public/3.5.0/downloads/hydflood3_*.tar",
-                  ".gz /home/WeberA/freigaben/AG/R/server/server_admin/package",
-                  "_sources"))
-} else if (Sys.info()["nodename"] == "up" & 
-           Sys.info()["user"] == "gitlab-runner" & R_version == "3.5.0") {
-    system("cp -rp public/3.5.0/* ~/public_html/hydflood3/")
+    system(paste0("[ -d /home/", user, "/freigaben/AG/R/server/server_admin/pa",
+                  "ckage_sources ] && cp -rp public/", R_version, "/downloads/",
+                  "hydflood3_*.tar.gz /home/", user, "/freigaben/AG/R/server/s",
+                  "erver_admin/package_sources"))
 }
 
 q("no")
