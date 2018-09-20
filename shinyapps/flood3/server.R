@@ -1072,13 +1072,14 @@ function(input, output, session) {
                 })
             }
         } else {
-            if (res$restored) {
+            if (file.exists(paste0("processed/", res$random, "/", res$random, 
+                                   ".RData"))) {
                 output$submit <- renderUI({
                     tagList(
-                        h3("Berechnung gestartet"),
-                        p(paste0("Nach Abschluss dieser erhalten Sie eine weit",
-                                 "ere Email mit einem Downloadlink des produzi",
-                                 "erten Rasterdatensatzes.")),
+                        h3("Berechnung beendet"),
+                        p(paste0("Die Berechung wurde vor mehr als sieben Tage",
+                                 "n abgeschlossen und die Produkte wurden zwis",
+                                 "chenzeitig gelöscht.")),
                         p(""),
                         splitLayout(
                             p(""),
@@ -1087,23 +1088,39 @@ function(input, output, session) {
                     )
                 })
             } else {
-                output$submit <- renderUI({
-                    tagList(
-                        h3("Berechnung gestartet"),
-                        p(paste0("Nach Abschluss dieser erhalten Sie eine weit",
-                                 "ere Email mit einem Downloadlink des produzi",
-                                 "erten Rasterdatensatzes.")),
-                        p(""),
-                        splitLayout(
-                            bookmarkButton(label = "Bookmark", 
-                                           title = paste0("Setze ein Bookmark ",
-                                                          "des Anwendungszusta",
-                                                          "nds"), 
-                                           id = "bookmark"),
-                            actionButton("reset", "Neue Berechnung")
+                if (res$restored) {
+                    output$submit <- renderUI({
+                        tagList(
+                            h3("Berechnung gestartet"),
+                            p(paste0("Nach Abschluss dieser erhalten Sie eine ",
+                                     "weitere Email mit einem Downloadlink des",
+                                     " produzierten Rasterdatensatzes.")),
+                            p(""),
+                            splitLayout(
+                                p(""),
+                                actionButton("reset", "Neue Berechnung")
+                            )
                         )
-                    )
-                })
+                    })
+                } else {
+                    output$submit <- renderUI({
+                        tagList(
+                            h3("Berechnung gestartet"),
+                            p(paste0("Nach Abschluss dieser erhalten Sie eine ",
+                                     "weitere Email mit einem Downloadlink des",
+                                     " produzierten Rasterdatensatzes.")),
+                            p(""),
+                            splitLayout(
+                                bookmarkButton(label = "Bookmark", 
+                                               title = paste0("Setze ein Bookm",
+                                                              "ark des Anwendu",
+                                                              "ngszustands"), 
+                                               id = "bookmark"),
+                                actionButton("reset", "Neue Berechnung")
+                            )
+                        )
+                    })
+                }
             }
         }
         
