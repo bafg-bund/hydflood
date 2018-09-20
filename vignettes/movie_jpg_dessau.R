@@ -261,7 +261,7 @@ for (h in seq[j]) {
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl,
             add = TRUE,
             col = add.alpha(wl_colfunc(20), 0.5),
-            clim = c(54, 60.3),
+            clim = c(54, 60.6),
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = -0.2),
@@ -272,7 +272,7 @@ for (h in seq[j]) {
             colvar = ma.wl, 
             col = wl_colfunc(20), 
             colkey = FALSE,
-            clim = c(54, 60.3))
+            clim = c(54, 60.6))
     # water level contours
     segments3D(x0 = df.csa_borders$y0, y0 = -df.csa_borders$x0, 
                z0 = df.csa_borders$z0, x1 = df.csa_borders$y1, 
