@@ -10,7 +10,7 @@ bibliography: ../inst/REFERENCES.bib
 csl: ../vignettes/apa_modified.csl
 vignette: |
   %\VignetteIndexEntry{hyd1d} 
-  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -109,19 +109,104 @@ following command:
 library(hydflood3)
 ```
 
-## Usage
+## Dependencies
 
-The package **hydflood3** is build around the packages `raster` and `hyd1d`.
-`hyd1d` internally provides gauging data for all gauging stations along River
-Rhine and Elbe operated by the waterway and navigation authorities. The package 
-`raster` provides the S4 class `RasterStack` upon which the S4 class 
-`hydRasterStack` is build. A `hydRasterStack` is simply a `RasterStack` 
-containing two `RasterLayer`s: One named `dem`, containing a digital elevation
-model, the other named `csa`, containing the cross section areas. These are 
-similar to stairs along the river axis, each step corresponding to a station
-of the 1D `WaterLevelDataFrame` computed by the `waterLevel` function of 
-package `hyd1d`. Originally, cross section area were derived from the cross
-sections used as input data to run the 1D hydraulic model SOBEK.
+The package **hydflood3** is build around the packages
+[`raster`](https://cran.r-project.org/package=raster) and
+[`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/) .
+[`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/) internally provides gauging
+data for all gauging stations along River Rhine and Elbe operated by the
+waterway and navigation authorities and computes 1D water levels. The package
+[`raster`](https://cran.r-project.org/package=raster) provides the S4 class
+`RasterStack` upon which the S4 class `hydRasterStack` is build and thereby
+enables the GIS based comparison between extrapolated water levels and elevation
+data.
+
+## S4-class hydRasterStack
+
+A `hydRasterStack` is simply a `RasterStack` containing two `RasterLayer`s: One
+named `dem`, containing a digital elevation model, the other named `csa`,
+containing the cross section areas.
+
+```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation modell of the waterway (DEM-W, in German: Digitales Geländemodell der Wasserstraße, DGM-W) with 1 m spatial resolution at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+knitr::include_graphics('./screenshot_hydflood3_dem.png')
+```
+
+**hydflood3** provides download facilities for the official digital elevation
+models of the waterways Rhine and Elbe (DEM-W, in German: Digitales
+Geländemodell der Wasserstraße, DGM-W; @wsv_dgmw_2016) with 1 m spatial
+resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
+by users. They just need to overlap with active floodplains of either Rhine ([`spdf.active_floodplain_rhein`](reference/spdf.active_floodplain_rhein.html)) or
+Elbe ([`spdf.active_floodplain_elbe`](reference/spdf.active_floodplain_elbe.html)).
+
+To create a water surface raster, which can be compared to the `dem`, a simple
+1D to 2D conversion is applied to water level data computed along the river axis
+with the package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/). Therefore
+so called cross section areas (`csa`) are needed. They originate from cross
+sections used for the SOBEK models run for and incorporated into
+[FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
+
+```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+knitr::include_graphics('./screenshot_hydflood3_crosssections.png')
+```
+
+```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+knitr::include_graphics('./screenshot_hydflood3_crosssectionareas.png')
+```
+
+```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustraded in Fig. 3 overlayed by the corresponding cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+knitr::include_graphics('./screenshot_hydflood3_crosssectionareas_cs.png')
+```
+
+These cross sections, one for each individual river station, represent water 
+level isolines perpendicular to the rivers axis. To enable the spatial 
+extrapolation of water level information for each river station, they were
+converted to cross section areas (`csa`) which are similar to stairs along the 
+river axis, each step corresponding to a station of the 1D
+[`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html)
+computed by the
+[`waterLevel`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/waterLevel.html)
+function of package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/). To 
+accelerate the computations, while keeping the package size on 
+[CRAN](https://cran.r-project.org/) small, cross section areas are downloaded 
+once for each river by package internal facilities during their first use. 
+
+## Computation of flood extents and durations
+
+The actual computation of a flood extent in a selected computational extent for 
+a given time can be split into five steps:
+
+1. Extraction of relevant stations within the computational extent
+2. Creation of a [`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) for the selected river section
+3. Computation of the 1D water level using the [`waterLevel`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/waterLevel.html) function of package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/)
+4. Transfer of the 1D water level information from the [`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) to the cross section areas (`csa`) through the join field `station_int`
+5. Computation of a binary flood raster `fd` through the equation `fd[csa > dem] = fd[csa > dem] + 1`
+
+To compute flood durations these five steps are repeated for every given 
+time step, so that the resulting raster contains counts of how often each 
+individual raster cell was flooded. The possible range of values is between 0
+and the number of time steps given.
+
+## Products
+
+### Flood animations
+
+Dessau
+
+<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
+  <source src="movie/dessau/2002/flood3-2fps.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video> 
+
+Lenzen
+
+<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
+  <source src="movie/lenzen/2013/flood3-2fps.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video> 
+
+
+## Usage
 
 To initialize such a `hydRasterStack` several possibilities are implemented in 
 the initializing homonymous function `hydRasterStack`. Either you
