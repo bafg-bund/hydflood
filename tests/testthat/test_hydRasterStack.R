@@ -1,10 +1,14 @@
 library(testthat)
-library(sp)
-library(raster)
 library(hydflood3)
 
-
 context("hydRasterStack")
+
+if ((Sys.info()['nodename'] %in% c("up", "up2", "arnd-desktop")) & 
+    Sys.info()['user'] == "arnd") {
+    dr <- "~/BfG/hydflood3/data-raw"
+} else {
+    dr <- "~/hydflood3/data-raw"
+}
 
 test_that("General tests", {
     
