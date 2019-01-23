@@ -194,14 +194,14 @@ and the number of time steps given.
 Dessau
 
 <video width="640" height="480" style="display:block; margin: 0 auto;" controls>
-  <source src="movie/dessau/2002/flood3-2fps.mp4" type="video/mp4">
+  <source src="flood3-2fps-dessau.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video> 
 
 Lenzen
 
 <video width="640" height="480" style="display:block; margin: 0 auto;" controls>
-  <source src="movie/lenzen/2013/flood3-2fps.mp4" type="video/mp4">
+  <source src="flood3-2fps-lenzen.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video> 
 
