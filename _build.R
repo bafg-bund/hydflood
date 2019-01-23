@@ -94,6 +94,7 @@ devtools::build_vignettes(".")
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
+devtools::check(".", document = FALSE, manual = FALSE)
 devtools::check(".", document = FALSE, manual = FALSE,
                 build_args = "--no-build-vignettes")
 
