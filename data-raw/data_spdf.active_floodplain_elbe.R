@@ -15,8 +15,8 @@ if (!(file.exists("data/spdf.active_floodplain_elbe.rda"))) {
                                            verbose = FALSE)
     
     # export
-    devtools::use_data(spdf.active_floodplain_elbe, pkg = ".", overwrite = TRUE, 
-                       compress = "bzip2")
+    usethis::use_data(spdf.active_floodplain_elbe, pkg = ".", overwrite = TRUE, 
+                      compress = "bzip2")
     
     # clean up
     rm(spdf.active_floodplain_elbe)
