@@ -27,23 +27,21 @@ build <- paste0("build/", R_version)
 dir.create(build, verbose, TRUE)
 public <- paste0("public/", R_version)
 dir.create(public, verbose, TRUE)
-downloads <- paste0("public/", R_version, "/downloads")
-dir.create(downloads, verbose, TRUE)
 
 #####
 # load the packages
 write("#####", stdout())
 write(" load packages", stdout())
-require(devtools, lib.loc = lib)
-require(usethis, lib.loc = lib)
-require(sp, lib.loc = lib)
-require(raster, lib.loc = lib)
-require(rgdal, lib.loc = lib)
-require(rgeos, lib.loc = lib)
-require(knitr, lib.loc = lib)
-require(rmarkdown, lib.loc = lib)
-require(pkgdown, lib.loc = lib)
-require(hyd1d, lib.loc = lib)
+require(devtools)
+require(usethis)
+require(sp)
+require(raster)
+require(rgdal)
+require(rgeos)
+require(knitr)
+require(rmarkdown)
+require(pkgdown)
+require(hyd1d)
 
 #####
 # assemble variables and create output directories
@@ -95,21 +93,14 @@ devtools::build_vignettes(".")
 write("#####", stdout())
 write(" check", stdout())
 devtools::check(".", document = FALSE, manual = FALSE)
-devtools::check(".", document = FALSE, manual = FALSE,
-                build_args = "--no-build-vignettes")
+# devtools::check(".", document = FALSE, manual = FALSE,
+#                 build_args = "--no-build-vignettes")
 
 #####
 # build the source package
 write("#####", stdout())
 write(" build", stdout())
 devtools::build(".", path = build, vignettes = FALSE, manual = FALSE)
-
-#####
-# create public/downloads directory and copy hyd1d_*.tar.gz-files into it
-from <- list.files(path = build,
-                   pattern = "hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
-                   full.names = TRUE)
-file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
 
 #####
 # install hyd1d from source
@@ -144,15 +135,6 @@ for (a_file in pkg_files) {
 }
 
 #####
-# export the documentation as pdf
-write("#####", stdout())
-write(" export the documentation as pdf", stdout())
-
-system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-preview ",
-              "--force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding=UTF",
-              "-8"), ignore.stdout = quiet, ignore.stderr = quiet)
-
-#####
 # document
 write("#####", stdout())
 write(" document gitlab & website", stdout())
@@ -165,16 +147,9 @@ if (!(file.exists("README.md"))) {
 }
 
 # render the package website 
-#pkgdown::clean_site(".")
+pkgdown::clean_site(".")
 pkgdown::build_site(".", examples = TRUE, preview = FALSE, document = FALSE, 
                     override = list(destination = public), new_process = FALSE)
-
-if (file.exists("_pkgdown.yml")) {
-    file.remove("_pkgdown.yml")
-}
-if (dir.exists("docs")) {
-    unlink("docs", TRUE, TRUE)
-}
 
 # insert the BfG logo into the header
 files <- list.files(path = public, pattern = "*[.]html",
@@ -206,6 +181,25 @@ rm(a_file, files, x, y)
 if (!(file.exists(paste0(public, "/bfg_logo.jpg")))){
     file.copy("pkgdown/bfg_logo.jpg", public)
 }
+
+
+#####
+# create public/downloads directory and copy hydflood3_*.tar.gz-files into it
+downloads <- paste0("public/", R_version, "/downloads")
+dir.create(downloads, verbose, TRUE)
+from <- list.files(path = build,
+                   pattern = "hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
+                   full.names = TRUE)
+file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
+
+#####
+# export the documentation as pdf
+write("#####", stdout())
+write(" export the documentation as pdf", stdout())
+
+system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-prev",
+              "iew --force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding",
+              "=UTF-8"), ignore.stdout = quiet, ignore.stderr = quiet)
 
 #####
 # document

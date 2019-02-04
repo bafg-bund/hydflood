@@ -45,10 +45,8 @@ $(document).ready(function() {
 
 ```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 # standard library path for the installed local packages
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-require(hyd1d, lib.loc = lib)
-require(hydflood3, lib.loc = lib)
+require(hyd1d)
+require(hydflood3)
 
 # set english locale to produce english plot labels
 Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")

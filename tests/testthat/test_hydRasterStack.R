@@ -1,14 +1,10 @@
 library(testthat)
+library(hyd1d)
+library(sp)
+library(raster)
 library(hydflood3)
 
 context("hydRasterStack")
-
-if ((Sys.info()['nodename'] %in% c("up", "up2", "arnd-desktop")) & 
-    Sys.info()['user'] == "arnd") {
-    dr <- "~/BfG/hydflood3/data-raw"
-} else {
-    dr <- "~/hydflood3/data-raw"
-}
 
 test_that("General tests", {
     
@@ -36,8 +32,8 @@ test_that("General tests", {
     }
     
     # the same extents and crs, but different data sources
-    filename_dem <- "~/hydflood3/data-raw/raster.dem.tif"
-    filename_csa <- "~/hydflood3/data-raw/raster.csa.tif"
+    filename_dem <- "data-raw/raster.dem.tif"
+    filename_csa <- "data-raw/raster.csa.tif"
     ext_csa <- extent(raster(filename_csa))
     crs_csa <- crs(raster(filename_csa))
     expect_equal(dim(hydRasterStack(filename_dem = filename_dem, 
