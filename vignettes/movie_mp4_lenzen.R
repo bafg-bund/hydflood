@@ -22,10 +22,6 @@ if (length(args) != 1) {
 verbose <- TRUE
 quiet <- !verbose
 
-# standard library path for the package install
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-
 # output paths
 out_dir <- paste0("vignettes/movie/lenzen/", year,"/")
 dir.create(out_dir, verbose, TRUE)

@@ -45,10 +45,6 @@ zmax <- 25
 verbose <- TRUE
 quiet <- !verbose
 
-# standard library path for the package install
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-
 # output paths
 #out_dir <- paste0("vignettes/movie/", year,"/")
 out_dir <- paste0("vignettes/movie/lenzen/", year,"/")
@@ -56,12 +52,12 @@ dir.create(out_dir, verbose, TRUE)
 
 #####
 # load the packages
-require(sp, lib.loc = lib)
-require(raster, lib.loc = lib)
-require(rgdal, lib.loc = lib)
-require(plot3D, lib.loc = lib)
-require(hyd1d, lib.loc = lib)
-require(plotrix, lib.loc = lib)
+require(sp)
+require(raster)
+require(rgdal)
+require(plot3D)
+require(hyd1d)
+require(plotrix)
 
 #####
 # convert tif files
