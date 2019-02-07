@@ -2,8 +2,8 @@
 # store spdf.active_floodplain_elbe as external dataset
 if (!(file.exists("data/spdf.active_floodplain_elbe.rda"))) {
     
-    require("rgdal")
-    require("sp")
+    library("rgdal")
+    library("sp")
     
     # import
     spdf.active_floodplain_elbe <- readOGR(dsn = "data-raw", 
