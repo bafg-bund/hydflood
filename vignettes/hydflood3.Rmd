@@ -6,8 +6,8 @@ output:
   html_vignette:
     toc: yes
     toc_depth: 3
-bibliography: ../inst/REFERENCES.bib
-csl: ../vignettes/apa_modified.csl
+bibliography: "`r paste0(Sys.getenv()['hydflood3'], '/inst/REFERENCES.bib')`"
+csl: "`r paste0(Sys.getenv()['hydflood3'], '/vignettes/apa_modified.csl')`"
 vignette: |
   %\VignetteIndexEntry{hyd1d} 
   %\VignetteEngine{knitr::rmarkdown}
@@ -44,12 +44,12 @@ $(document).ready(function() {
 <!-- numbering for figures and tables-->
 
 ```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
-# standard library path for the installed local packages
-require(hyd1d)
-require(hydflood3)
-
 # set english locale to produce english plot labels
 Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")
+
+# standard library path for the installed local packages
+library(hyd1d)
+library(hydflood3)
 
 # Determine the output format of the document
 outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
@@ -191,17 +191,17 @@ and the number of time steps given.
 
 Dessau
 
-<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
+<!-- <video width="640" height="480" style="display:block; margin: 0 auto;" controls>
   <source src="flood3-2fps-dessau.mp4" type="video/mp4">
   Your browser does not support the video tag.
-</video> 
+</video> -->
 
 Lenzen
 
-<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
+<!-- <video width="640" height="480" style="display:block; margin: 0 auto;" controls>
   <source src="flood3-2fps-lenzen.mp4" type="video/mp4">
   Your browser does not support the video tag.
-</video> 
+</video> -->
 
 
 ## Usage
@@ -229,8 +229,8 @@ x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",
                     filename_csa = "data-raw/raster.csa.tif")
 ```
 
-After initialing an object of type `hydRasterStack` everything else is straight 
-forward. Create a temporal sequence `seq`:
+After initialinzig an object of type `hydRasterStack` everything else is 
+straight forward. Create a temporal sequence `seq`:
 
 ```{r seq, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
 seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")

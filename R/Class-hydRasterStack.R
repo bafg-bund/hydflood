@@ -50,7 +50,10 @@
 methods::setClass(
     Class     = "hydRasterStack",
     contains  = "RasterStack",
-    prototype = raster::stack(),
+    representation = representation(
+        dem = 'RasterLayer',
+        csa = 'RasterLayer'
+    ),
     validity  = function(object) {
         
         ## vector and function to catch error messages
