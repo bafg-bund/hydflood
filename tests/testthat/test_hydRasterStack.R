@@ -1,7 +1,4 @@
 library(testthat)
-library(hyd1d)
-library(sp)
-library(raster)
 library(hydflood3)
 
 context("hydRasterStack")
@@ -32,10 +29,11 @@ test_that("General tests", {
     }
     
     # the same extents and crs, but different data sources
-    filename_dem <- "data-raw/raster.dem.tif"
-    filename_csa <- "data-raw/raster.csa.tif"
-    ext_csa <- extent(raster(filename_csa))
-    crs_csa <- crs(raster(filename_csa))
+    hf3 <- Sys.getenv("hydflood3")
+    filename_dem <- paste0(hf3, "/data-raw/raster.dem.tif")
+    filename_csa <- paste0(hf3, "/data-raw/raster.csa.tif")
+    ext_csa <- raster::extent(raster(filename_csa))
+    crs_csa <- raster::crs(raster(filename_csa))
     expect_equal(dim(hydRasterStack(filename_dem = filename_dem, 
                                     filename_csa = filename_csa)),
                  c(1000, 1000, 2))

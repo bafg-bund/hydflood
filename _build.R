@@ -2,31 +2,32 @@
 # _build.R
 #
 # author: arnd.weber@bafg.de
-# date:   20.07.2018
+# date:   05.02.2019
 #
 # purpose: 
-#   - build the repository version of hyd1d
+#   - build the repository version of hydflood3
 #
 ##################################################
-
-# configure output
-verbose <- TRUE
-quiet <- !verbose
+write("#####", stdout())
+write(" set en_US locale", stdout())
+Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
+Sys.setlocale(category = "LC_PAPER", locale = "en_US.UTF-8")
+Sys.setlocale(category = "LC_MEASUREMENT", locale = "en_US.UTF-8")
+Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.UTF-8")
 
 #####
 # assemble variables, create output directories and load packages
 write("#####", stdout())
 write(" R variables", stdout())
 
-# standard library path for the package install
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
+# obtain R version
+R_version <- getRversion()
 
-# output paths
+# assemble and create R version specific output paths
 build <- paste0("build/", R_version)
-dir.create(build, verbose, TRUE)
+dir.create(build, FALSE, TRUE)
 public <- paste0("public/", R_version)
-dir.create(public, verbose, TRUE)
+dir.create(public, FALSE, TRUE)
 
 #####
 # load the packages
@@ -36,24 +37,13 @@ require(devtools)
 require(usethis)
 require(sp)
 require(raster)
-require(rgdal)
-require(rgeos)
 require(knitr)
 require(rmarkdown)
 require(pkgdown)
 require(hyd1d)
 
 #####
-# assemble variables and create output directories
-write("#####", stdout())
-write(" set en_US locale", stdout())
-Sys.setlocale(category = "LC_ALL", locale = "en_US.UTF-8")
-Sys.setlocale(category = "LC_PAPER", locale = "en_US.UTF-8")
-Sys.setlocale(category = "LC_MEASUREMENT", locale = "en_US.UTF-8")
-Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.UTF-8")
-
-#####
-# assemble variables and create output directories
+# session info
 write("#####", stdout())
 write(" sessionInfo", stdout())
 sessionInfo()
@@ -92,15 +82,13 @@ devtools::build_vignettes(".")
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
-devtools::check(".", document = FALSE, manual = FALSE)
-# devtools::check(".", document = FALSE, manual = FALSE,
-#                 build_args = "--no-build-vignettes")
+devtools::check(".")
 
 #####
 # build the source package
 write("#####", stdout())
 write(" build", stdout())
-devtools::build(".", path = build, vignettes = FALSE, manual = FALSE)
+devtools::build(".", path = build)
 
 #####
 # install hyd1d from source
@@ -120,17 +108,15 @@ for (a_file in pkg_files) {
     package_version <- gsub(".tar.gz", "", unlist(strsplit(a_file, "_"))[2])
     
     # check presently installed local packages
-    pkgs <- as.data.frame(installed.packages(lib.loc = lib))
+    pkgs <- as.data.frame(installed.packages())
     if (package_name %in% pkgs$Package) {
-        if (compareVersion(as.character(packageVersion(package_name,
-                                                       lib.loc = lib)),
+        if (compareVersion(as.character(packageVersion(package_name)),
                            package_version) < 1) {
-            install.packages(paste(build, a_file, sep = "/"),
-                             lib = lib, dependencies = TRUE, quiet = quiet)
+            install.packages(paste(build, a_file, sep = "/"), 
+                             dependencies = TRUE)
         }
     } else {
-        install.packages(paste(build, a_file, sep = "/"),
-                         lib = lib, dependencies = TRUE, quiet = quiet)
+        install.packages(paste(build, a_file, sep = "/"), dependencies = TRUE)
     }
 }
 
@@ -158,9 +144,7 @@ files <- list.files(path = public, pattern = "*[.]html",
 for (a_file in files){
     x <- readLines(paste0(public, "/", a_file))
     if (grepl("/", a_file, fixed = TRUE)){
-        if (verbose) {
-            write(a_file, stdout())
-        }
+        write(a_file, stdout())
         y <- gsub('<a href="http://www.bafg.de">BfG</a>',
                   paste0('<a href="http://www.bafg.de"><img border="0" src="..',
                          '/bfg_logo.jpg" height="50px" width="114px"></a>'), x)
@@ -186,7 +170,7 @@ if (!(file.exists(paste0(public, "/bfg_logo.jpg")))){
 #####
 # create public/downloads directory and copy hydflood3_*.tar.gz-files into it
 downloads <- paste0("public/", R_version, "/downloads")
-dir.create(downloads, verbose, TRUE)
+dir.create(downloads, recursive = TRUE)
 from <- list.files(path = build,
                    pattern = "hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
                    full.names = TRUE)
@@ -199,7 +183,7 @@ write(" export the documentation as pdf", stdout())
 
 system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-prev",
               "iew --force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding",
-              "=UTF-8"), ignore.stdout = quiet, ignore.stderr = quiet)
+              "=UTF-8"))
 
 #####
 # document
@@ -209,7 +193,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "hpc-service" & user == "WeberA" & R_version == "3.5.0") {
+if (host == "hpc-service" & user == "WeberA" & R_version == "3.5.2") {
     system(paste0("cp -rp public/", R_version, "/* /home/", user, 
                   "/public_html/hydflood3/"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",

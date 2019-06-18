@@ -1,7 +1,4 @@
 library(testthat)
-library(hyd1d)
-library(sp)
-library(raster)
 library(hydflood3)
 
 context("flood3")
@@ -9,8 +6,9 @@ context("flood3")
 test_that("Elbe", {
     
     # Elbe
-    x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif", 
-                        filename_csa = "data-raw/raster.csa.tif")
+    hf3 <- Sys.getenv("hydflood3")
+    x <- hydRasterStack(filename_dem = paste0(hf3, "/data-raw/raster.dem.tif"), 
+                        filename_csa = paste0(hf3, "/data-raw/raster.csa.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -82,10 +80,11 @@ test_that("Elbe", {
 test_that("Rhein", {
     
     # Rhein
-    x <- hydRasterStack(filename_dem = 
-                            "data-raw/raster.dem_plittersdorf.tif", 
-                        filename_csa = 
-                            "data-raw/raster.csa_plittersdorf.tif")
+    hf3 <- Sys.getenv("hydflood3")
+    x <- hydRasterStack(filename_dem = paste0(hf3, 
+                                       "/data-raw/raster.dem_plittersdorf.tif"), 
+                        filename_csa = paste0(hf3, 
+                                       "/data-raw/raster.csa_plittersdorf.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")

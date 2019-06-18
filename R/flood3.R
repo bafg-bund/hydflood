@@ -69,11 +69,7 @@ flood3 <- function(x, seq, filename = '', ...) {
     #####
     # check requirements
     ##
-    # make parent environment accessible through the local environment
-    e <- environment()
-    p_env <- parent.env(e)
-    
-    ## vector and function to catch error messages
+    # vector and function to catch error messages
     errors <- character()
     l <- function(errors) {as.character(length(errors) + 1)}
     
@@ -121,11 +117,7 @@ flood3 <- function(x, seq, filename = '', ...) {
             # access the spdf.active_floodplain_* data
             active_floodplain <- paste0("spdf.active_floodplain_", 
                                         tolower(river))
-            if (exists(active_floodplain, where = p_env)){
-                get(active_floodplain, envir = p_env)
-            } else {
-                utils::data(active_floodplain)
-            }
+            get(active_floodplain, pos = -1)
             if (river == "Elbe") {
                 l.over <- sp::over(rasterextent2polygon(x), 
                                    spdf.active_floodplain_elbe,
