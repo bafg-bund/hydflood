@@ -35,5 +35,5 @@ Collate:
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: https://apps.bafg.de/gitbucket/webera/hydflood3/issues
-URL: http://hpc-service.bafg.de/~WeberA/hydflood3/index.html, 
+URL: http://r.bafg.de/~WeberA/hydflood3/index.html, 
     https://apps.bafg.de/gitbucket/webera/hydflood3

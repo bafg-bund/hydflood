@@ -193,19 +193,19 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "hpc-service" & user == "WeberA" & R_version == "3.5.2") {
+if (host == "r.bafg.de" & user == "WeberA" & R_version == "3.5.2") {
     system(paste0("cp -rp public/", R_version, "/* /home/", user, 
                   "/public_html/hydflood3/"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",
                   "0 | xargs -0 chmod 0644"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type d -print",
                   "0 | xargs -0 chmod 0755"))
-    system(paste0("chcon -R -t httpd_user_content_t /home/", user,
-                  "/public_html/"))
-    system(paste0("[ -d /home/", user, "/freigaben/AG/R/server/server_admin/pa",
-                  "ckage_sources ] && cp -rp public/", R_version, "/downloads/",
-                  "hydflood3_*.tar.gz /home/", user, "/freigaben/AG/R/server/s",
-                  "erver_admin/package_sources"))
+    # system(paste0("chcon -R -t httpd_user_content_t /home/", user,
+    #               "/public_html/"))
+    system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sources",
+                  " ] && cp -rp public/", R_version, "/downloads/hydflood3_*.t",
+                  "ar.gz /home/", user, "/freigaben_r/_packages/package_source",
+                  "s"))
 }
 
 q("no")
