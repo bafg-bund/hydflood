@@ -6,12 +6,14 @@ context("hydRasterStack")
 test_that("General tests", {
     
     # smaller extent (crop)
-    if (Sys.info()["nodename"] == "hpc-service") {
+    if (Sys.info()["nodename"] == "r.bafg.de") {
         # input data
-        filename_dem <- paste0("/home/WeberA/freigaben/U/U2/RH_336_867_UFD/da",
-                               "ta/ascii/r002_PLITTERSDORF1_DEM.asc")
-        filename_csa <- paste0("/home/WeberA/freigaben/U/U2/RH_336_867_UFD/da",
-                               "ta/ascii/r002_PLITTERSDORF1_CSA.asc")
+        filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
+                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_D",
+                               "EM.asc")
+        filename_csa <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
+                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_C",
+                               "SA.asc")
         ext <- extent(436500, 438000, 5415000, 5416500)
         crs <- crs("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs", 
                    asText = FALSE)
@@ -41,9 +43,9 @@ test_that("General tests", {
                                     filename_csa = filename_csa)),
                  c(1,1))
     
-    # execute the folowing check ony on hpc-service, since the DEM data are not 
+    # execute the folowing check ony on r.bafg.de, since the DEM data are not 
     # public yet
-    if (Sys.info()["nodename"] == "hpc-service") {
+    if (Sys.info()["nodename"] == "r.bafg.de") {
         expect_equal(dim(hydRasterStack(filename_csa = filename_csa)),
                      c(1000, 1000, 2))
         expect_equal(minValue(hydRasterStack(filename_dem = filename_dem, 

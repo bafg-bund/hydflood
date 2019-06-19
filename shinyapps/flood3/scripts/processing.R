@@ -97,10 +97,8 @@ m@ResourceAbstract <- paste0("Dieser Rasterdatensatz der Überflutungsdau",
                              "auf.")
 
 # link to online ressources
-m <- setResourceLocator(m, paste0("http://hpc-service.bafg.de/~WeberA/hydflood",
-                                  "3/index.html"))
-m <- addResourceLocator(m, paste0("http://hpc-service.bafg.de/shiny/WeberA/07-",
-                                  "flood3/"))
+m <- setResourceLocator(m, "http://r.bafg.de/~WeberA/hydflood3/index.html")
+m <- addResourceLocator(m, "http://r.bafg.de/shiny/WeberA/07-flood3/")
 
 # add the authors information
 m <- setAuthor(m, "Dr. Arnd Weber", "++49 (0)261/1306-5462", 
@@ -172,7 +170,7 @@ write(paste0("Sehr geehrte Nutzerin, sehr geehrter Nutzer,\n\nsoeben wurde ihr",
       file = filename_msg)
 
 # link
-write(paste0("http://hpc-service.bafg.de/shiny/WeberA/07-flood3/", 
+write(paste0("http://r.bafg.de/shiny/WeberA/07-flood3/", 
              filename_zip_msg, "\n"), file = filename_msg, append = TRUE)
 
 # footer

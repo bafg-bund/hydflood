@@ -512,9 +512,9 @@ function(input, output, session) {
                                                    'Überflutungsdauer (d/a)</c',
                                                    'enter></p><center><img wid',
                                                    'th="40%" style="" src="htt',
-                                                   'p://hpc-service.bafg.de/sh',
-                                                   'iny/WeberA/08-flood3wms/le',
-                                                   'gend.png"></center>'))
+                                                   'p://r.bafg.de/shiny/WeberA',
+                                                   '/08-flood3wms/legend.png">',
+                                                   '</center>'))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))

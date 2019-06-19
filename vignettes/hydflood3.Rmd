@@ -111,8 +111,8 @@ library(hydflood3)
 
 The package **hydflood3** is build around the packages
 [`raster`](https://cran.r-project.org/package=raster) and
-[`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/) .
-[`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/) internally provides gauging
+[`hyd1d`](http://r.bafg.de/~WeberA/hyd1d/) .
+[`hyd1d`](http://r.bafg.de/~WeberA/hyd1d/) internally provides gauging
 data for all gauging stations along River Rhine and Elbe operated by the
 waterway and navigation authorities and computes 1D water levels. The package
 [`raster`](https://cran.r-project.org/package=raster) provides the S4 class
@@ -139,7 +139,7 @@ Elbe ([`spdf.active_floodplain_elbe`](reference/spdf.active_floodplain_elbe.html
 
 To create a water surface raster, which can be compared to the `dem`, a simple
 1D to 2D conversion is applied to water level data computed along the river axis
-with the package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/). Therefore
+with the package [`hyd1d`](http://r.bafg.de/~WeberA/hyd1d/). Therefore
 so called cross section areas (`csa`) are needed. They originate from cross
 sections used for the SOBEK models run for and incorporated into
 [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
@@ -161,10 +161,10 @@ level isolines perpendicular to the rivers axis. To enable the spatial
 extrapolation of water level information for each river station, they were
 converted to cross section areas (`csa`) which are similar to stairs along the 
 river axis, each step corresponding to a station of the 1D
-[`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html)
+[`WaterLevelDataFrame`](http://r.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html)
 computed by the
-[`waterLevel`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/waterLevel.html)
-function of package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/). To 
+[`waterLevel`](http://r.bafg.de/~WeberA/hyd1d/reference/waterLevel.html)
+function of package [`hyd1d`](http://r.bafg.de/~WeberA/hyd1d/). To 
 accelerate the computations, while keeping the package size on 
 [CRAN](https://cran.r-project.org/) small, cross section areas are downloaded 
 once for each river by package internal facilities during their first use. 
@@ -175,9 +175,9 @@ The actual computation of a flood extent in a selected computational extent for
 a given time can be split into five steps:
 
 1. Extraction of relevant stations within the computational extent
-2. Creation of a [`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) for the selected river section
-3. Computation of the 1D water level using the [`waterLevel`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/waterLevel.html) function of package [`hyd1d`](http://hpc-service.bafg.de/~WeberA/hyd1d/)
-4. Transfer of the 1D water level information from the [`WaterLevelDataFrame`](http://hpc-service.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) to the cross section areas (`csa`) through the join field `station_int`
+2. Creation of a [`WaterLevelDataFrame`](http://r.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) for the selected river section
+3. Computation of the 1D water level using the [`waterLevel`](http://r.bafg.de/~WeberA/hyd1d/reference/waterLevel.html) function of package [`hyd1d`](http://r.bafg.de/~WeberA/hyd1d/)
+4. Transfer of the 1D water level information from the [`WaterLevelDataFrame`](http://r.bafg.de/~WeberA/hyd1d/reference/WaterLevelDataFrame-class.html) to the cross section areas (`csa`) through the join field `station_int`
 5. Computation of a binary flood raster `fd` through the equation `fd[csa > dem] = fd[csa > dem] + 1`
 
 To compute flood durations these five steps are repeated for every given 

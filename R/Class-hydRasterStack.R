@@ -736,8 +736,8 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         merge_rasters <- list()
         for (a_section in sections_sel) {
             tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-            url <- paste0("http://hpc-service.bafg.de/~WeberA/hydflood3/downlo",
-                          "ads/", tolower(river), "/", a_section, "_DEM.asc")
+            url <- paste0("http://r.bafg.de/~WeberA/hydflood3/downloads/",
+                          tolower(river), "/", a_section, "_DEM.asc")
             utils::download.file(url, tmp_dem, quiet = TRUE)
             
             x <- raster::raster(x = tmp_dem, crs = crs_int)
