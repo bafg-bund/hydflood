@@ -592,7 +592,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
-        csa_dir <- paste0(find.package("hydflood3"), "/data-raw")
+        csa_dir <- paste0(path.expand('~'), "/.hydflood3")
         dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
         csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", tolower(river), 
                            "_csa.rda")
@@ -682,7 +682,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         if (!exists("sections_sel")) {
             # download the packages csa_file, if it has not yet been stored 
             # locally, and load it
-            csa_dir <- paste0(find.package("hydflood3"), "/data-raw")
+            csa_dir <- paste0(path.expand('~'), "/.hydflood3")
             dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
             csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", 
                                tolower(river), "_csa.rda")
