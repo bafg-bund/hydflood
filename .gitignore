@@ -1,24 +1,25 @@
-Meta
-doc
 # ignore specific files
 .Rproj.user
 .Rhistory
+.Rprofile
+.Renviron
 .RData
 .Ruserdata
 .Rd2pdf*
 *.dat
 *.Rd
-*/Thumbs.db
+*humbs.db
 
 # ignore directories and files
-/build
-/data-raw/Thumbs.db
-/public
-/man
-/inst/doc
-/README_files/figure-markdown_github/Thumbs.db
-/vignettes/movie
-/.Renviron
-/shinyapps/flood3/data/df.gauging_data_latest.rda
-/shinyapps/flood3/scripts/cleanup.log
-/shinyapps/flood3wms/www/Thumbs.db
+build
+data-raw/Thumbs.db
+doc
+inst/doc
+man
+Meta
+public
+README_files/figure-markdown_github/Thumbs.db
+shinyapps/flood3/data/df.gauging_data_latest.rda
+shinyapps/flood3/scripts/cleanup.log
+shinyapps/flood3wms/www/Thumbs.db
+vignettes/movie
