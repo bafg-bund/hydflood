@@ -6,8 +6,8 @@ output:
   html_vignette:
     toc: yes
     toc_depth: 3
-bibliography: "`r paste0(Sys.getenv()['hydflood3'], '/inst/REFERENCES.bib')`"
-csl: "`r paste0(Sys.getenv()['hydflood3'], '/vignettes/apa_modified.csl')`"
+bibliography: ../inst/REFERENCES.bib
+csl: apa_modified.csl
 vignette: |
   %\VignetteIndexEntry{hyd1d} 
   %\VignetteEngine{knitr::rmarkdown}
