@@ -4,6 +4,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^build$
+^\.commit$
 ^data-raw$
 ^public$
 ^README_files$
