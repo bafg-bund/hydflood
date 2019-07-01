@@ -9,6 +9,7 @@
 *.dat
 *.Rd
 *humbs.db
+.commit
 
 # ignore directories and files
 build
