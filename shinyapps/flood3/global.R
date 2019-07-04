@@ -3,23 +3,19 @@
 ################################################################################
 # libraries
 #####
-# standard library path for the package install
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-
 # load the necessary packages
-library(shiny, lib.loc = lib)
-library(shinyjs, lib.loc = lib)
-# library(shinycssloaders, lib.loc = lib)
-library(htmltools, lib.loc = lib)
-library(leaflet, lib.loc = lib)
-library(leaflet.extras, lib.loc = lib)
-library(sp, lib.loc = lib)
-library(raster, lib.loc = lib)
-library(rgdal, lib.loc = lib)
-library(rgeos, lib.loc = lib)
-library(hyd1d, lib.loc = lib)
-library(hydflood3, lib.loc = lib)
+library(shiny)
+library(shinyjs)
+# library(shinycssloaders)
+library(htmltools)
+library(leaflet)
+library(leaflet.extras)
+library(sp)
+library(raster)
+library(rgdal)
+library(rgeos)
+library(hyd1d)
+library(hydflood3)
 
 #####
 # add some additional functions
@@ -108,7 +104,7 @@ df.from_to <- data.frame(river    = rivers,
 
 ###
 # SpatialPointsDataFrame with all gauging stations
-# data("df.gauging_station_data", package = "hyd1d", lib.loc = lib)
+# data("df.gauging_station_data", package = "hyd1d")
 # save(df.gauging_station_data, file = "df.gauging_station_data.rda")
 # load("data/df.gauging_station_data.rda")
 # df.gsd <- df.gauging_station_data[df.gauging_station_data$data_present,]
@@ -122,9 +118,9 @@ load("data/spdf.gauging_station_data.rda")
 ###
 # df.gauging_data
 # download daily refreshed dataset from aqualogy.de and rename it to df.gd
-file_gd <- "data/df.gauging_data_latest.rda"
+file_gd <- "data/df.gauging_data_latest.RDS"
 url <- paste0("https://www.aqualogy.de/wp-content/uploads",
-              "/bfg/df.gauging_data_latest.rda")
+              "/bfg/df.gauging_data_latest.RDS")
 if (! file.exists(file_gd)) {
     utils::download.file(url, file_gd, quiet = TRUE)
 } else {
@@ -134,13 +130,12 @@ if (! file.exists(file_gd)) {
         utils::download.file(url, file_gd, quiet = TRUE)
     }
 }
-load(file_gd)
-df.gd <- df.gauging_data
+df.gd <- readRDS(file_gd)
 
 ###
 # SpatialPolygonsDataFrames and data.frames of active floodplain polygons
 # data(list = c("spdf.active_floodplain_rhein", "spdf.active_floodplain_elbe"), 
-#      package = "hydflood3", lib.loc = lib)
+#      package = "hydflood3")
 # load("data/spdf.active_floodplain_elbe.rda")
 # load("data/spdf.active_floodplain_rhein.rda")
 # spdf.afe <- spTransform(spdf.active_floodplain_elbe, CRSobj = crs)

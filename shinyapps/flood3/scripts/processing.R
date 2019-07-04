@@ -10,18 +10,14 @@
 #
 ################################################################################
 
-# standard library path for the packages
-R_version <- paste(sep = ".", R.Version()$major, R.Version()$minor)
-lib <- paste0("~/R/", R_version, "/")
-
 # load the necessary packages
-library(sp, lib.loc = lib)
-library(raster, lib.loc = lib)
-library(rgdal, lib.loc = lib)
-library(rgeos, lib.loc = lib)
-library(hyd1d, lib.loc = lib)
-library(hydflood3, lib.loc = lib)
-library(inspiRe, lib.loc = lib)
+library(sp)
+library(raster)
+library(rgdal)
+library(rgeos)
+library(hyd1d)
+library(hydflood3)
+library(inspiRe)
 
 # add functions and definitions
 # function to convert an extent to a polygon
@@ -43,7 +39,7 @@ wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 # capture args, load input data and prepare result directories
 path <- commandArgs(trailingOnly = TRUE)[[1]]
 #path <- "in_process/7f199JoieFF0VFJQrKZk.RData"
-#path <- "in_process/hy86051lzdb61phjalce.RData"
+#path <- "in_process/7dn63fh4mx6ocqu22avv.RData"
 id <- gsub(".RData", "", unlist(strsplit(path, "/"))[2])
 
 # load data
@@ -55,7 +51,7 @@ load(path)
 # x
 ext <- extent(l.res$extent)
 crs <- crs(l.res$crs)
-x <- hydRasterStack(ext = ext, crs = crs)
+x <- hydflood3::hydRasterStack(ext = ext, crs = crs)
 
 # seq
 seq <- seq.Date(from = as.Date(l.res$seq_from_to[1]), 
@@ -89,8 +85,8 @@ m <- new("inspireSettings")
 # add title and abstract
 m@ResourceTitle <- "Überflutungsdauer nach hydflood3::flood3()"
 m@ResourceAbstract <- paste0("Dieser Rasterdatensatz der Überflutungsdau",
-                             "er eines Teiles der aktiven ", l.res$river, "-aue ",
-                             "ist mittels des R-Paketes hydflood3 ber",
+                             "er eines Teiles der aktiven ", l.res$river,
+                             "aue ist mittels des R-Paketes hydflood3 ber",
                              "echnet. Der Datensatz hat eine räumliche A",
                              "uflösung von 1 Meter und weißt Werte zwisc",
                              "hen 0 und maximal ", length(seq), " Tagen ",
@@ -194,7 +190,7 @@ system(paste0("mail -s '[shiny-flood3]: Berechnung abgeschlossen' ",
               l.res$email, " < ", filename_msg))
 
 #####
-# clean up 
+# clean up
 
 #####
 # quit R
