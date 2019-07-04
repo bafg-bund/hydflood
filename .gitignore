@@ -20,7 +20,10 @@ man
 Meta
 public
 README_files/figure-markdown_github/Thumbs.db
-shinyapps/flood3/data/df.gauging_data_latest.rda
+shinyapps/flood3/data/df.gauging_data_latest.RDS
+shinyapps/flood3/in_process
+shinyapps/flood3/processed
+shinyapps/flood3/www
 shinyapps/flood3/scripts/cleanup.log
 shinyapps/flood3wms/www/Thumbs.db
 vignettes/movie

@@ -517,7 +517,7 @@ function(input, output, session) {
                 SpatialPolygons(
                     list(Polygons(
                         list(Polygon(df.coor_area_reactive())), ID = 1)), 
-                    proj4string = crs_reactive()))
+                    proj4string = crs))
             l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
                             lat1 = e@ymin - (e@ymax - e@ymin) / 3,
                             lng2 = e@xmax + (e@xmax - e@xmin) / 3,
@@ -710,7 +710,7 @@ function(input, output, session) {
                 SpatialPolygons(
                     list(Polygons(
                         list(Polygon(df.coor_area_reactive())), ID = 1)), 
-                    proj4string = crs_reactive()))
+                    proj4string = crs))
             l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
                             lat1 = e@ymin - (e@ymax - e@ymin) / 3,
                             lng2 = e@xmax + (e@xmax - e@xmin) / 3,
@@ -1201,7 +1201,7 @@ function(input, output, session) {
                          data = spdf.gsd_reactive(),
                          options = pathOptions(pane = "gs"))
         
-        # add area and zoom to it
+        # add area
         l %>% addPolygons(lng = df.coor_area_reactive()$lng, 
                           lat = df.coor_area_reactive()$lat, 
                           color = "black", weight = 2, 
@@ -1209,22 +1209,13 @@ function(input, output, session) {
                           fillOpacity = 0.7, 
                           layerId = "area",
                           options = pathOptions(pane = "area"))
-        e <- extent(
-            SpatialPolygons(
-                list(Polygons(
-                    list(Polygon(df.coor_area_reactive())), ID = 1)), 
-                proj4string = CRS(res$crs)))
-        l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
-                        lat1 = e@ymin - (e@ymax - e@ymin) / 3,
-                        lng2 = e@xmax + (e@xmax - e@xmin) / 3,
-                        lat2 = e@ymax + (e@ymax - e@ymin) / 3)
         
         # display the raster product, if it exists
         geotiff <- paste0("processed/", res$random, "/", res$river, "_",
                           paste0(res$extent, collapse = "-"), "_",
                           paste0(res$seq_from_to, collapse = "-"), "_wgs84.tif")
         if (file.exists(geotiff)) {
-            r <- raster(geotiff)
+            r <- raster(geotiff, crs = crs)
             ufd_col <- colorRampPalette(c("red", "yellow", "green", "darkblue"))
             pal <- colorNumeric(palette = ufd_col(10),
                                 domain = values(r),
@@ -1252,6 +1243,16 @@ function(input, output, session) {
             l %>% addLegend("bottomleft", title = "Überflutungsdauer (d)",
                             pal = pal, values = values(r), opacity = 1)
         }
+        
+        e <- extent(
+            SpatialPolygons(
+                list(Polygons(
+                    list(Polygon(df.coor_area_reactive())), ID = 1)), 
+                proj4string = crs))
+        l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
+                        lat1 = e@ymin - (e@ymax - e@ymin) / 3,
+                        lng2 = e@xmax + (e@xmax - e@xmin) / 3,
+                        lat2 = e@ymax + (e@ymax - e@ymin) / 3)
         
     })
     

@@ -511,10 +511,8 @@ function(input, output, session) {
                 output$legend <- renderText(paste0('<p>Legende:</p><p><center>',
                                                    'Überflutungsdauer (d/a)</c',
                                                    'enter></p><center><img wid',
-                                                   'th="40%" style="" src="htt',
-                                                   'p://r.bafg.de/shiny/WeberA',
-                                                   '/08-flood3wms/legend.png">',
-                                                   '</center>'))
+                                                   'th="40%" style="" src="leg',
+                                                   'end.png"></center>'))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))
