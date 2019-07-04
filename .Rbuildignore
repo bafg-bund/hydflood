@@ -12,6 +12,7 @@
 ^pkgdown$
 ^_install\.R$
 ^\.gitlab-ci\.yml$
+^vignettes/flood3-2fps-.*\\.mp4$
 ^vignettes/Thumbs\.db$
 ^vignettes/movie$
 ^_build\.R$
