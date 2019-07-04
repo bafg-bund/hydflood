@@ -193,7 +193,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "r.bafg.de" & user == "WeberA" & R_version == "3.5.2") {
+if (host == "r.bafg.de" & user == "WeberA" & R_version == "3.6.0") {
     system(paste0("cp -rp public/", R_version, "/* /home/", user, 
                   "/public_html/hydflood3/"))
     system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",
