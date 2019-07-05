@@ -79,8 +79,8 @@ f_wgs84 <- projectRaster(f, crs = wgs84, method = "ngb",
 
 #####
 # create INSPIRE, ISO 19139, GGinA-conform metadata
-# create an object of "inspireSettings"
-m <- new("inspireSettings")
+# create an object of "inspireDataset"
+m <- new("inspireDataset")
 
 # add title and abstract
 m@ResourceTitle <- "Überflutungsdauer nach hydflood3::flood3()"
@@ -91,13 +91,19 @@ m@ResourceAbstract <- paste0("Dieser Rasterdatensatz der Überflutungsdau",
                              "uflösung von 1 Meter und weißt Werte zwisc",
                              "hen 0 und maximal ", length(seq), " Tagen ",
                              "auf.")
+m@Lineage <- paste0("Die Daten sind Ergebnis einer Prozessierungskette ausgehe",
+                    "nd von Pegeldaten, modellierten und dann interpolierten 1",
+                    "D Wasserspiegellagen entlang der Gewässerachse die über G",
+                    "IS-Algorythmen in die Fläche gebracht und dann für jeden ",
+                    " Tag mit dem DGM-W verglichen werden und summarisch aggre",
+                    "giert werden.")
 
 # link to online ressources
 m <- setResourceLocator(m, "http://r.bafg.de/~WeberA/hydflood3/index.html")
 m <- addResourceLocator(m, "http://r.bafg.de/shiny/WeberA/07-flood3/")
 
 # add the authors information
-m <- setAuthor(m, "Dr. Arnd Weber", "++49 (0)261/1306-5462", 
+m <- addAuthor(m, "Dr. Arnd Weber", "++49 (0)261/1306-5445", 
                "arnd.weber@bafg.de","Ansprechpartner")
 
 m@ResourceCreationDate   <- as.character(Sys.Date())
