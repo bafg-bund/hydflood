@@ -265,8 +265,8 @@ function(input, output, session) {
             } else {
                 return(spdf.station[
                     which(spdf.station$river == res$river &
-                          spdf.station$station >= res$from_to[1] &
-                          spdf.station$station <= res$from_to[2]), ])
+                              spdf.station$station >= res$from_to[1] &
+                              spdf.station$station <= res$from_to[2]), ])
             }
         }
     })
@@ -286,8 +286,8 @@ function(input, output, session) {
         
         subset(spdf.station,
                river == res$river &
-               latitude >= latRng[1] & latitude <= latRng[2] &
-               longitude >= lngRng[1] & longitude <= lngRng[2])
+                   latitude >= latRng[1] & latitude <= latRng[2] &
+                   longitude >= lngRng[1] & longitude <= lngRng[2])
     })
     
     observeEvent(spdf.stationInBounds_reactive(), {
@@ -493,6 +493,7 @@ function(input, output, session) {
             !is.null(input$map_zoom)) {
             
             year <- as.numeric(input$year)
+            id <- df.years$id[which(df.years$year == year)]
             
             l <- leafletProxy("map")
             # zoom level denpendent visualisation
@@ -512,12 +513,23 @@ function(input, output, session) {
                               as.character(floor(year / 10) * 10),
                               "_",
                               as.character(floor(year / 10) * 10 + 9),
-                              "/MapServer")
-                l %>% addEsriTiledMapLayer(url = url,
-                    options = tiledMapLayerOptions(
-                        tileOptions = WMSTileOptions(format = "image/png",
-                                                     transparent = TRUE)),
-                    layerId = as.character(9 - (year - (floor(year / 10) * 10))))
+                              "/MapServer/WMSServer?")
+                l %>% addWMSTiles(
+                    baseUrl = url,
+                    layers = as.character(id),
+                    options = WMSTileOptions(format = "image/png",
+                                             transparent = TRUE),
+                    layerId = "fd")
+                # url <- paste0(url_base, input$river, "_",
+                #               as.character(floor(year / 10) * 10),
+                #               "_",
+                #               as.character(floor(year / 10) * 10 + 9),
+                #               "/MapServer")
+                # l %>% addEsriTiledMapLayer(url = url,
+                #     options = tiledMapLayerOptions(
+                #         tileOptions = WMSTileOptions(format = "image/png",
+                #                                      transparent = TRUE)),
+                #     layerId = as.character(year - (floor(year / 10) * 10)))
                 output$legend <- renderText(paste0('<p>Legende:</p><p><center>',
                                                    'Überflutungsdauer (d/a)</c',
                                                    'enter></p><center><img wid',

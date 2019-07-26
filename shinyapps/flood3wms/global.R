@@ -155,6 +155,10 @@ load("data/df.coor.afX.rda")
 load("data/spdf.station.rda")
 
 years <- seq(1990, 2016, 1)
+from <- c(rep(1990, 10), rep(2000, 10), rep(2010, 7))
+till <- c(rep(1999, 10), rep(2009, 10), rep(2019, 7))
+id <- c(seq(9, 0), seq(9, 0), seq(6, 0))
+df.years <- data.frame(year = years, from = from, till = till, id = id)
 
 url_base <- "https://geoportal.bafg.de/arcgis3/services/Flut3/"
 
