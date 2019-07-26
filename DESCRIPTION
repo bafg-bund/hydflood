@@ -34,6 +34,6 @@ Collate:
     'hydflood3-internal.R'
     'zzz.R'
 VignetteBuilder: knitr
-BugReports: https://apps.bafg.de/gitbucket/webera/hydflood3/issues
-URL: http://r.bafg.de/~WeberA/hydflood3/index.html, 
-    https://apps.bafg.de/gitbucket/webera/hydflood3
+BugReports: https://git.aqualogy.de/arnd/hydflood3/issues
+URL: https://www.aqualogy.de/R/packages/hydflood3/, 
+    https://git.aqualogy.de/arnd/hydflood3
