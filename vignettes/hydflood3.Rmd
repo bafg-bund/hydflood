@@ -104,7 +104,7 @@ Institute of Hydrology (BfG) execute the following commands:
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood3.git")
+devtools::install_git("git://git.aqualogy.de/arnd/hydflood3.git")
 ```
 
 Afterwards **hydflood3** can be loaded like every other R package with the 
