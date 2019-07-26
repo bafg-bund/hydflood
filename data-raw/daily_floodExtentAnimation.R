@@ -17,7 +17,7 @@ library(hydflood3)
 library(rgdal)
 
 # temporal sequence (last X days)
-dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 1, 
+dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 1,
                                by = "1 day"))
 
 #####
@@ -94,22 +94,22 @@ for (a_date in dates) {
         # tmap_options(
         #     max.raster = c(plot = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows,
         #                    view = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows))
-        # 
+        #
         # # plot flood extent
-        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) + 
+        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) +
         #     # fill for mask floodplain
-        #     tm_fill(col = "white", alpha = 0.5) + 
+        #     tm_fill(col = "white", alpha = 0.5) +
         # # airial image background
         # tm_view(alpha = 1, basemaps = "Esri.WorldImagery") +
         # # flood extent
-        # tm_shape(flood_extent_wgs84) + 
+        # tm_shape(flood_extent_wgs84) +
         #     tm_raster(col = "blue3", alpha = 1)
-        # 
-        # 
+        #
+        #
         # map <- tm_shape(mask_floodplain, projection = wgs84,
-        #                 bbox = extent_wgs84) + 
+        #                 bbox = extent_wgs84) +
         #     tm_fill(col = "white", alpha = 0.5)
-        # 
+        #
         # map <- map + tm_view(alpha = 1, basemaps = "Esri.WorldImagery")
         # # gauging_stations
         # tm_markers()
@@ -168,22 +168,22 @@ for (a_date in dates) {
         # tmap_options(
         #     max.raster = c(plot = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows,
         #                    view = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows))
-        # 
+        #
         # # plot flood extent
-        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) + 
+        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) +
         #     # fill for mask floodplain
-        #     tm_fill(col = "white", alpha = 0.5) + 
+        #     tm_fill(col = "white", alpha = 0.5) +
         # # airial image background
         # tm_view(alpha = 1, basemaps = "Esri.WorldImagery") +
         # # flood extent
-        # tm_shape(flood_extent_wgs84) + 
+        # tm_shape(flood_extent_wgs84) +
         #     tm_raster(col = "blue3", alpha = 1)
-        # 
-        # 
+        #
+        #
         # map <- tm_shape(mask_floodplain, projection = wgs84,
-        #                 bbox = extent_wgs84) + 
+        #                 bbox = extent_wgs84) +
         #     tm_fill(col = "white", alpha = 0.5)
-        # 
+        #
         # map <- map + tm_view(alpha = 1, basemaps = "Esri.WorldImagery")
         # # gauging_stations
         # tm_markers()
