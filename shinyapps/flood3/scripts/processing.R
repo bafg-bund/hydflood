@@ -39,7 +39,7 @@ wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
 # capture args, load input data and prepare result directories
 path <- commandArgs(trailingOnly = TRUE)[[1]]
 #path <- "in_process/7f199JoieFF0VFJQrKZk.RData"
-#path <- "in_process/7dn63fh4mx6ocqu22avv.RData"
+#path <- "in_process/wy6e0m8n0i808sjpdnd4.RData"
 id <- gsub(".RData", "", unlist(strsplit(path, "/"))[2])
 
 # load data
@@ -51,7 +51,7 @@ load(path)
 # x
 ext <- extent(l.res$extent)
 crs <- crs(l.res$crs)
-x <- hydflood3::hydRasterStack(ext = ext, crs = crs)
+x <- hydRasterStack(ext = ext, crs = crs)
 
 # seq
 seq <- seq.Date(from = as.Date(l.res$seq_from_to[1]), 
@@ -73,9 +73,9 @@ filename_zip_msg <- paste0("downloads/", id, ".zip")
 
 #####
 # compute
-f <- flood3(x = x, seq = seq, filename = filename)
+f <- flood3(x = x, seq = seq, filename = filename, overwrite = TRUE)
 f_wgs84 <- projectRaster(f, crs = wgs84, method = "ngb", 
-                         filename = filename_wgs84)
+                         filename = filename_wgs84, overwrite = TRUE)
 
 #####
 # create INSPIRE, ISO 19139, GGinA-conform metadata
@@ -104,13 +104,22 @@ m <- addResourceLocator(m, "http://r.bafg.de/shiny/WeberA/07-flood3/")
 
 # add the authors information
 m <- addAuthor(m, "Dr. Arnd Weber", "++49 (0)261/1306-5445", 
-               "arnd.weber@bafg.de","Ansprechpartner")
+               "arnd.weber@bafg.de", "Ansprechpartner")
+
+m@OrganisationName       <- "Bundesanstalt für Gewässerkunde"
+m@OrganisationAdress     <- "Am Mainzer Tor 1"
+m@OrganisationPostalCode <- "56068"
+m@OrganisationCity       <- "Koblenz"
+m@OrganisationCountry    <- "Deutschland"
+m@OrganisationMailAddress<- "posteingang@bafg.de"
+m@OrganisationPhone      <- "++49 (0)261/1306-0"
 
 m@ResourceCreationDate   <- as.character(Sys.Date())
-m@ResourceCreationDateType<-"Date of last revision"
-
-m@Version                <- paste0("hydflood3, version ", 
-                                   packageVersion("hydflood3"))
+m@ResourcePublicationDate <- as.character(Sys.Date())
+m@ResourceLastRevisionDate <- as.character(Sys.Date())
+################################################################################
+# m@Version                <- paste0("hydflood3, version ", 
+#                                    packageVersion("hydflood3"))
 m@TemporalExtent         <- c(l.res$seq_from_to[1], l.res$seq_from_to[2])
 
 # compute the bounding box
@@ -119,13 +128,16 @@ sp.ext_wgs84 <- spTransform(sp.ext, CRSobj = wgs84)
 e.ext_wgs84 <- extent(sp.ext_wgs84)
 bb.ext_wgs84 <- c(e.ext_wgs84@xmin, e.ext_wgs84@xmax, 
                   e.ext_wgs84@ymin, e.ext_wgs84@ymax) 
+#
 m@BoundingBox            <- bb.ext_wgs84
 
-m@DistributionFormatName <- "GeoTIFF"
-m@DistributionFormatVersion <- "1.8.1"
+
+m@FormatName <- "GeoTIFF"
+m@FormatVersion <- "1.8.1"
+
 m@UseLimitations         <- paste0("Die Daten (GeoTIFF-Format) sind mit Standa",
                                    "rd-GIS-Software les- und bearbeitbar.")
-m@ConditionOfUse         <- paste0("Die Daten werden dem Nutzer ohne jede Gewä",
+m@OtherConstraints       <- paste0("Die Daten werden dem Nutzer ohne jede Gewä",
                                    "hrleistung überlassen. Der Nutzer ist sich",
                                    " bewusst, dass die Daten mit Unsicherheite",
                                    "n behaftet sind, da sie auf der Basis morp",
@@ -142,25 +154,27 @@ m@ConditionOfUse         <- paste0("Die Daten werden dem Nutzer ohne jede Gewä"
                                    "zitieren. Die unentgeltliche Übermittelung",
                                    " eines entsprechendes Belegexemplars ist g",
                                    "ewünscht.")
-m@IdentifierCode         <- paste0("Shiny-URL")
+m@FileIdentifier         <- ""
 m@IdentifierCodespace    <- "http://doi.bafg.de"
 
 # Thema, Schlagworte
-m@TopicCategory          <- factor(c("Inland Waters", "Environment"),
+m@TopicCategory          <- factor(c("inlandWaters", "Environment"),
                                    levels = levels(m@TopicCategory))
-m                        <- setKeyword(m, Name = "inspireidentifiziert")
+# Achtung beim setzen dieses Keywords! Datensatz muss dann INSPIRE Konventionen 
+# befolgen!
+#m                        <- setKeyword(m, Name = "inspireidentifiziert")
 m                        <- addKeyword(m, "Gewässernetz", 
                                        Dictionary = "INSPIRE-Annex-Thema", 
                                        "2014-04-17")
 
 m@CharacterSetCode <- "utf8"
-m@ResourceType <- "dataset"
+m@HierarchyLevel <- "dataset"
 m@MetadataLanguage <- "ger"
 m@ResourceLanguage <- "ger"
 
 # save the xml file
 xml <- xmlInspireCreate(m)
-saveXML(doc = xml, file = filename_xml, encoding = "UTF-8")
+#saveXML(doc = xml, file = filename_xml, encoding = "UTF-8")
 
 #####
 # assemble the email message
