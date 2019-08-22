@@ -26,5 +26,6 @@ shinyapps/flood3/in_process
 shinyapps/flood3/processed
 shinyapps/flood3/www
 shinyapps/flood3/scripts/cleanup.log
+shinyapps/flood3daily/www
 shinyapps/flood3wms/www/Thumbs.db
 vignettes/movie
