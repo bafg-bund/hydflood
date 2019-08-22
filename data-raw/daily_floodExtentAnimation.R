@@ -16,8 +16,11 @@ library(hyd1d)
 library(hydflood3)
 library(rgdal)
 
+# setwd
+setwd(Sys.getenv("hydflood3")) 
+
 # temporal sequence (last X days)
-dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 1,
+dates <- as.character(seq.Date(Sys.Date() - 8, Sys.Date() - 1,
                                by = "1 day"))
 
 #####
@@ -28,10 +31,10 @@ df.gsd <- na.omit(df.gauging_station_data)
 coordinates <- df.gsd[, c("longitude", "latitude")]
 spdf.gsd <- SpatialPointsDataFrame(coords = coordinates, data = df.gsd,
                                    proj4string = wgs84)
-spdf.gsd_DESSAU <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("ROSSLAU", "DESSAU")), ]
-spdf.gsd_DESSAU <- spTransform(spdf.gsd_DESSAU, crs)
-spdf.gsd_LENZEN <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("SCHNACKENBURG", "LENZEN")), ]
-spdf.gsd_LENZEN <- spTransform(spdf.gsd_LENZEN, crs)
+spdf.gsd_D <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("ROSSLAU", "DESSAU")), ]
+spdf.gsd_D <- spTransform(spdf.gsd_D, crs)
+spdf.gsd_L <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("SCHNACKENBURG", "LENZEN")), ]
+spdf.gsd_L <- spTransform(spdf.gsd_L, crs)
 
 #####
 # color function
@@ -39,7 +42,7 @@ dem_colfunc <- colorRampPalette(c("saddlebrown", "yellow", "darkgreen"))
 
 #####
 # DESSAU
-ext_DESSAU <- extent(306050, 311870, 5747870, 5752220)
+ext_D <- extent(306050, 311870, 5747870, 5752220)
 dem <- raster("data-raw/raster.dem_dessau.tif")
 dem_plot <- dem
 dem_plot[dem_plot > 62] <- 62
@@ -47,7 +50,6 @@ dem_plot[dem_plot < 50] <- 50
 csa <- raster("data-raw/raster.csa_dessau.tif")
 x <- hydRasterStack(filename_dem = "data-raw/raster.dem_dessau.tif",
                     filename_csa = "data-raw/raster.csa_dessau.tif")
-
 # mask <- readOGR(dsn="data-raw", layer="doc_mask_dessau")
 # mask <- spTransform(mask, wgs84)
 # mask_floodplain <- readOGR(dsn="data-raw", layer="doc_mask_dessau_floodplain")
@@ -57,6 +59,21 @@ x <- hydRasterStack(filename_dem = "data-raw/raster.dem_dessau.tif",
 # x <- sort(unique(mask@polygons[[1]]@Polygons[[1]]@coords[,1]))
 # y <- sort(unique(mask@polygons[[1]]@Polygons[[1]]@coords[,2]))
 # extent_wgs84 <- extent(x[2], x[3], y[2], y[3])
+
+# export a dem plot
+dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
+              "ta/png/flood3_daily/DESSAU/dem.png")
+if (!file.exists(dem)) {
+    png(filename = dem, width = 960, height = 640, units = "px")
+    plot(dem_plot, col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
+         legend.width = 1, horizontal = TRUE, bty = "n",
+         legend.args = list(text = "elevation (m)"),
+         xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2))
+    points(spdf.gsd_D, pch = 21, bg = "white")
+    text(spdf.gsd_D[1,], pos = 3, labels = spdf.gsd_D$gauging_station[1])
+    text(spdf.gsd_D[2,], pos = 1, labels = spdf.gsd_D$gauging_station[2])
+    dev.off()
+}
 
 # loop over all dates
 for (a_date in dates) {
@@ -83,9 +100,9 @@ for (a_date in dates) {
              legend.args = list(text = "elevation (m)"),
              xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2))
         plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-        points(spdf.gsd_DESSAU, pch = 21, bg = "white")
-        text(spdf.gsd_DESSAU[1,], pos = 3, labels = spdf.gsd_DESSAU$gauging_station[1])
-        text(spdf.gsd_DESSAU[2,], pos = 1, labels = spdf.gsd_DESSAU$gauging_station[2])
+        points(spdf.gsd_D, pch = 21, bg = "white")
+        text(spdf.gsd_D[1,], pos = 3, labels = spdf.gsd_D$gauging_station[1])
+        text(spdf.gsd_D[2,], pos = 1, labels = spdf.gsd_D$gauging_station[2])
         dev.off()
         
         # attempts with tmap
@@ -119,7 +136,7 @@ for (a_date in dates) {
 
 #####
 # LENZEN
-ext_LENZEN <- extent(261940, 270870, 5881635, 5887550)
+ext_L <- extent(261940, 270870, 5881635, 5887550)
 dem <- raster("data-raw/raster.dem_lenzen.tif")
 dem_plot <- dem
 dem_plot[dem_plot > 24] <- 24
@@ -131,6 +148,21 @@ x <- hydRasterStack(filename_dem = "data-raw/raster.dem_lenzen.tif",
 # mask <- readOGR(dsn="data-raw", layer="doc_mask_lenzen")
 # mask_floodplain <- readOGR(dsn="data-raw", layer="doc_mask_lenzen_floodplain")
 # mask_floodplain <- crop(mask_floodplain, mask)
+
+# export a dem plot
+dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
+              "ta/png/flood3_daily/LENZEN/dem.png")
+if (!file.exists(dem)) {
+    png(filename = dem, width = 960, height = 640, units = "px")
+    plot(dem_plot, col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
+         legend.width = 1, horizontal = TRUE, bty = "n",
+         legend.args = list(text = "elevation (m)"),
+         xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1))
+    # points(spdf.gsd_L, pch = 21, bg = "white")
+    # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
+    # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+    dev.off()
+}
 
 # loop over all dates
 for (a_date in dates) {
@@ -157,9 +189,9 @@ for (a_date in dates) {
              legend.args = list(text = "elevation (m)"),
              xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1))
         plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-        # points(spdf.gsd_LENZEN, pch = 21, bg = "white")
-        # text(spdf.gsd_LENZEN[1,], pos = 3, labels = spdf.gsd_LENZEN$gauging_station[1])
-        # text(spdf.gsd_LENZEN[2,], pos = 1, labels = spdf.gsd_LENZEN$gauging_station[2])
+        # points(spdf.gsd_L, pch = 21, bg = "white")
+        # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
+        # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
         dev.off()
         
         # attempts with tmap
