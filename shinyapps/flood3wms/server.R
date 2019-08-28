@@ -493,22 +493,10 @@ function(input, output, session) {
             !is.null(input$map_zoom)) {
             
             year <- as.numeric(input$year)
-            id <- df.years$id[which(df.years$year == year)]
             
             l <- leafletProxy("map")
             # zoom level denpendent visualisation
             if (input$map_zoom >= 12) {
-                # url <- paste0(url_base, input$river, "_",
-                #               as.character(floor(year / 10) * 10),
-                #               "_",
-                #               as.character(floor(year / 10) * 10 + 9),
-                #               "/MapServer/WMSServer?")
-                # l %>% addWMSTiles(
-                #     baseUrl = url,
-                #     layers = as.character(year - (floor(year / 10) * 10)),
-                #     options = WMSTileOptions(format = "image/png",
-                #                              transparent = TRUE),
-                #     layerId = "fd")
                 url <- paste0(url_base, input$river, "_",
                               as.character(floor(year / 10) * 10),
                               "_",
@@ -516,7 +504,7 @@ function(input, output, session) {
                               "/MapServer/WMSServer?")
                 l %>% addWMSTiles(
                     baseUrl = url,
-                    layers = as.character(id),
+                    layers = paste0("Flut3_", as.character(year)),
                     options = WMSTileOptions(format = "image/png",
                                              transparent = TRUE),
                     layerId = "fd")
