@@ -154,6 +154,8 @@ load("data/df.coor.afX.rda")
 # save(spdf.station, file = "data/spdf.station.rda")
 load("data/spdf.station.rda")
 
+years <- seq(1990, 2016, 1)
+
 url_base <- "https://geoportal.bafg.de/arcgis3/services/Flut3/"
 
 options(shiny.trace = TRUE)
