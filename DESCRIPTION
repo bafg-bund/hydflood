@@ -29,6 +29,8 @@ RoxygenNote: 6.1.1
 Collate:
     'Class-hydRasterStack.R'
     'data.R'
+    'flood1.R'
+    'flood2.R'
     'flood3.R'
     'hydflood3.R'
     'hydflood3-internal.R'
