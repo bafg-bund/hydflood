@@ -8,6 +8,8 @@ reference:
   - title: "Class and functions"
     desc: S4 Class and functions to compute flood extent and duration
     contents:
+      - "`flood1`"
+      - "`flood2`"
       - "`flood3`"
       - "`hydRasterStack-class`"
       - "`hydRasterStack`"
