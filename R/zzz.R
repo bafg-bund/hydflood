@@ -16,8 +16,8 @@
     }
 }
 
-
 if(getRversion() >= "2.15.1"){
     utils::globalVariables(c("spdf.active_floodplain_elbe_csa", 
-                             "spdf.active_floodplain_rhein_csa"))
+                             "spdf.active_floodplain_rhein_csa",
+                             "df.gauging_station_data"))
 }
