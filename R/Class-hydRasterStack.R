@@ -418,13 +418,19 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     rm(crs_int_csa, crs_int_dem)
     
     # 3rd time error messages
+    if (!file_exists_dem & !file_exists_csa & missing(ext) & missing(crs)) {
+        errors <- c(errors, paste0("Error ", l(errors), ": The specified files",
+                                   " do not exist! If you specifiy the extent ",
+                                   "and a valid crs (ETRS 1989 UTM32 N for Riv",
+                                   "er Rhein, ETRS 1989 UTM32 N for River Elbe",
+                                   "), the will be downloaded according to you",
+                                   "r specifications."))
+    }
     if (l(errors) != "1") {stop(paste0(errors, collapse="\n  "))}
     
     ##
     # ext
     if (missing(ext) & is.logical(ext_int_ras)) {
-        errors <- c(errors, paste0("Error ", l(errors), ": The 'ext' ",
-                                   "argument has to be supplied."))
     }
     if (missing(ext) & !is.logical(ext_int_ras)) {
         ext_int <- ext_int_ras
