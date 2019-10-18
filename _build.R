@@ -185,9 +185,9 @@ file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
 write("#####", stdout())
 write(" export the documentation as pdf", stdout())
 
-system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-prev",
-              "iew --force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding",
-              "=UTF-8"))
+# system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-prev",
+#               "iew --force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding",
+#               "=UTF-8"))
 
 #####
 # document
