@@ -134,8 +134,8 @@ if (!(file.exists("README.md"))) {
 
 # render the package website 
 pkgdown::clean_site(".")
-pkgdown::build_site(".", examples = TRUE, preview = FALSE, document = FALSE, 
-                    override = list(destination = public), new_process = FALSE)
+pkgdown::build_site(".", examples = TRUE, preview = FALSE, new_process = TRUE,
+                    override = list(destination = public))
 
 # insert the BfG logo into the header
 files <- list.files(path = public, pattern = "*[.]html",
