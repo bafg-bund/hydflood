@@ -271,7 +271,7 @@ function(input, output, session) {
         }
     })
     
-    # A reactive expression that returns the set of zips that are
+    # A reactive expression that returns the set of stations that are
     # in bounds right now
     spdf.stationInBounds_reactive <- reactive({
         if (is.null(input$map_bounds)) {
