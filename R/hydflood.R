@@ -1,7 +1,7 @@
-#' @name hydflood3
+#' @name hydflood
 #' @docType package
 #' 
-#' @title hydflood3: A package to compute flood extent and duration along 
+#' @title hydflood: A package to compute flood extent and duration along 
 #'    German federal waterways Elbe and Rhine
 #' 
 #' @description To be done...

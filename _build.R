@@ -5,7 +5,7 @@
 # date:   05.02.2019
 #
 # purpose: 
-#   - build the repository version of hydflood3
+#   - build the repository version of hydflood
 #
 ##################################################
 write("#####", stdout())
@@ -96,7 +96,7 @@ write("#####", stdout())
 write(" install from source", stdout())
 
 pkg_files <- list.files(path = build,
-                        pattern = paste0("hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]",
+                        pattern = paste0("hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]",
                                          "\\.tar\\.gz"))
 
 for (a_file in pkg_files) {
@@ -172,11 +172,11 @@ file.copy("README_files/figure-markdown_github/usage-1.png",
           paste0(public, "/README_files/figure-markdown_github"))
 
 #####
-# create public/downloads directory and copy hydflood3_*.tar.gz-files into it
+# create public/downloads directory and copy hydflood_*.tar.gz-files into it
 downloads <- paste0("public/", R_version, "/downloads")
 dir.create(downloads, recursive = TRUE)
 from <- list.files(path = build,
-                   pattern = "hydflood3\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
+                   pattern = "hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
                    full.names = TRUE)
 file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
 
@@ -185,7 +185,7 @@ file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
 write("#####", stdout())
 write(" export the documentation as pdf", stdout())
 
-# system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood3.pdf --no-prev",
+# system(paste0("R CMD Rd2pdf . --output=", downloads, "/hydflood.pdf --no-prev",
 #               "iew --force --RdMacros=Rdpack --encoding=UTF-8 --outputEncoding",
 #               "=UTF-8"))
 
@@ -199,15 +199,15 @@ host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
 if (host == "r.bafg.de" & user == "WeberA" & R_version == "3.6.0") {
     system(paste0("cp -rp public/", R_version, "/* /home/", user, 
-                  "/public_html/hydflood3/"))
-    system(paste0("find /home/", user, "/public_html/hydflood3/ -type f -print",
+                  "/public_html/hydflood/"))
+    system(paste0("find /home/", user, "/public_html/hydflood/ -type f -print",
                   "0 | xargs -0 chmod 0644"))
-    system(paste0("find /home/", user, "/public_html/hydflood3/ -type d -print",
+    system(paste0("find /home/", user, "/public_html/hydflood/ -type d -print",
                   "0 | xargs -0 chmod 0755"))
     # system(paste0("chcon -R -t httpd_user_content_t /home/", user,
     #               "/public_html/"))
     system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sources",
-                  " ] && cp -rp public/", R_version, "/downloads/hydflood3_*.t",
+                  " ] && cp -rp public/", R_version, "/downloads/hydflood_*.t",
                   "ar.gz /home/", user, "/freigaben_r/_packages/package_source",
                   "s"))
 }

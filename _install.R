@@ -6,7 +6,7 @@
 #
 # purpose:
 #   - install R packages required for the CI jobs
-#   - install the repository version of hydflood3
+#   - install the repository version of hydflood
 #
 ##################################################
 

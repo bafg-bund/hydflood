@@ -13,11 +13,11 @@ write("floodExtents for Dessau and Lenzen will be computed", stdout())
 
 # load hyd1d
 library(hyd1d)
-library(hydflood3)
+library(hydflood)
 library(rgdal)
 
 # setwd
-setwd(Sys.getenv("hydflood3")) 
+setwd(Sys.getenv("hydflood")) 
 
 # temporal sequence (last X days)
 dates <- as.character(seq.Date(Sys.Date() - 8, Sys.Date() - 1,

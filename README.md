@@ -1,36 +1,31 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-hydflood3
+hydflood
 =========
 
-[![pipeline status](https://git.aqualogy.de/arnd/hydflood3/badges/master/pipeline.svg)](https://git.aqualogy.de/arnd/hydflood3/commits/master)
+[![pipeline status](https://git.aqualogy.de/arnd/hydflood/badges/master/pipeline.svg)](https://git.aqualogy.de/arnd/hydflood/commits/master)
 
-The R package **hydflood3** is designed to compute flood extent and duration along German federal waterways Elbe and Rhine.
+The R package **hydflood** is designed to compute flood extent and duration along German federal waterways Elbe and Rhine.
 
 Installation
 ------------
 
-**hydflood3** is not currently available from CRAN, but you can install the development version from BfG's gitbucket server with:
+**hydflood** is not currently available from CRAN, but you can install the development version from BfG's gitbucket server with:
 
 ``` r
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://git.aqualogy.de/arnd/hydflood3.git")
+devtools::install_git("git://git.aqualogy.de/arnd/hydflood.git")
 ```
 
 Usage
 -----
 
-The package **hydflood3** is build around the packages `raster` and `hyd1d`.
+The package **hydflood** is build around the packages `raster` and `hyd1d`.
 
 ``` r
 # load the package
-library(sp)
-library(raster)
-library(rgdal)
-library(rgeos)
-library(hyd1d)
-library(hydflood3)
+library(hydflood)
 
 # import the raster data and create a raster stack
 x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",

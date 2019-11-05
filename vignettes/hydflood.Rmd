@@ -1,5 +1,5 @@
 ---
-title: "hydflood3"
+title: "hydflood"
 author: "Arnd Weber"
 date: "`r Sys.Date()`"
 output:
@@ -56,7 +56,7 @@ Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
 library(hyd1d)
-library(hydflood3)
+library(hydflood)
 
 # Determine the output format of the document
 outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
@@ -88,7 +88,7 @@ capFig <- function(x){
 
 # Purpose
 
-**hydflood3** is an R package designed to compute flood extent and duration 
+**hydflood** is an R package designed to compute flood extent and duration 
 along the German federal waterways Elbe and Rhine.
 
 <BR>
@@ -97,26 +97,26 @@ along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-The package **hydflood3** is not available from CRAN at the moment. To install 
+The package **hydflood** is not available from CRAN at the moment. To install 
 the recent developmental version from the GitBucket server of the Federal 
 Institute of Hydrology (BfG) execute the following commands: 
 
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://git.aqualogy.de/arnd/hydflood3.git")
+devtools::install_git("git://git.aqualogy.de/arnd/hydflood.git")
 ```
 
-Afterwards **hydflood3** can be loaded like every other R package with the 
+Afterwards **hydflood** can be loaded like every other R package with the 
 following command: 
 
 ```{r library_print, eval = FALSE, echo = TRUE}
-library(hydflood3)
+library(hydflood)
 ```
 
 ## Dependencies
 
-The package **hydflood3** is build around the packages
+The package **hydflood** is build around the packages
 [`raster`](https://cran.r-project.org/package=raster) and
 [`hyd1d`](`r paste0(base_hyd1d)`). [`hyd1d`](`r paste0(base_hyd1d)`) internally
 provides gauging data for all gauging stations along River Rhine and Elbe
@@ -133,10 +133,10 @@ named `dem`, containing a digital elevation model, the other named `csa`,
 containing the cross section areas.
 
 ```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation modell of the waterway (DEM-W, in German: Digitales Geländemodell der Wasserstraße, DGM-W) with 1 m spatial resolution at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
-knitr::include_graphics('./screenshot_hydflood3_dem.png')
+knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
-**hydflood3** provides download facilities for the official digital elevation
+**hydflood** provides download facilities for the official digital elevation
 models of the waterways Rhine and Elbe (DEM-W, in German: Digitales
 Geländemodell der Wasserstraße, DGM-W; @wsv_dgmw_2016) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
@@ -151,15 +151,15 @@ sections used for the SOBEK models run for and incorporated into
 [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
 
 ```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
-knitr::include_graphics('./screenshot_hydflood3_crosssections.png')
+knitr::include_graphics('./screenshot_hydflood_crosssections.png')
 ```
 
 ```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
-knitr::include_graphics('./screenshot_hydflood3_crosssectionareas.png')
+knitr::include_graphics('./screenshot_hydflood_crosssectionareas.png')
 ```
 
 ```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustraded in Fig. 3 overlayed by the corresponding cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
-knitr::include_graphics('./screenshot_hydflood3_crosssectionareas_cs.png')
+knitr::include_graphics('./screenshot_hydflood_crosssectionareas_cs.png')
 ```
 
 These cross sections, one for each individual river station, represent water 
@@ -222,7 +222,7 @@ River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
 [25832](http://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
 River Elbe 'ETRS 1989 UTM 32N' (EPSG
 [25833](http://spatialreference.org/ref/epsg/25833/)). If you can't provide
-dem and csa yourself, `hydflood3` provides csa data internally and downloads
+dem and csa yourself, `hydflood` provides csa data internally and downloads
 the official digital elevation models of the waterway and navigation 
 authorities with 1 m spatial resolution. Therefore you definitely need internet
 access and, due to the data volume of the elevation data, your internet should 

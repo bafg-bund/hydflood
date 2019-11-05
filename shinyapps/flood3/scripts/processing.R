@@ -16,7 +16,7 @@ library(raster)
 library(rgdal)
 library(rgeos)
 library(hyd1d)
-library(hydflood3)
+library(hydflood)
 library(inspiRe)
 
 # add functions and definitions
@@ -83,10 +83,10 @@ f_wgs84 <- projectRaster(f, crs = wgs84, method = "ngb",
 m <- new("inspireDataset")
 
 # add title and abstract
-m@ResourceTitle <- "Überflutungsdauer nach hydflood3::flood3()"
+m@ResourceTitle <- "Überflutungsdauer nach hydflood::flood3()"
 m@ResourceAbstract <- paste0("Dieser Rasterdatensatz der Überflutungsdau",
                              "er eines Teiles der aktiven ", l.res$river,
-                             "aue ist mittels des R-Paketes hydflood3 ber",
+                             "aue ist mittels des R-Paketes hydflood ber",
                              "echnet. Der Datensatz hat eine räumliche A",
                              "uflösung von 1 Meter und weißt Werte zwisc",
                              "hen 0 und maximal ", length(seq), " Tagen ",
@@ -99,7 +99,7 @@ m@Lineage <- paste0("Die Daten sind Ergebnis einer Prozessierungskette ausgehe",
                     "giert werden.")
 
 # link to online ressources
-m <- setResourceLocator(m, "http://r.bafg.de/~WeberA/hydflood3/index.html")
+m <- setResourceLocator(m, "http://r.bafg.de/~WeberA/hydflood/index.html")
 m <- addResourceLocator(m, "http://r.bafg.de/shiny/WeberA/07-flood3/")
 
 # add the authors information
@@ -118,8 +118,8 @@ m@ResourceCreationDate   <- as.character(Sys.Date())
 m@ResourcePublicationDate <- as.character(Sys.Date())
 m@ResourceLastRevisionDate <- as.character(Sys.Date())
 ################################################################################
-# m@Version                <- paste0("hydflood3, version ", 
-#                                    packageVersion("hydflood3"))
+# m@Version                <- paste0("hydflood, version ", 
+#                                    packageVersion("hydflood"))
 m@TemporalExtent         <- c(l.res$seq_from_to[1], l.res$seq_from_to[2])
 
 # compute the bounding box
@@ -150,7 +150,7 @@ m@OtherConstraints       <- paste0("Die Daten werden dem Nutzer ohne jede Gewä"
                                    "eröffentlichungen, die auf der Grundlage d",
                                    "er bereitgestellten Daten entstanden sind,",
                                    " die BfG als Datenquelle zu nennen und das",
-                                   " Berechnungsrelevante R-Paket hydflood3 zu",
+                                   " Berechnungsrelevante R-Paket hydflood zu",
                                    "zitieren. Die unentgeltliche Übermittelung",
                                    " eines entsprechendes Belegexemplars ist g",
                                    "ewünscht.")

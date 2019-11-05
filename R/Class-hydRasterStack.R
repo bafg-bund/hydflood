@@ -39,11 +39,11 @@
 #'   dataset \code{\link[hyd1d]{df.flys}}.
 #' 
 #' @references
-#'   \insertRef{wsv_dgmw_2016}{hydflood3}
+#'   \insertRef{wsv_dgmw_2016}{hydflood}
 #'   
-#'   \insertRef{busch_einheitliche_2009}{hydflood3}
+#'   \insertRef{busch_einheitliche_2009}{hydflood}
 #'   
-#'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood3}
+#'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood}
 #' 
 #' @exportClass hydRasterStack
 #' 
@@ -236,26 +236,26 @@ methods::setClass(
 #'   \code{\link{spdf.active_floodplain_elbe}}
 #' 
 #' @references
-#'   \insertRef{wsv_dgmw_2016}{hydflood3}
+#'   \insertRef{wsv_dgmw_2016}{hydflood}
 #'   
-#'   \insertRef{brockmann_auswertung_2008}{hydflood3}
+#'   \insertRef{brockmann_auswertung_2008}{hydflood}
 #'   
-#'   \insertRef{brockmann_produktblatt_2012}{hydflood3}
+#'   \insertRef{brockmann_produktblatt_2012}{hydflood}
 #'   
-#'   \insertRef{brockmann_digitales_2008}{hydflood3}
+#'   \insertRef{brockmann_digitales_2008}{hydflood}
 #'   
-#'   \insertRef{smile_consult_gmbh_dgm-w_2011}{hydflood3}
+#'   \insertRef{smile_consult_gmbh_dgm-w_2011}{hydflood}
 #'   
-#'   \insertRef{fugro-hgn_gmbh_aufbau_2011}{hydflood3}
+#'   \insertRef{fugro-hgn_gmbh_aufbau_2011}{hydflood}
 #'   
-#'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood3}
+#'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood}
 #'   
-#'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood3}
+#'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood}
 #'   
-#'   \insertRef{brunotte_flussauen_data_2009}{hydflood3}
+#'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #' 
 #' @examples \dontrun{
-#'   library(hydflood3)
+#'   library(hydflood)
 #'   
 #'   ext <- extent(436500, 438000, 5415000, 5416500)
 #'   crs <- crs("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
@@ -598,7 +598,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
-        csa_dir <- paste0(path.expand('~'), "/.hydflood3")
+        csa_dir <- paste0(path.expand('~'), "/.hydflood")
         dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
         csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", tolower(river), 
                            "_csa.rda")
@@ -688,7 +688,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         if (!exists("sections_sel")) {
             # download the packages csa_file, if it has not yet been stored 
             # locally, and load it
-            csa_dir <- paste0(path.expand('~'), "/.hydflood3")
+            csa_dir <- paste0(path.expand('~'), "/.hydflood")
             dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
             csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", 
                                tolower(river), "_csa.rda")
@@ -742,7 +742,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         merge_rasters <- list()
         for (a_section in sections_sel) {
             tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-            url <- paste0("http://r.bafg.de/~WeberA/hydflood3/downloads/",
+            url <- paste0("http://r.bafg.de/~WeberA/hydflood/downloads/",
                           tolower(river), "/", a_section, "_DEM.asc")
             utils::download.file(url, tmp_dem, quiet = TRUE)
             
