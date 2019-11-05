@@ -10,18 +10,18 @@
 #' 
 #'   Originally, this polygon was produced for the floodplain status report 
 #'   (Auenzustandsbericht; Brunotte et al. (2009), Bundesamt für Naturschutz 
-#'   (2009)) at a scale of 1:25000. For hydflood3 it was updated with recent 
+#'   (2009)) at a scale of 1:25000. For hydflood it was updated with recent 
 #'   flood protection measures and manually improved with recent digital 
 #'   elevation models and aerial images at a scale < 1:10000.
 #' 
 #' @format A \code{SpatialPolygonsDataFrame} containing 1 polygon 
 #' 
 #' @references 
-#'   \insertRef{brunotte_flussauen_2009}{hydflood3}
+#'   \insertRef{brunotte_flussauen_2009}{hydflood}
 #'   
-#'   \insertRef{brunotte_flussauen_data_2009}{hydflood3}
+#'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #'   
-#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}
+#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
 "spdf.active_floodplain_elbe"
 
@@ -37,17 +37,17 @@
 #' 
 #'   Originally, this polygon was produced for the floodplain status report 
 #'   (Auenzustandsbericht; Brunotte et al. (2009), Bundesamt für Naturschutz 
-#'   (2009)) at a scale of 1:25000. For hydflood3 it was updated with recent 
+#'   (2009)) at a scale of 1:25000. For hydflood it was updated with recent 
 #'   flood protection measures and manually improved with recent digital 
 #'   elevation models and aerial images at a scale < 1:10000.
 #' 
 #' @format A \code{SpatialPolygonsDataFrame} containing 1 polygon 
 #' 
 #' @references 
-#'   \insertRef{brunotte_flussauen_2009}{hydflood3}
+#'   \insertRef{brunotte_flussauen_2009}{hydflood}
 #'   
-#'   \insertRef{brunotte_flussauen_data_2009}{hydflood3}
+#'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #'   
-#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}
+#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
 "spdf.active_floodplain_rhein"

@@ -1,4 +1,4 @@
-Package: hydflood3
+Package: hydflood
 Type: Package
 Title: Algorythms to compute flood extent and duration along German federal 
     waterways Elbe and Rhine
@@ -9,9 +9,9 @@ Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     comment = c(ORCID = "0000-0002-5973-2770")),
             person("Stephan", "Rosenzweig", email = "rosenzweig@bafg.de",
                     role = c("ctb")))
-Description: hydflood3 extends the functionalities of hyd1d, an R package to 
+Description: hydflood extends the functionalities of hyd1d, an R package to 
     interpolate 1D water level and gauging data, to raster based GIS processing. 
-    hydflood3 adopts strategies originally developed for INFORM, an 
+    hydflood adopts strategies originally developed for INFORM, an 
     ArcGIS-based hydro-ecological modelling framework, to compute flood extent 
     and duration. It does not provide a full, physical hydraulic modelling 
     algorythm, but a simplified, near realtime GIS approach for flood 
@@ -32,10 +32,10 @@ Collate:
     'flood1.R'
     'flood2.R'
     'flood3.R'
-    'hydflood3.R'
-    'hydflood3-internal.R'
+    'hydflood.R'
+    'hydflood-internal.R'
     'zzz.R'
 VignetteBuilder: knitr
-BugReports: https://git.aqualogy.de/arnd/hydflood3/issues
-URL: https://www.aqualogy.de/R/packages/hydflood3/, 
-    https://git.aqualogy.de/arnd/hydflood3
+BugReports: https://git.aqualogy.de/arnd/hydflood/issues
+URL: https://www.aqualogy.de/R/packages/hydflood/, 
+    https://git.aqualogy.de/arnd/hydflood

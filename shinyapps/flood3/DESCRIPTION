@@ -3,5 +3,5 @@ Description: Start a computation with flood3() interactively.
 License: GPL-3
 Author: Arnd Weber
 DisplayMode: None
-Tags: R, R Shiny, hydflood3, flood3()
+Tags: R, R Shiny, hydflood, flood3()
 Type: Shiny

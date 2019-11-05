@@ -1,5 +1,5 @@
 library(testthat)
-library(hydflood3)
+library(hydflood)
 
 context("flood2")
 
@@ -59,9 +59,9 @@ test_that("flood2: checks", {
 test_that("flood2: Elbe", {
     
     # Elbe
-    hf3 <- Sys.getenv("hydflood3")
-    x <- hydRasterStack(filename_dem = paste0(hf3, "/data-raw/raster.dem.tif"), 
-                        filename_csa = paste0(hf3, "/data-raw/raster.csa.tif"))
+    hf <- Sys.getenv("hydflood")
+    x <- hydRasterStack(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"), 
+                        filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -73,7 +73,7 @@ test_that("flood2: Elbe", {
     expect_equal(maxValue(fd), 31)
     expect_equal(minValue(fd), 0)
     expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood3::flood2() for th",
+                 paste0("flood duration computed by hydflood::flood2() for th",
                         "e following temporal sequence with length 31:"))
     
 })
@@ -82,10 +82,10 @@ test_that("flood2: Elbe", {
 test_that("flood2: Rhein", {
     
     # Rhein
-    hf3 <- Sys.getenv("hydflood3")
-    x <- hydRasterStack(filename_dem = paste0(hf3, 
+    hf <- Sys.getenv("hydflood")
+    x <- hydRasterStack(filename_dem = paste0(hf, 
                                               "/data-raw/raster.dem_plittersdorf.tif"), 
-                        filename_csa = paste0(hf3, 
+                        filename_csa = paste0(hf, 
                                               "/data-raw/raster.csa_plittersdorf.tif"))
     
     # create a temporal sequence
@@ -98,7 +98,7 @@ test_that("flood2: Rhein", {
     expect_equal(maxValue(fd), 31)
     expect_equal(minValue(fd), 0)
     expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood3::flood2() for th",
+                 paste0("flood duration computed by hydflood::flood2() for th",
                         "e following temporal sequence with length 31:"))
     
 })

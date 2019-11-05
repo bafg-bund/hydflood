@@ -1,5 +1,5 @@
-title: hydflood3
-url: https://www.aqualogy.de/R/packages/hydflood3/index.html
+title: hydflood
+url: https://www.aqualogy.de/R/packages/hydflood/index.html
 destination: public
 template:
   params:
@@ -14,7 +14,7 @@ reference:
       - "`hydRasterStack-class`"
       - "`hydRasterStack`"
   - title: Datasets
-    desc: Datasets included in hydflood3
+    desc: Datasets included in hydflood
     contents:
       - "`spdf.active_floodplain_elbe`"
       - "`spdf.active_floodplain_rhein`"
@@ -23,7 +23,7 @@ navbar:
     - text: "How To"
       menu:
       - text: "Get Started (EN)"
-        href: articles/hydflood3.html
+        href: articles/hydflood.html
       - text: "Präsentation (DE)"
         href: articles/presentation_DE.html
     - text: Reference

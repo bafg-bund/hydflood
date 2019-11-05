@@ -45,10 +45,10 @@
 #'   \code{\link[raster]{rasterOptions}}
 #' 
 #' @references 
-#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood3}
+#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
 #' @examples \dontrun{
-#' library(hydflood3)
+#' library(hydflood)
 #' 
 #' # import the raster data and create a raster stack
 #' crs <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
@@ -219,7 +219,7 @@ flood3 <- function(x, seq, filename = '', ...) {
     # describe out's data attributes
     attributes <- out@data@attributes
     attributes <- append(attributes, paste0("flood duration computed by hydflo",
-                                            "od3::flood3() for the following t",
+                                            "od::flood3() for the following t",
                                             "emporal sequence of type '", 
                                             class(seq), "' with length ",
                                             length(seq), ":"))

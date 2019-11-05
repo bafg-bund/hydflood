@@ -1,4 +1,4 @@
 library(testthat)
-library(hydflood3)
+library(hydflood)
 
-test_check("hydflood3")
+test_check("hydflood")

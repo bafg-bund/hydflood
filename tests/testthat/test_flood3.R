@@ -1,14 +1,14 @@
 library(testthat)
-library(hydflood3)
+library(hydflood)
 
 context("flood3")
 
 test_that("Elbe", {
     
     # Elbe
-    hf3 <- Sys.getenv("hydflood3")
-    x <- hydRasterStack(filename_dem = paste0(hf3, "/data-raw/raster.dem.tif"), 
-                        filename_csa = paste0(hf3, "/data-raw/raster.csa.tif"))
+    hf <- Sys.getenv("hydflood")
+    x <- hydRasterStack(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"), 
+                        filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -20,7 +20,7 @@ test_that("Elbe", {
     expect_equal(maxValue(fd), 31)
     expect_equal(minValue(fd), 0)
     expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood3::flood3() for ",
+                 paste0("flood duration computed by hydflood::flood3() for ",
                         "the following temporal sequence of type 'Date' with ",
                         "length 31:"))
     
@@ -80,10 +80,10 @@ test_that("Elbe", {
 test_that("Rhein", {
     
     # Rhein
-    hf3 <- Sys.getenv("hydflood3")
-    x <- hydRasterStack(filename_dem = paste0(hf3, 
+    hf <- Sys.getenv("hydflood")
+    x <- hydRasterStack(filename_dem = paste0(hf, 
                                        "/data-raw/raster.dem_plittersdorf.tif"), 
-                        filename_csa = paste0(hf3, 
+                        filename_csa = paste0(hf, 
                                        "/data-raw/raster.csa_plittersdorf.tif"))
     
     # create a temporal sequence
@@ -96,7 +96,7 @@ test_that("Rhein", {
     expect_equal(maxValue(fd), 31)
     expect_equal(minValue(fd), 0)
     expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood3::flood3() for ",
+                 paste0("flood duration computed by hydflood::flood3() for ",
                         "the following temporal sequence of type 'Date' with ",
                         "length 31:"))
     

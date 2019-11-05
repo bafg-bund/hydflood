@@ -15,7 +15,7 @@ library(raster)
 library(rgdal)
 library(rgeos)
 library(hyd1d)
-library(hydflood3)
+library(hydflood)
 
 #####
 # add some additional functions
@@ -135,7 +135,7 @@ df.gd <- readRDS(file_gd)
 ###
 # SpatialPolygonsDataFrames and data.frames of active floodplain polygons
 # data(list = c("spdf.active_floodplain_rhein", "spdf.active_floodplain_elbe"), 
-#      package = "hydflood3")
+#      package = "hydflood")
 # load("data/spdf.active_floodplain_elbe.rda")
 # load("data/spdf.active_floodplain_rhein.rda")
 # spdf.afe <- spTransform(spdf.active_floodplain_elbe, CRSobj = crs)
@@ -152,9 +152,9 @@ load("data/df.coor.afX.rda")
 
 ###
 # SpatialPointsDataFrame of stationing
-# spdf.hectometer_elbe <- readOGR(dsn = "~/hydflood3/data-raw", layer = "hectometer_elbe")
+# spdf.hectometer_elbe <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_elbe")
 # spdf.he <- spTransform(spdf.hectometer_elbe, CRSobj = crs)
-# spdf.hectometer_rhein <- readOGR(dsn = "~/hydflood3/data-raw", layer = "hectometer_rhein")
+# spdf.hectometer_rhein <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_rhein")
 # spdf.hr <- spTransform(spdf.hectometer_rhein, CRSobj = crs)
 # spdf.he@data$river <- as.factor(rep("Elbe", nrow(spdf.he@data)))
 # spdf.hr@data$river <- as.factor(rep("Rhein", nrow(spdf.hr@data)))
