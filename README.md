@@ -15,7 +15,7 @@ Installation
 ``` r
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://git.aqualogy.de/arnd/hydflood.git")
+devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood.git")
 ```
 
 Usage

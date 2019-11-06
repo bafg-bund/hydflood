@@ -1,5 +1,5 @@
 title: hydflood
-url: https://www.aqualogy.de/R/packages/hydflood/index.html
+url: http://r.bafg.de/~WeberA/hydflood/index.html
 destination: public
 template:
   params:
@@ -31,13 +31,12 @@ navbar:
     - text: "ShinyApps"
       menu:
       - text: "flood3()"
-        href: https://www.aqualogy.de/shiny/flood3/
+        href: http://r.bafg.de/shiny/WeberA/07-flood3/
       - text: "flood3()-WMS"
-        href: https://www.aqualogy.de/shiny/flood3wms/
+        href: http://r.bafg.de/shiny/WeberA/08-flood3wms/
+      - text: "flood3() daily"
+        href: http://r.bafg.de/shiny/WeberA/10-flood3daily/
   right:
-    - text: "hyd1d"
-      href: https://www.aqualogy.de/R/packages/hyd1d/index.html
-    - text: "aqualogy.de/R"
-      href: https://www.aqualogy.de/R
-
+    - text: BfG
+      href: http://www.bafg.de
 
