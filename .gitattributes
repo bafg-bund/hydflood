@@ -1,0 +1,18 @@
+# Set the default behavior for all files.
+* text eol=lf
+
+# Binary files.
+*.png binary
+*.jpg binary
+*.xcf binary
+*.mp4 binary
+*.tif binary
+*.dbf binary
+*.prj binary
+*.sbn binary
+*.sbx binary
+*.shp binary
+*.shx binary
+*.rda binary
+*.RData binary
+
