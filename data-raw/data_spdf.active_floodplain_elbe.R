@@ -6,12 +6,12 @@ if (!(file.exists("data/spdf.active_floodplain_elbe.rda"))) {
     library("sp")
     
     # import
-    spdf.active_floodplain_elbe <- readOGR(dsn = "data-raw", 
-                                           layer = "active_floodplain_elbe", 
+    spdf.active_floodplain_elbe <- readOGR(dsn = "data-raw",
+                                           layer = "active_floodplain_elbe",
                                            verbose = FALSE)
     
     # export
-    usethis::use_data(spdf.active_floodplain_elbe, pkg = ".", overwrite = TRUE, 
+    usethis::use_data(spdf.active_floodplain_elbe, overwrite = TRUE,
                       compress = "bzip2")
     
     # clean up

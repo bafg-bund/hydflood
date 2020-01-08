@@ -12,7 +12,7 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
         verbose = FALSE)
     
     # export
-    usethis::use_data(spdf.active_floodplain_elbe_csa, pkg = ".",
+    usethis::use_data(spdf.active_floodplain_elbe_csa,
                       overwrite = TRUE, compress = "bzip2")
     system("mv data/spdf.active_floodplain_elbe_csa.rda data-raw/")
     
