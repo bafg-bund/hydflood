@@ -8,11 +8,11 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     # import
     spdf.active_floodplain_rhein_csa <- readOGR(
         dsn = "data-raw", 
-        layer = "active_floodplain_rhein_csa", 
+        layer = "active_floodplain_rhein_csa",
         verbose = FALSE)
     
     # export
-    usethis::use_data(spdf.active_floodplain_rhein_csa, pkg = ".", 
+    usethis::use_data(spdf.active_floodplain_rhein_csa,
                       overwrite = TRUE, compress = "bzip2")
     system("mv data/spdf.active_floodplain_rhein_csa.rda data-raw/")
     
@@ -20,7 +20,7 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     rm(spdf.active_floodplain_rhein_csa)
     
 } else {
-    write("data-raw/spdf.active_floodplain_rhein_csa.rda exists already", 
+    write("data-raw/spdf.active_floodplain_rhein_csa.rda exists already",
           stderr())
 }
 
