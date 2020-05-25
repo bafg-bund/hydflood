@@ -4,12 +4,23 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     
     library("rgdal")
     library("sp")
+    library("sf")
     
     # import
-    spdf.active_floodplain_rhein_csa <- readOGR(
-        dsn = "data-raw", 
-        layer = "active_floodplain_rhein_csa",
-        verbose = FALSE)
+    spdf.active_floodplain_rhein_csa <- readOGR(dsn = "data-raw",
+        layer = "active_floodplain_rhein_csa", verbose = FALSE)
+    if (!"SECTION" %in% names(spdf.active_floodplain_rhein_csa)) {
+        spdf.tiles <- readOGR(dsn = "~/flut3_Rhein/data/shp",
+                              layer = "tiles", verbose = FALSE)
+        spdf.tiles <- spdf.tiles[,c("NAME")]
+        names(spdf.tiles) <- "SECTION"
+        sf.af <- st_as_sf(spdf.active_floodplain_rhein_csa)
+        sf.t <- st_as_sf(spdf.tiles)
+        sf.aft <- st_join(sf.af, sf.t)
+        sf.aft <- sf.aft[!grepl(".", row.names(sf.aft), fixed = TRUE), ]
+        spdf.active_floodplain_rhein_csa <- as(sf.aft, "Spatial")
+        rm(spdf.tiles, sf.af, sf.t, sf.aft)
+    }
     
     # export
     usethis::use_data(spdf.active_floodplain_rhein_csa,
