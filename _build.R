@@ -82,7 +82,7 @@ devtools::build_vignettes(".")
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
-devtools::check(".")
+devtools::check(".", error_on = "never")
 
 #####
 # build the source package
