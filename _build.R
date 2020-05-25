@@ -198,18 +198,25 @@ write(" web", stdout())
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
 if (host == "r.bafg.de" & user == "WeberA" & R_version == "3.6.0") {
-    system(paste0("cp -rp public/", R_version, "/* /home/", user, 
-                  "/public_html/hydflood/"))
-    system(paste0("find /home/", user, "/public_html/hydflood/ -type f -print",
-                  "0 | xargs -0 chmod 0644"))
-    system(paste0("find /home/", user, "/public_html/hydflood/ -type d -print",
-                  "0 | xargs -0 chmod 0755"))
-    # system(paste0("chcon -R -t httpd_user_content_t /home/", user,
-    #               "/public_html/"))
-    system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sources",
-                  " ] && cp -rp public/", R_version, "/downloads/hydflood_*.t",
-                  "ar.gz /home/", user, "/freigaben_r/_packages/package_source",
-                  "s"))
+    # copy html output to ~/public_html
+    system(paste0("cp -rp public/", R_version, "/* /home/", user, "/public_htm",
+                  "l/hydflood/"))
+    system("permissions_html")
+    
+    # copy shinyapps to ~/ShinyApps
+    system(paste0("cp -rp shinyapps/flood3/* /home/", user, "/ShinyApps/",
+                  "07-flood3"))
+    system(paste0("cp -rp shinyapps/flood3daily/* /home/", user, "/ShinyApps/",
+                  "10-flood3daily"))
+    system(paste0("cp -rp shinyapps/flood3wms/* /home/", user,
+                  "/ShinyApps/08-flood3wms"))
+    system("permissions_shiny")
+    
+    # copy package source to r.bafg.de
+    system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sour",
+                  "ces ] && cp -rp public/", R_version, "/downloads/hydflood_*",
+                  ".tar.gz /home/", user, "/freigaben_r/_packages/package_sour",
+                  "ces"))
 }
 
 q("no")
