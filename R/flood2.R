@@ -7,8 +7,10 @@
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
 #'   duration for the active floodplains along German federal waterways Elbe 
-#'   and Rhine based on 1D water levels computed by \code{waterLevelFlood2()} 
-#'   provided by package \code{hyd1d}.
+#'   and Rhine based on 1D water levels computed by 
+#'   \code{\link[hyd1d]{waterLevelFlood2}} provided by package
+#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d} in analogy to
+#'   the INFORM 3 module 'Flut2'.
 #' 
 #' @param x has to by type \code{RasterStack} and has to include both input 
 #'   RasterLayers \code{csa} (cross section areas) and \code{dem} (digital 
@@ -21,8 +23,9 @@
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
 #'   have length larger 0. Values of \code{seq} must be in the 
 #'   temporal range between 1990-01-01 and yesterday (\code{Sys.Date() - 1}). 
-#'   Internally \code{waterLevelFlood2()} uses \code{getGaugingDataW()} to 
-#'   obtain daily water level information from \code{df.gauging_data}.
+#'   Internally \code{waterLevelFlood2()} uses
+#'   \code{\link[hyd1d]{getGaugingDataW}} to obtain daily water level 
+#'   information from \code{\link[hyd1d]{df.gauging_data}}.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
@@ -31,20 +34,21 @@
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq} \code{flood2()} computes 
-#'   a 1D water level using \code{waterLevelFlood2} along the requested river
-#'   section. This 1D water level is transfered to a \code{wl} (water level) 
-#'   RasterLayer, which is in fact a copy of the \code{csa} 
+#'   a 1D water level using \code{\link[hyd1d]{waterLevelFlood2}} along the
+#'   requested river section. This 1D water level is transfered to a \code{wl}
+#'   (water level) RasterLayer, which is in fact a copy of the \code{csa} 
 #'   (cross section areas) RasterLayer, and then compared to the \code{dem} 
 #'   (digital elevation model) RasterLayer. Where the \code{wl} RasterLayer is
 #'   higher than the \code{dem} RasterLayer flood duration is increased by 1.
 #' 
-#' @seealso \code{\link[hyd1d]{getGaugingDataW}},
+#' @seealso \code{\link[hyd1d]{df.gauging_data}},
+#'   \code{\link[hyd1d]{getGaugingDataW}},
 #'   \code{\link[hyd1d]{waterLevelFlood2}}, 
 #'   \code{\link[raster]{writeRaster}}, 
 #'   \code{\link[raster]{rasterOptions}}
 #' 
 #' @references 
-#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
+#'   \insertRef{rosenzweig_inform_2011}{hydflood}
 #' 
 #' @examples \dontrun{
 #' library(hydflood)
