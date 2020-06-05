@@ -24,7 +24,7 @@
 #'   with dataType \code{FLT4S}. Official **dem-w**'s (**d**igital **e**levation
 #'   **m**odell of a **w**aterway; **DGM-W**: **D**igitales
 #'   **G**elände**m**odell des **W**asserlaufs) published by water and
-#'   navigation authorities provide elevation data for terrestrial parts of
+#'   navigation authorities provided elevation data for terrestrial parts of
 #'   floodplains from airborne laserscanning and data from hydrographic surveys
 #'   for aquatic parts. These datasets are presently provided in the height
 #'   reference system DHHN92 (Deutschen Haupthöhennetz 1992).
@@ -40,6 +40,24 @@
 #' 
 #' @references
 #'   \insertRef{wsv_dgmw_2016}{hydflood}
+#'   
+#'   \insertRef{brockmann_auswertung_2008}{hydflood}
+#'   
+#'   \insertRef{brockmann_produktblatt_2012}{hydflood}
+#'   
+#'   \insertRef{brockmann_digitales_2008}{hydflood}
+#'   
+#'   \insertRef{smile_consult_gmbh_dgm-w_2011}{hydflood}
+#'   
+#'   \insertRef{fugro-hgn_gmbh_aufbau_2011}{hydflood}
+#'   
+#'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood}
+#'   
+#'   \insertRef{weber_dgmws_2020}{hydflood}
+#'   
+#'   \insertRef{weber_dgmw_elbe_2020}{hydflood}
+#'   
+#'   \insertRef{weber_dgmw_rhine_2020}{hydflood}
 #'   
 #'   \insertRef{busch_einheitliche_2009}{hydflood}
 #'   
@@ -249,6 +267,12 @@ methods::setClass(
 #'   \insertRef{fugro-hgn_gmbh_aufbau_2011}{hydflood}
 #'   
 #'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood}
+#'   
+#'   \insertRef{weber_dgmws_2020}{hydflood}
+#'   
+#'   \insertRef{weber_dgmw_elbe_2020}{hydflood}
+#'   
+#'   \insertRef{weber_dgmw_rhine_2020}{hydflood}
 #'   
 #'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood}
 #'   

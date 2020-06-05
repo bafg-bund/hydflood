@@ -2,12 +2,15 @@
 #' @rdname flood3
 #' 
 #' @title Function to compute flood extent or flood duration along German 
-#'   federal waterways Elbe and Rhine
+#'   federal waterways Elbe and Rhine using the 1D water level algorythms
+#'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
 #'   duration for the active floodplains along German federal waterways Elbe 
-#'   and Rhine based on 1D water levels computed by \code{waterLevel()} or 
-#'   \code{waterLevelPegelonline()} provided by package \code{hyd1d}.
+#'   and Rhine based on 1D water levels computed by
+#'   \code{\link[hyd1d]{waterLevel}} or
+#'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package 
+#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d}.
 #' 
 #' @param x has to by type \code{RasterStack} and has to include both input 
 #'   RasterLayers \code{csa} (cross section areas) and \code{dem} (digital 
@@ -21,10 +24,10 @@
 #'   have length larger 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")}, 
 #'   values must be in the temporal range between 31 days ago (\code{Sys.time() 
 #'   - 2678400}) and now (\code{Sys.time()}). Then 
-#'   \code{waterLevelPegelonline()} is used internally for the water level 
-#'   computations. If \code{seq} is type \code{Date} values must be in the 
+#'   \code{\link[hyd1d]{waterLevelPegelonline}} is used internally for the water
+#'   level computations. If \code{seq} is type \code{Date} values must be in the
 #'   temporal range between 1990-01-01 and yesterday (\code{Sys.Date() - 1}) 
-#'   and \code{waterLevel()} is used internally.
+#'   and \code{\link[hyd1d]{waterLevel}} is used internally.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
@@ -40,12 +43,10 @@
 #'   \code{wl} RasterLayer is higher than the \code{dem} RasterLayer flood 
 #'   duration is increased by 1.
 #' 
-#' @seealso \code{\link[hyd1d]{waterLevel}}, 
+#' @seealso \code{\link[hyd1d]{waterLevel}},
+#'   \code{\link[hyd1d]{waterLevelPegelonline}}, 
 #'   \code{\link[raster]{writeRaster}}, 
 #'   \code{\link[raster]{rasterOptions}}
-#' 
-#' @references 
-#'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
 #' @examples \dontrun{
 #' library(hydflood)
