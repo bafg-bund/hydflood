@@ -3,7 +3,7 @@
 #' 
 #' @title Function to compute flood extent or flood duration along German 
 #'   federal waterways Elbe and Rhine using the 1D water level algorythm
-#'   \code{waterLevelFlood1()}
+#'   \code{hyd1d::waterLevelFlood1()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
 #'   duration for the active floodplains along German federal waterways Elbe 
@@ -158,26 +158,75 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     l <- function(errors) {as.character(length(errors) + 1)}
     
     ## x
-    # class
-    if (class(x) != "hydRasterStack") {
-        errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
-                                   "type 'hydRasterStack'."))
+    if (missing(x)) {
+        errors <- c(errors, paste0("Error ", l(errors), ": The 'x' ",
+                                   "argument has to be supplied."))
+    } else {
+        # class
+        if (class(x) != "hydRasterStack") {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
+                                       "type 'hydRasterStack'."))
+        }
+        
+        # names
+        if (!(all(names(x) == c("dem", "csa")))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": names(x) ",
+                                       "must be c('dem', 'csa')."))
+        }
+        
+        # crs
+        crs_string <- raster::crs(x, asText = TRUE)
+        etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
+        etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
+        
+        if ( !(raster::compareCRS(crs_string, etrs_1989_utm_32_string)) & 
+             !(raster::compareCRS(crs_string, etrs_1989_utm_33_string))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": The projection",
+                                       " of x must be either 'ETRS 1989 UTM 32",
+                                       "N' or 'ETRS 1989 UTM 33N'."))
+        } else {
+            if (raster::compareCRS(crs_string, etrs_1989_utm_32_string)) {
+                zone <- "32"
+                river <- "Rhein"
+            } else if (raster::compareCRS(crs_string, 
+                                          etrs_1989_utm_33_string)) {
+                zone <- "33"
+                river <- "Elbe"
+            } else {
+                stop(errors)
+            }
+        }
+        
+        # check position
+        if (exists("river")) {
+            # access the spdf.active_floodplain_* data
+            active_floodplain <- paste0("spdf.active_floodplain_", 
+                                        tolower(river))
+            get(active_floodplain, pos = -1)
+            if (river == "Elbe") {
+                l.over <- sp::over(rasterextent2polygon(x), 
+                                   spdf.active_floodplain_elbe,
+                                   returnList = TRUE)
+                if (! (length(unlist(l.over)) > 0)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
+                                               "NOT overlap with the active fl",
+                                               "oodplain of River Elbe."))
+                }
+            } else if (river == "Rhein") {
+                l.over <- sp::over(rasterextent2polygon(x), 
+                                   spdf.active_floodplain_rhein,
+                                   returnList = TRUE)
+                if (! (length(unlist(l.over)) > 0)) {
+                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
+                                               "NOT overlap with the active fl",
+                                               "oodplain of River Rhine."))
+                }
+            }
+        }
     }
     
-    # crs
-    crs_string <- raster::crs(x, asText = TRUE)
-    etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
-    etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
-    
-    if (raster::compareCRS(crs_string, etrs_1989_utm_32_string)) {
-        zone <- "32"
-        river <- "Rhein"
-    } else if (raster::compareCRS(crs_string, 
-                                  etrs_1989_utm_33_string)) {
-        zone <- "33"
-        river <- "Elbe"
-    } else {
-        stop(errors)
+    if (l(errors) != "1") {
+        stop(paste0(errors, collapse="\n  "))
     }
     
     # initialize the WaterLevelDataFrame
@@ -313,8 +362,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'uuid' must",
                                            " be an element of c('", 
                                            paste0(uuids, collapse = "', '"),
-                                           "') for the river ", 
-                                           getRiver(wldf), "."))
+                                           "') for the river ", river, "."))
             } else {
                 
                 id_uu <- which(uuids == uuid)
