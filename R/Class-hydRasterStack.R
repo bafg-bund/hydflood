@@ -650,26 +650,27 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                                      crs = crs_int)
         if (file_create_csa) {
             raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                            field = "STATION_IN", update = TRUE,
-                                            updateValue = 'all',
+                                            field = "STATION_INT",
+                                            update = TRUE, updateValue = 'all',
                                             filename = filename_csa, ...)
+            raster::dataType(raster.csa) <- "INT4S"
         } else {
             if (in_memory) {
                 raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                                field = "STATION_IN", 
+                                                field = "STATION_INT", 
                                                 update = TRUE,
                                                 updateValue = 'all')
             } else {
                 tmp_csa <- raster::rasterTmpFile(prefix = "r_tmp_csa_")
                 raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                                field = "STATION_IN", 
+                                                field = "STATION_INT", 
                                                 update = TRUE,
                                                 updateValue = 'all',
                                                 filename = tmp_csa)
             }
+            raster::dataType(raster.csa) <- "INT4S"
         }
     }
-    raster::dataType(raster.csa) <- "INT4S"
     
     ##
     # dem
