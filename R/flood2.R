@@ -3,7 +3,7 @@
 #' 
 #' @title Function to compute flood extent or flood duration along German 
 #'   federal waterways Elbe and Rhine using the 1D water level algorythm
-#'   \code{waterLevelFlood2()}
+#'   \code{hyd1d::waterLevelFlood2()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
 #'   duration for the active floodplains along German federal waterways Elbe 
