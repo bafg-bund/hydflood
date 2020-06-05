@@ -15,8 +15,7 @@ test_that("General tests", {
                                "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_C",
                                "SA.asc")
         ext <- extent(436500, 438000, 5415000, 5416500)
-        crs <- crs("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs", 
-                   asText = FALSE)
+        crs <- CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
         
         # tests
         expect_message(a <- hydRasterStack(filename_dem, filename_csa, ext, crs),
