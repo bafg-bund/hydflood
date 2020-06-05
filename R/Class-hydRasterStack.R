@@ -774,7 +774,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
             }
             merge_rasters[["overlap"]] <- TRUE
             merge_rasters[["ext"]] <- ext_int
-            raster.dem <- do.call("raster::merge", merge_rasters)
+            raster.dem <- do.call("merge", merge_rasters)
         } else {
             if (file_create_dem) {
                 raster.dem <- raster::crop(merge_rasters$x, y = ext_int, 
