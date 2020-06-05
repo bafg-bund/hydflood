@@ -9,7 +9,7 @@ output:
 bibliography: ../inst/REFERENCES.bib
 csl: apa_modified.csl
 vignette: |
-  %\VignetteIndexEntry{hyd1d} 
+  %\VignetteIndexEntry{hydflood} 
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
