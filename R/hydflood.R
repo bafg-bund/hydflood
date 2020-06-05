@@ -37,6 +37,7 @@
 #' @importFrom raster rasterize
 #' @importFrom raster merge
 #' @importFrom raster extend
+#' @importFrom raster writeRaster
 #' @import hyd1d
 #' 
 NULL

@@ -654,6 +654,9 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                                             update = TRUE, updateValue = 'all',
                                             filename = filename_csa, ...)
             raster::dataType(raster.csa) <- "INT4S"
+            if (!file.exists(filename_csa)) {
+                raster::writeRaster(raster.csa, filename = filename_csa, ...)
+            }
         } else {
             if (in_memory) {
                 raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
@@ -776,6 +779,10 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
             if (file_create_dem) {
                 raster.dem <- raster::crop(merge_rasters$x, y = ext_int, 
                                            filename = filename_dem, ...)
+                if (!file.exists(filename_dem)) {
+                    raster::writeRaster(raster.dem, filename = filename_dem,
+                                        ...)
+                }
             } else {
                 if (!in_memory) {
                     tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
@@ -793,6 +800,9 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         if (file_create_dem) {
             raster.dem <- raster::extend(raster.dem, y = ext_int, value = NA, 
                                          filename = filename_dem, ...)
+            if (!file.exists(filename_dem)) {
+                raster::writeRaster(raster.dem, filename = filename_dem, ...)
+            }
         } else {
             if (!in_memory) {
                 tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
