@@ -104,7 +104,7 @@ Institute of Hydrology (BfG) execute the following commands:
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://git.aqualogy.de/arnd/hydflood.git")
+devtools::install_git("git://apps.bafg.de/gitbucket/webera/hydflood.git")
 ```
 
 Afterwards **hydflood** can be loaded like every other R package with the 
@@ -137,8 +137,7 @@ knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
 **hydflood** provides download facilities for the official digital elevation
-models of the waterways Rhine and Elbe (DEM-W, in German: Digitales
-Geländemodell der Wasserstraße, DGM-W; @wsv_dgmw_2016) with 1 m spatial
+models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
 by users. They just need to overlap with active floodplains of either Rhine ([`spdf.active_floodplain_rhein`](reference/spdf.active_floodplain_rhein.html)) or
 Elbe ([`spdf.active_floodplain_elbe`](reference/spdf.active_floodplain_elbe.html)).

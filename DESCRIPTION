@@ -25,13 +25,14 @@ RdMacros: Rdpack
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Collate:
     'Class-hydRasterStack.R'
     'data.R'
     'flood1.R'
     'flood2.R'
     'flood3.R'
+    'getDEM.R'
     'hydflood.R'
     'hydflood-internal.R'
     'zzz.R'

@@ -96,8 +96,8 @@ write("#####", stdout())
 write(" install from source", stdout())
 
 pkg_files <- list.files(path = build,
-                        pattern = paste0("hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]",
-                                         "\\.tar\\.gz"))
+                        pattern = paste0("hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9",
+                                         ":]\\.tar\\.gz"))
 
 for (a_file in pkg_files) {
     
@@ -197,7 +197,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.0.0") {
+if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.0.2") {
     # copy html output to ~/public_html
     system(paste0("cp -rp public/", R_version, "/* /home/", user, "/public_htm",
                   "l/hydflood/"))
@@ -213,11 +213,10 @@ if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.0.0") {
     system("permissions_shiny")
     
     # copy package source to r.bafg.de
-    system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sour",
-                  "ces ] && cp -rp public/", R_version, "/downloads/hydflood_*",
-                  ".tar.gz /home/", user, "/freigaben_r/_packages/package_sour",
-                  "ces"))
+    system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sources",
+                  " ] && cp -rp public/", R_version, "/downloads/hydflood_*.ta",
+                  "r.gz /home/", user, "/freigaben_r/_packages/package_sources"))
 }
 
-q("no")
+#q("no")
 
