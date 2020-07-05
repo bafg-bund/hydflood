@@ -53,11 +53,11 @@
 #'   
 #'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood}
 #'   
-#'   \insertRef{weber_dgmws_2020}{hydflood}
+#'   \insertRef{weber_dgms_2020}{hydflood}
 #'   
-#'   \insertRef{weber_dgmw_elbe_2020}{hydflood}
+#'   \insertRef{weber_dgm_elbe_2020}{hydflood}
 #'   
-#'   \insertRef{weber_dgmw_rhine_2020}{hydflood}
+#'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #'   
 #'   \insertRef{busch_einheitliche_2009}{hydflood}
 #'   
@@ -98,19 +98,12 @@ methods::setClass(
         
         obj_crs <- raster::crs(object)
         # check
-        if ( !(raster::compareCRS(obj_crs, etrs_1989_utm_32_string)) & 
-             !(raster::compareCRS(obj_crs, etrs_1989_utm_33_string))) {
+        if (!isUTM32(obj_crs) & !isUTM33(obj_crs)) {
             errors <- c(errors, paste0("Error ", l(errors), ": The project",
                                        "ion of a hydRasterStack must be",
                                        " either 'ETRS 1989 UTM 32N' or 'ET",
                                        "RS 1989 UTM 33N'."))
         }
-        
-        # # res
-        # if (all(raster::res(object) != c(1, 1))) {
-        #     errors <- c(errors, paste0("Error ", l(errors), ": The resolution ",
-        #                                "of a hydRasterStack must be 1."))
-        # }
         
         # dem dataType
         if ("dem" %in% names(object)) {
@@ -132,7 +125,7 @@ methods::setClass(
         }
         
         # csa range(station_int)
-        if (raster::compareCRS(obj_crs, etrs_1989_utm_32_string)) {
+        if (isUTM32(obj_crs)) {
             if (maxValue(object$csa) > 865700) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The maximum",
                                            " value of 'csa' must be 865700 or ",
@@ -144,7 +137,7 @@ methods::setClass(
                                            "above for River Rhine."))
             }
         }
-        if (raster::compareCRS(obj_crs, etrs_1989_utm_33_string)) {
+        if (isUTM33(obj_crs)) {
             if (maxValue(object$csa) > 585700) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The maximum",
                                            " value of 'csa' must be 585700 or ",
@@ -268,11 +261,11 @@ methods::setClass(
 #'   
 #'   \insertRef{arge_vermessung_schmid_-_inphoris_aufbau_2012}{hydflood}
 #'   
-#'   \insertRef{weber_dgmws_2020}{hydflood}
+#'   \insertRef{weber_dgms_2020}{hydflood}
 #'   
-#'   \insertRef{weber_dgmw_elbe_2020}{hydflood}
+#'   \insertRef{weber_dgm_elbe_2020}{hydflood}
 #'   
-#'   \insertRef{weber_dgmw_rhine_2020}{hydflood}
+#'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #'   
 #'   \insertRef{bundesanstalt_fur_gewasserkunde_flys_2016}{hydflood}
 #'   
@@ -519,26 +512,21 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     if (l(errors) != "1") {stop(paste0(errors, collapse="\n  "))}
     
     # check standard projections
-    etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
-    etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
-    if ( !(raster::compareCRS(crs_int, etrs_1989_utm_32_string)) & 
-         !(raster::compareCRS(crs_int, etrs_1989_utm_33_string))) {
+    if ( !isUTM32(crs_int) & !isUTM33(crs_int)) {
         errors <- c(errors, paste0("Error ", l(errors), ": The supplied crs mu",
                                    "st be either 'ETRS 1989 UTM 32N' or 'ETRS ",
                                    "1989 UTM 33N'."))
     } else {
-        if (raster::compareCRS(crs_int, etrs_1989_utm_32_string)) {
+        if (isUTM32(crs_int)) {
             zone <- "32"
             river <- "Rhein"
-        } else if (raster::compareCRS(crs_int, 
-                                      etrs_1989_utm_33_string)) {
+        } else if (isUTM33(crs_int)) {
             zone <- "33"
             river <- "Elbe"
         } else {
             stop(errors)
         }
     }
-    rm(etrs_1989_utm_32_string, etrs_1989_utm_33_string)
     
     ##
     # in area
@@ -555,6 +543,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         }
         rm(active_floodplain)
         if (river == "Elbe") {
+            raster::crs(spdf.active_floodplain_elbe) <- crs_int
             l.over <- sp::over(sp.ext, spdf.active_floodplain_elbe, 
                                returnList = TRUE)
             if (! (length(unlist(l.over)) > 0)) {
@@ -565,6 +554,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
             }
             rm(l.over)
         } else if (river == "Rhein") {
+            raster::crs(spdf.active_floodplain_rhein) <- crs_int
             l.over <- sp::over(sp.ext, spdf.active_floodplain_rhein, 
                                returnList = TRUE)
             if (! (length(unlist(l.over)) > 0)) {
@@ -611,15 +601,8 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
             }
         }
     }
-    # if (file_exists_csa & ext_int == ext_int_csa) {
-    #     if (!in_memory) {
-    #         tmp_csa <- raster::rasterTmpFile(prefix = "r_tmp_csa_")
-    #         raster.csa <- raster::crop(raster.csa, ext_int, filename = tmp_csa)
-    #     }
-    # }
     
     if (!file_exists_csa) {
-        
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
         csa_dir <- paste0(path.expand('~'), "/.hydflood")
@@ -647,7 +630,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         # identify relevant sections
         sections_sel <- unique(spdf.csa@data$SECTION)
         for (a_section in sort(sections_sel, decreasing = TRUE)) {
-            if (a_section %in% unique(spdf.csa@data$SECTION_DO)) {
+            if (a_section %in% unique(na.omit(spdf.csa@data$SECTION_DO))) {
                 id <- which(spdf.csa@data$SECTION_DO == a_section)
                 id_min <- min(id)
                 id_max <- max(id)
@@ -675,8 +658,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         if (file_create_csa) {
             raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
                                             field = "STATION_INT",
-                                            update = TRUE, updateValue = 'all',
-                                            filename = filename_csa, ...)
+                                            update = TRUE, updateValue = 'all')
             raster::dataType(raster.csa) <- "INT4S"
             if (!file.exists(filename_csa)) {
                 raster::writeRaster(raster.csa, filename = filename_csa, ...)
@@ -711,130 +693,17 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                                            filename = tmp_dem)
             }
         }
-    }
-    if (!file_exists_dem) {
-        if (!exists("sections_sel")) {
-            # download the packages csa_file, if it has not yet been stored 
-            # locally, and load it
-            csa_dir <- paste0(path.expand('~'), "/.hydflood")
-            dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
-            csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", 
-                               tolower(river), "_csa.rda")
-            if(!file.exists(csa_file)) {
-                url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/", 
-                              "spdf.active_floodplain_", tolower(river), "_csa",
-                              ".rda")
-                utils::download.file(url, csa_file, quiet = TRUE)
-            }
-            load(csa_file)
-            
-            if (river == "Elbe") {
-                assign("spdf.active_floodplain_csa", 
-                       spdf.active_floodplain_elbe_csa)
-            } else {
-                assign("spdf.active_floodplain_csa", 
-                       spdf.active_floodplain_rhein_csa)
-            }
-            
-            # subset it to sp.ext
-            spdf.csa <- raster::intersect(spdf.active_floodplain_csa, sp.ext)
-            
-            # identify relevant sections
-            sections_sel <- unique(spdf.csa@data$SECTION)
-            for (a_section in sort(sections_sel, decreasing = TRUE)) {
-                if (a_section %in% unique(spdf.csa@data$SECTION_DO)) {
-                    id <- which(spdf.csa@data$SECTION_DO == a_section)
-                    id_min <- min(id)
-                    id_max <- max(id)
-                    if (id_min == 1 | id_max == nrow(spdf.csa@data)) {
-                        sections_sel <- unique(spdf.csa@data$SECTION[-id])
-                    }
-                }
-            }
-            
-            if (length(sections_sel) > 5) {
-                stop(paste0("Error: The choosen 'ext' is very large and covers",
-                            " more than 5 sections\n used for tiled computatio",
-                            "ns. Please reduce the size of you computation ext",
-                            "ent."))
-            }
-            if (length(sections_sel) > 3) {
-                warning(paste0("Error: The choosen 'ext' is large and covers m",
-                               "ore than 3 sections\n used for tiled computati",
-                               "ons. Please reduce the size of your extent to",
-                               "\n avoid overly long computation times."))
-            }
-        }
-        
-        # download relevant DEM datasets
-        merge_rasters <- list()
-        for (a_section in sections_sel) {
-            tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-            url <- paste0("http://r.bafg.de/~WeberA/hydflood/downloads/",
-                          tolower(river), "/", a_section, "_DEM.asc")
-            utils::download.file(url, tmp_dem, quiet = TRUE)
-            
-            x <- raster::raster(x = tmp_dem, crs = crs_int)
-            merge_rasters <- append(merge_rasters, x)
-        }
-        
-        # rename objects in merge_rasters
-        dem_names <-c(letters[24:26], letters[1:23])
-        names(merge_rasters) <- dem_names[1:length(merge_rasters)]
-        
-        if (length(merge_rasters) > 1){
-            if (file_create_dem) {
-                merge_rasters[["filename"]] <- filename_dem
-                if (length(args) > 0){
-                    for (i in 1:length(args)){
-                        merge_rasters[[names(args)[i]]] <- args[i]
-                    }
-                }
-            } else {
-                if (!in_memory) {
-                    tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-                    merge_rasters[["filename"]] <- tmp_dem
-                }
-            }
-            merge_rasters[["overlap"]] <- TRUE
-            merge_rasters[["ext"]] <- ext_int
-            raster.dem <- do.call("merge", merge_rasters)
-        } else {
-            if (file_create_dem) {
-                raster.dem <- raster::crop(merge_rasters$x, y = ext_int, 
-                                           filename = filename_dem, ...)
-                if (!file.exists(filename_dem)) {
-                    raster::writeRaster(raster.dem, filename = filename_dem,
-                                        ...)
-                }
-            } else {
-                if (!in_memory) {
-                    tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-                    raster.dem <- raster::crop(merge_rasters$x, y = ext_int, 
-                                               filename = tmp_dem)
-                } else {
-                    raster.dem <- raster::crop(merge_rasters$x, y = ext_int)
-                }
-            }
-        }
-    }
-    
-    # extend raster.dem with NA's, if it smaller than ext
-    if (raster::extent(raster.dem) <= ext_int) {
+    } else {
         if (file_create_dem) {
-            raster.dem <- raster::extend(raster.dem, y = ext_int, value = NA, 
-                                         filename = filename_dem, ...)
-            if (!file.exists(filename_dem)) {
-                raster::writeRaster(raster.dem, filename = filename_dem, ...)
-            }
+            raster.dem <- getDEM(filename = filename_dem, ext = ext_int,
+                                 crs = crs_int, ...)
         } else {
             if (!in_memory) {
                 tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-                raster.dem <- raster::extend(raster.dem, y = ext_int, 
-                                             value = NA, filename = tmp_dem)
+                raster.dem <- getDEM(filename = tmp_dem, ext = ext_int,
+                                     crs = crs_int, ...)
             } else {
-                raster.dem <- raster::extend(raster.dem, y = ext_int, 
-                                             value = NA)
+                raster.dem <- getDEM(ext = ext_int, crs = crs_int)
             }
         }
     }

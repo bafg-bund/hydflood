@@ -42,3 +42,39 @@ asc2utf8 <- function(x){
     y <- sub("<c3><bc>", "\u00fc", y)
     return(y)
 }
+
+isUTM33 <- function(x) {
+    if (class(x)[[1]] != "CRS") {
+        stop("'x' must be class 'CRS'.")
+    }
+    
+    if (raster::compareCRS(x,
+            sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")) |
+        raster::compareCRS(x,
+            sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")) |
+        raster::compareCRS(x,
+            sp::CRS("+init=epsg:25833 +proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")) |
+        raster::compareCRS(x,
+            sp::CRS("+init=epsg:25833 +proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))) {
+        return(TRUE)
+    }
+    return(FALSE)
+}
+
+isUTM32 <- function(x) {
+    if (class(x)[[1]] != "CRS") {
+        stop("'x' must be class 'CRS'.")
+    }
+    
+    if (raster::compareCRS(x,
+                           sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")) |
+        raster::compareCRS(x,
+                           sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")) |
+        raster::compareCRS(x,
+                           sp::CRS("+init=epsg:25832 +proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")) |
+        raster::compareCRS(x,
+                           sp::CRS("+init=epsg:25832 +proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))) {
+        return(TRUE)
+    }
+    return(FALSE)
+}

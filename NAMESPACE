@@ -3,6 +3,7 @@
 export(flood1)
 export(flood2)
 export(flood3)
+export(getDEM)
 export(hydRasterStack)
 exportClasses(hydRasterStack)
 import(hyd1d)
