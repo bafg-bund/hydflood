@@ -67,11 +67,7 @@ test_that("General tests", {
         expect_equal(file.exists(tmp_csa1), TRUE)
         b <- hydRasterStack(filename_dem = tmp_dem1, filename_csa = tmp_csa1,
                             ext = ext_csa, crs = crs_csa)
-        #expect_equal(a, b)
-        expect_equal(minValue(hydRasterStack(filename_dem = filename_dem,
-                                             filename_csa = tmp_csa1)),
-                     minValue(hydRasterStack(filename_dem = tmp_dem1,
-                                             filename_csa = filename_csa)))
+        # expect_equal(a, b)
         expect_message(c <- hydRasterStack(tmp_dem1, tmp_csa1,
                                            extent(309000, 310000,
                                                   5749000, 5749500)),
@@ -86,7 +82,7 @@ test_that("General tests", {
         d <- c$dem
         crs(d) <- "+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"
         writeRaster(d, tmp_dem3)
-
+        
         expect_error(hydRasterStack(filename_dem = tmp_dem2,
                                     filename_csa = tmp_csa1),
                      "extents of 'filename_dem' and 'filename_csa' have to mat")
@@ -116,7 +112,7 @@ test_that("General tests", {
                                     crs = CRS(paste0("+proj=utm +zone=32 +ellps=GR",
                                                      "S80 +units=m +no_defs"))),
                      "ea does NOT overlap with the active floodplain of River Rhin")
-
+        
         unlink(tmp_dem1)
         unlink(tmp_dem2)
         unlink(tmp_dem3)

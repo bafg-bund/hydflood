@@ -11,6 +11,7 @@ reference:
       - "`flood1`"
       - "`flood2`"
       - "`flood3`"
+      - "`getDEM`"
       - "`hydRasterStack-class`"
       - "`hydRasterStack`"
   - title: Datasets
@@ -18,6 +19,8 @@ reference:
     contents:
       - "`spdf.active_floodplain_elbe`"
       - "`spdf.active_floodplain_rhein`"
+      - "`spdf.tiles_elbe`"
+      - "`spdf.tiles_rhein`"
 navbar:
   left:
     - text: "How To"
