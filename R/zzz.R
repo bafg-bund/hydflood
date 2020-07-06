@@ -1,3 +1,4 @@
+hydflood_cache <- NULL
 
 .onLoad <- function(libname, pkgname) {
     # load package data
@@ -5,12 +6,17 @@
                 "spdf.tiles_elbe", "spdf.tiles_rhein",
                 package = pkgname, envir = parent.env(environment()))
     
+    # data cache
+    x <- hoardr::hoard()
+    x$cache_path_set(full_path = "~/.hydflood")
+    hydflood_cache <<- x
 }
 
 
 .onUnload  <- function(libpath) {
     for (a_dataset in c("spdf.active_floodplain_elbe", "spdf.tiles_elbe",
-                        "spdf.active_floodplain_rhein", "spdf.tiles_rhein")){
+                        "spdf.active_floodplain_rhein", "spdf.tiles_rhein",
+                        "hydflood_cache")){
         if (exists(a_dataset, envir = globalenv())){
             rm(list = a_dataset, envir = globalenv())
         }

@@ -41,6 +41,7 @@ require(knitr)
 require(rmarkdown)
 require(pkgdown)
 require(hyd1d)
+require(hoardr)
 
 #####
 # session info

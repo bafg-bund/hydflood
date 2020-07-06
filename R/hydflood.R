@@ -39,5 +39,6 @@
 #' @importFrom raster extend
 #' @importFrom raster writeRaster
 #' @import hyd1d
+#' @importFrom hoardr hoard
 #' 
 NULL

@@ -605,10 +605,8 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
     if (!file_exists_csa) {
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
-        csa_dir <- paste0(path.expand('~'), "/.hydflood")
-        dir.create(csa_dir, showWarnings = FALSE, recursive = TRUE)
-        csa_file <- paste0(csa_dir, "/spdf.active_floodplain_", tolower(river), 
-                           "_csa.rda")
+        csa_file <- paste0(hydflood_cache$cache_path_get(), "/spdf.active_floo",
+                           "dplain_", tolower(river), "_csa.rda")
         if (!file.exists(csa_file)) {
             url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/spdf", 
                           ".active_floodplain_", tolower(river), "_csa.rda")

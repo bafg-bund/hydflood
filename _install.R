@@ -18,7 +18,7 @@
 #               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
 #               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders", 
 #               "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-#               "usethis", "lattice")
+#               "usethis", "lattice", "pangaear", "hoardr")
 # 
 # for (a_package in packages) {
 #     if (! (a_package %in% installed.packages()[, "Package"])) {
