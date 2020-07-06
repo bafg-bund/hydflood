@@ -251,9 +251,19 @@ getDEM <- function(filename = '', ext, crs, ...) {
                                             n = 2)
     
     if (river == "Elbe") {
-        spdf.tiles <- spdf.tiles_elbe[sp.ext,]
+        within <- rgeos::gContains(spdf.tiles_elbe, sp.ext, byid = TRUE)[,1]
+        if (any(within)) {
+            spdf.tiles <- spdf.tiles_elbe[within,]
+        } else {
+            spdf.tiles <- spdf.tiles_elbe[sp.ext,]
+        }
     } else {
-        spdf.tiles <- spdf.tiles_rhein[sp.ext,]
+        within <- rgeos::gContains(spdf.tiles_rhein, sp.ext, byid = TRUE)[,1]
+        if (any(within)) {
+            spdf.tiles <- spdf.tiles_rhein[within,]
+        } else {
+            spdf.tiles <- spdf.tiles_rhein[sp.ext,]
+        }
     }
     
     if (length(spdf.tiles) > 5) {
@@ -262,9 +272,9 @@ getDEM <- function(filename = '', ext, crs, ...) {
                     "."))
     }
     if (length(spdf.tiles) > 3) {
-        warning(paste0("Error: The choosen 'ext' is very large and covers more",
-                       " than 3 DEM tiles.\n   Please reduce the size of your ",
-                       "extent to avoid overly long computation times."))
+        warning(paste0("Error: The choosen 'ext' is large and covers more than",
+                       " 3 DEM tiles.\n   Please reduce the size of your exten",
+                       "t to avoid overly long computation times."))
     }
     
     if (!dir.exists(hydflood_cache$cache_path_get())) {
