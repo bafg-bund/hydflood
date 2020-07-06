@@ -267,10 +267,13 @@ getDEM <- function(filename = '', ext, crs, ...) {
                        "extent to avoid overly long computation times."))
     }
     
-    if (!dir.exists("~/.hydflood")) {dir.create("~/.hydflood", FALSE, TRUE)}
+    if (!dir.exists(hydflood_cache$cache_path_get())) {
+        dir.create(hydflood_cache$cache_path_get(), FALSE, TRUE)
+    }
     merge_rasters <- list()
     for (i in 1:length(spdf.tiles)) {
-        file <- paste0("~/.hydflood/", spdf.tiles$name[i], "_DEM.tif")
+        file <- paste0(hydflood_cache$cache_path_get(), "/", spdf.tiles$name[i],
+                       "_DEM.tif")
         if (!file.exists(file)) {
             utils::download.file(spdf.tiles$url[i], file, quiet = TRUE)
         }
