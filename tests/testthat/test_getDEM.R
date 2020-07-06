@@ -79,7 +79,7 @@ test_that("General tests", {
                         crs = c33),
                  "'ext' is very large and covers more than 5 ")
     expect_warning(getDEM(ext = extent(300000, 330000, 5744000, 5753000),
-                        crs = c33),
+                          crs = c33),
                  "'ext' is very large and covers more than 3 ")
     
 })
