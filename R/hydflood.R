@@ -6,13 +6,16 @@
 #' 
 #' @description To be done...
 #' 
+#' @import hyd1d
+#' @importFrom hoardr hoard
 #' @importFrom Rdpack reprompt
 #' @import stats
+#' @importFrom sp coordinates
 #' @importFrom sp CRS
-#' @importFrom sp over
 #' @importFrom sp Polygon
 #' @importFrom sp Polygons
 #' @importFrom sp SpatialPolygons
+#' @importFrom sp SpatialPointsDataFrame
 #' @importFrom raster crs
 #' @importFrom raster compareCRS
 #' @importFrom raster raster
@@ -38,8 +41,6 @@
 #' @importFrom raster merge
 #' @importFrom raster extend
 #' @importFrom raster writeRaster
-#' @import hyd1d
-#' @importFrom hoardr hoard
 #' @importFrom rgeos gContains
 #' 
 NULL
