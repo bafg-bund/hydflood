@@ -11,9 +11,9 @@
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
 #' @param ext argument of type \code{\link[raster]{extent}}.
-#' @param crs argument of type \code{\link[rgdal]{CRS}}. It is 
-#'   used to select the respective river (Elbe: 'ETRS 1989 UTM 33N'; Rhine: 
-#'   'ETRS 1989 UTM 32N')
+#' @param crs argument of type \code{\link[sp]{CRS}}. It is
+#'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
 #' 
 #' @return Raster* object containing elevation data for the selected floodplain
@@ -189,24 +189,18 @@ getDEM <- function(filename = '', ext, crs, ...) {
         sp.ext <- extent2polygon(ext_int, crs_int)
         if (river == "Elbe") {
             raster::crs(spdf.active_floodplain_elbe) <- crs_int
-            l.over <- sp::over(sp.ext, spdf.active_floodplain_elbe, 
-                               returnList = TRUE)
-            if (! (length(unlist(l.over)) > 0)) {
+            if (! (length(spdf.active_floodplain_elbe[sp.ext,]) > 0)) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
                                            "d 'ext' does NOT overlap with the ",
                                            "active floodplain of River Elbe."))
             }
-            rm(l.over)
         } else if (river == "Rhein") {
             raster::crs(spdf.active_floodplain_rhein) <- crs_int
-            l.over <- sp::over(sp.ext, spdf.active_floodplain_rhein, 
-                               returnList = TRUE)
-            if (! (length(unlist(l.over)) > 0)) {
+            if (! (length(spdf.active_floodplain_rhein[sp.ext,]) > 0)) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
                                            "d 'ext' does NOT overlap with the ",
                                            "active floodplain of River Rhine."))
             }
-            rm(l.over)
         }
     }
     
@@ -318,8 +312,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
         if (file_create_dem) {
             raster.dem <- raster::crop(merge_rasters$x, y = ext_int)
             if (!file.exists(filename) | overwrite) {
-                raster::writeRaster(raster.dem, filename = filename,
-                                    ...)
+                raster::writeRaster(raster.dem, filename = filename, ...)
             }
         } else {
             if (!in_memory) {

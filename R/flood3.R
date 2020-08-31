@@ -1,8 +1,8 @@
 #' @name flood3
 #' @rdname flood3
 #' 
-#' @title Function to compute flood extent or flood duration along German 
-#'   federal waterways Elbe and Rhine using the 1D water level algorythms
+#' @title Function to compute flood extent or flood duration \code{raster} along
+#'   German federal waterways Elbe and Rhine using the 1D water level algorythms
 #'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
@@ -44,17 +44,15 @@
 #'   duration is increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}},
-#'   \code{\link[hyd1d]{waterLevelPegelonline}}, 
-#'   \code{\link[raster]{writeRaster}}, 
-#'   \code{\link[raster]{rasterOptions}}
+#'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
 #' @examples \dontrun{
 #' library(hydflood)
 #' 
 #' # import the raster data and create a raster stack
-#' crs <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#' x <- hydRasterStack(ext = c(309000, 310000, 5749000, 5750000), 
-#'                     crs = crs)
+#' c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+#' e <- extent(309000, 310000, 5749000, 5750000)
+#' x <- hydRasterStack(ext = e, crs = c)
 #' 
 #' # create a temporal sequence
 #' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -120,19 +118,15 @@ flood3 <- function(x, seq, filename = '', ...) {
                                         tolower(river))
             get(active_floodplain, pos = -1)
             if (river == "Elbe") {
-                l.over <- sp::over(rasterextent2polygon(x), 
-                                   spdf.active_floodplain_elbe,
-                                   returnList = TRUE)
-                if (! (length(unlist(l.over)) > 0)) {
+                l.over <- spdf.active_floodplain_elbe[rasterextent2polygon(x),]
+                if (! (length(l.over) > 0)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": x does ",
                                                "NOT overlap with the active fl",
                                                "oodplain of River Elbe."))
                 }
             } else if (river == "Rhein") {
-                l.over <- sp::over(rasterextent2polygon(x), 
-                                   spdf.active_floodplain_rhein,
-                                   returnList = TRUE)
-                if (! (length(unlist(l.over)) > 0)) {
+                l.over <- spdf.active_floodplain_rhein[rasterextent2polygon(x),]
+                if (! (length(l.over) > 0)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": x does ",
                                                "NOT overlap with the active fl",
                                                "oodplain of River Rhine."))
