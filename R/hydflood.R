@@ -40,5 +40,6 @@
 #' @importFrom raster writeRaster
 #' @import hyd1d
 #' @importFrom hoardr hoard
+#' @importFrom rgeos gContains
 #' 
 NULL

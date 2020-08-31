@@ -11,6 +11,7 @@ reference:
       - "`flood1`"
       - "`flood2`"
       - "`flood3`"
+      - "`flood3Points`"
       - "`getDEM`"
       - "`hydRasterStack-class`"
       - "`hydRasterStack`"
