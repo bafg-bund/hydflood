@@ -544,9 +544,8 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         rm(active_floodplain)
         if (river == "Elbe") {
             raster::crs(spdf.active_floodplain_elbe) <- crs_int
-            l.over <- sp::over(sp.ext, spdf.active_floodplain_elbe, 
-                               returnList = TRUE)
-            if (! (length(unlist(l.over)) > 0)) {
+            l.over <- spdf.active_floodplain_elbe[sp.ext,]
+            if (! (length(l.over) > 0)) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
                                            "d processing area does NOT overlap",
                                            " with the active floodplain of Riv",
@@ -555,9 +554,8 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
             rm(l.over)
         } else if (river == "Rhein") {
             raster::crs(spdf.active_floodplain_rhein) <- crs_int
-            l.over <- sp::over(sp.ext, spdf.active_floodplain_rhein, 
-                               returnList = TRUE)
-            if (! (length(unlist(l.over)) > 0)) {
+            l.over <- spdf.active_floodplain_rhein[sp.ext,]
+            if (! (length(l.over) > 0)) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
                                            "d processing area does NOT overlap",
                                            " with the active floodplain of Riv",
