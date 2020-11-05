@@ -47,9 +47,6 @@ test_that("flood2: checks", {
     
     # seq range POSIX
     now <- Sys.time()
-    seq <- c(now - 3600 * 24, now - 3600 * 48)
-    expect_equal(class(flood2(x, seq))[1], "RasterLayer")
-    
     months_ago <- now - 3600 * 24 * 30 * 2
     seq <- c(months_ago - 3600, months_ago - 3600 * 2)
     expect_error(flood2(x, seq),
