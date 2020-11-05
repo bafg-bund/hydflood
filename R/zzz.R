@@ -1,4 +1,4 @@
-hydflood_cache <- NULL
+#hydflood_cache <- NULL
 
 .onLoad <- function(libname, pkgname) {
     # load package data
