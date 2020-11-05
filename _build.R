@@ -83,6 +83,7 @@ devtools::build_vignettes(".")
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
+Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
 devtools::check(".", error_on = "never")
 
 #####
@@ -198,7 +199,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.0.2") {
+if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.0.3") {
     # copy html output to ~/public_html
     system(paste0("cp -rp public/", R_version, "/* /home/", user, "/public_htm",
                   "l/hydflood/"))
