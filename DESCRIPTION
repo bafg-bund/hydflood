@@ -29,6 +29,7 @@ RoxygenNote: 7.1.1
 Collate:
     'caching.R'
     'Class-hydRasterStack.R'
+    'createTiles.R'
     'data.R'
     'flood1.R'
     'flood2.R'
