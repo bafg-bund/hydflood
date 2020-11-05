@@ -26,7 +26,7 @@ dates <- as.character(seq.Date(Sys.Date() - 8, Sys.Date() - 1,
 #####
 # gauging_station_data
 wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 df.gsd <- na.omit(df.gauging_station_data)
 coordinates <- df.gsd[, c("longitude", "latitude")]
 spdf.gsd <- SpatialPointsDataFrame(coords = coordinates, data = df.gsd,
@@ -44,10 +44,12 @@ dem_colfunc <- colorRampPalette(c("saddlebrown", "yellow", "darkgreen"))
 # DESSAU
 ext_D <- extent(306050, 311870, 5747870, 5752220)
 dem <- raster("data-raw/raster.dem_dessau.tif")
+crs(dem) <- crs
 dem_plot <- dem
 dem_plot[dem_plot > 62] <- 62
 dem_plot[dem_plot < 50] <- 50
 csa <- raster("data-raw/raster.csa_dessau.tif")
+crs(csa) <- crs
 x <- hydRasterStack(filename_dem = "data-raw/raster.dem_dessau.tif",
                     filename_csa = "data-raw/raster.csa_dessau.tif")
 # mask <- readOGR(dsn="data-raw", layer="doc_mask_dessau")
