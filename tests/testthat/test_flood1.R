@@ -67,7 +67,7 @@ test_that("flood1: checks", {
     
     # gauging station value
     expect_error(flood1(x, seq, "DES"),
-                 " must be an element of c('SCHÖNA'", fixed = TRUE)
+                 " must be an element of c('SCHOENA'", fixed = TRUE)
     expect_error(flood1(x, seq, "DRESDEN"),
                  "has to be in the river stretch", fixed = TRUE)
     
