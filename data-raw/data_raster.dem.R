@@ -7,11 +7,10 @@ if (!(file.exists("data/raster.dem.rda"))){
     library("raster")
     
     # import
-    raster.dem <- readAll(raster("data-raw/raster.dem.tif"))
+    raster.dem <- raster("data-raw/raster.dem.tif")
     
     # export
-    devtools::use_data(raster.dem, pkg = ".", overwrite = TRUE, 
-                       compress = "bzip2")
+    usethis::use_data(raster.dem, overwrite = TRUE, compress = "bzip2")
     
     # clean up
     rm(raster.dem)

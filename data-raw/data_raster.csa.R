@@ -7,11 +7,10 @@ if (!(file.exists("data/raster.csa.rda"))){
     library("raster")
     
     # import
-    raster.csa <- readAll(raster("data-raw/raster.csa.tif"))
+    raster.csa <- raster("data-raw/raster.csa.tif")
     
     # export
-    devtools::use_data(raster.csa, pkg = ".", overwrite = TRUE, 
-                       compress = "bzip2")
+    usethis::use_data(raster.csa, overwrite = TRUE, compress = "bzip2")
     
     # clean up
     rm(raster.csa)
