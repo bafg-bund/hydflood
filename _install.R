@@ -11,20 +11,20 @@
 ##################################################
 
 # update.packages
-# update.packages(lib.loc = .libPaths()[1], ask = FALSE, checkBuilt = TRUE)
+update.packages(lib.loc = .libPaths()[1], ask = FALSE, checkBuilt = TRUE)
 
 # install all possible dependencies
-# packages <- c("hyd1d", "rgdal", "sp", "raster", "rgeos", "Rdpack", "knitr",  
-#               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
-#               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders", 
-#               "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-#               "usethis", "lattice", "pangaear", "hoardr")
-# 
-# for (a_package in packages) {
-#     if (! (a_package %in% installed.packages()[, "Package"])) {
-#         install.packages(a_package, dependencies = TRUE)
-#     }
-# }
+packages <- c("hyd1d", "rgdal", "sp", "raster", "rgeos", "Rdpack", "knitr",
+              "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
+              "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders",
+              "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
+              "usethis", "lattice", "pangaear", "hoardr", "rgrass7")
+
+for (a_package in packages) {
+    if (! (a_package %in% installed.packages()[, "Package"])) {
+        install.packages(a_package, dependencies = TRUE)
+    }
+}
 
 # install the local package
 require(devtools)

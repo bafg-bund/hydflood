@@ -266,7 +266,7 @@ flood3Points <- function(x, seq) {
         spdf.csa <- spdf.active_floodplain_elbe_csa[x, ]
         for (i in 1:length(spdf.csa)) {
             id <- x[spdf.csa[i,], ]$id_tmp
-            x$csa[id] <- spdf.csa[i,]$STATION_INT
+            x$csa[id] <- spdf.csa[i,]$station_int
             if (length(id) == length(x)) {
                 break
             }
