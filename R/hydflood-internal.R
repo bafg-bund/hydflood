@@ -23,25 +23,6 @@ extent2polygon <- function(x, crs) {
     return(sp.polygon)
 }
 
-# convert byte substituted ascii strings to utf-8
-# https://en.wikipedia.org/wiki/List_of_Unicode_characters
-# 
-asc2utf8 <- function(x){
-    y <- iconv(x, "ASCII", "UTF-8", sub="byte")
-    # Ä
-    y <- sub("<c3><84>", "\u00c4", y)
-    # ä
-    y <- sub("<c3><a4>", "\u00e4", y)
-    # Ö
-    y <- sub("<c3><96>", "\u00d6", y)
-    # ö
-    y <- sub("<c3><b6>", "\u00f6", y)
-    # Ü
-    y <- sub("<c3><9c>", "\u00dc", y)
-    # ü
-    y <- sub("<c3><bc>", "\u00fc", y)
-    return(y)
-}
 utm32n <- sp::CRS(SRS_string = 
                       'PROJCRS["ETRS89 / UTM zone 32N",
     BASEGEOGCRS["ETRS89",
@@ -157,4 +138,5 @@ isUTM33 <- function(x) {
     }
     return(FALSE)
 }
+
 
