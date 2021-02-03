@@ -91,7 +91,7 @@ flood3Points <- function(x, seq) {
             if (isUTM32(x@proj4string)) {
                 zone <- "32"
                 river <- "Rhein"
-                raster::crs(x) <- sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
+                raster::crs(x) <- utm32n
                 # within <- rgeos::gContains(spdf.tiles_rhein, x, byid = TRUE)[,1]
                 # if (any(within)) {
                 #     spdf.tiles <- spdf.tiles_rhein[within,]
@@ -102,7 +102,7 @@ flood3Points <- function(x, seq) {
             } else if (isUTM33(x@proj4string)) {
                 zone <- "33"
                 river <- "Elbe"
-                raster::crs(x) <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+                raster::crs(x) <- utm33n
                 # within <- rgeos::gContains(x, spdf.tiles_elbe, byid = TRUE)[,1]
                 # if (any(within)) {
                 #     spdf.tiles <- spdf.tiles_elbe[within,]

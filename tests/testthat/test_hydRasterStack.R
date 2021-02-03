@@ -1,7 +1,30 @@
 library(testthat)
+options("rgdal_show_exportToProj4_warnings" =  "none")
 library(hydflood)
 
 context("hydRasterStack")
+
+wgs <- sp::CRS(SRS_string = 'GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]],
+        ID["EPSG",6326]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8901]],
+    CS[ellipsoidal,2],
+        AXIS["longitude",east,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+        AXIS["latitude",north,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World."],
+        BBOX[-90,-180,90,180]]]')
 
 test_that("General tests", {
     
@@ -15,18 +38,18 @@ test_that("General tests", {
                                "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_C",
                                "SA.asc")
         ext <- extent(436500, 438000, 5415000, 5416500)
-        crs <- CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
         
         # tests
-        expect_message(a <- hydRasterStack(filename_dem, filename_csa, ext, crs),
+        expect_message(a <- hydRasterStack(filename_dem, filename_csa, ext,
+                                           utm32n),
                        "'ext' will be used to crop the supplied raster file(s).",
                        fixed = TRUE)
         expect_message(b <- hydRasterStack(filename_csa = filename_csa, 
-                                           ext = ext, crs = crs),
+                                           ext = ext, crs = utm32n),
                        "'ext' will be used to crop the supplied raster file",
                        fixed = TRUE)
-        expect_equal(extent(hydRasterStack(ext = ext, crs = crs)), ext)
-        expect_equal(crs(hydRasterStack(ext = ext, crs = crs)), crs)
+        expect_equal(extent(hydRasterStack(ext = ext, crs = utm32n)), ext)
+        expect_equal(crs(hydRasterStack(ext = ext, crs = utm32n)), utm32n)
     }
     
     # the same extents and crs, but different data sources
@@ -101,16 +124,15 @@ test_that("General tests", {
                      "'crs' must be type 'CRS'")
         expect_error(hydRasterStack(filename_dem = tmp_dem1,
                                     filename_csa = tmp_csa1,
-                                    crs = CRS("+init=epsg:4326")),
+                                    crs = wgs),
                      "supplied 'crs' does not agree with the crs supplied through")
-        expect_error(hydRasterStack(ext = extent(d), crs = CRS("+init=epsg:4326")),
+        expect_error(hydRasterStack(ext = extent(d), crs = wgs),
                      "crs must be either 'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N")
         expect_error(hydRasterStack(ext = extent(200000, 201000, 5749000, 5749500),
                                     crs = crs_csa),
                      "ea does NOT overlap with the active floodplain of River Elbe")
         expect_error(hydRasterStack(ext = extent(200000, 201000, 5749000, 5749500),
-                                    crs = CRS(paste0("+proj=utm +zone=32 +ellps=GR",
-                                                     "S80 +units=m +no_defs"))),
+                                    crs = utm32n),
                      "ea does NOT overlap with the active floodplain of River Rhin")
         
         unlink(tmp_dem1)

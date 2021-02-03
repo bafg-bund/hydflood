@@ -179,20 +179,17 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
         
         # crs
         crs_string <- raster::crs(x, asText = TRUE)
-        etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
-        etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
         
-        if ( !(raster::compareCRS(crs_string, etrs_1989_utm_32_string)) & 
-             !(raster::compareCRS(crs_string, etrs_1989_utm_33_string))) {
+        if ( !(raster::compareCRS(crs_string, utm32n)) & 
+             !(raster::compareCRS(crs_string, utm33n))) {
             errors <- c(errors, paste0("Error ", l(errors), ": The projection",
                                        " of x must be either 'ETRS 1989 UTM 32",
                                        "N' or 'ETRS 1989 UTM 33N'."))
         } else {
-            if (raster::compareCRS(crs_string, etrs_1989_utm_32_string)) {
+            if (raster::compareCRS(crs_string, utm32n)) {
                 zone <- "32"
                 river <- "Rhein"
-            } else if (raster::compareCRS(crs_string, 
-                                          etrs_1989_utm_33_string)) {
+            } else if (raster::compareCRS(crs_string, utm33n)) {
                 zone <- "33"
                 river <- "Elbe"
             } else {
@@ -292,7 +289,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     id <- which(df.gauging_station_data$data_present & 
                     df.gauging_station_data$river == toupper(river))
     df.gauging_station_data_sel <- df.gauging_station_data[id, ]
-    gs <- asc2utf8(df.gauging_station_data_sel$gauging_station)
+    gs <- df.gauging_station_data_sel$gauging_station
     uuids <- df.gauging_station_data_sel$uuid
     
     if (missing(gauging_station) & missing(uuid)) {

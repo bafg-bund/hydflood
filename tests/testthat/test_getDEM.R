@@ -1,15 +1,32 @@
 library(testthat)
+options("rgdal_show_exportToProj4_warnings" =  "none")
 library(hydflood)
 
 context("getDEM")
 
 test_that("General tests", {
     
-    c32 <- CRS(paste0("+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,",
-                      "0 +units=m +no_defs"))
-    c33 <- CRS(paste0("+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,",
-                      "0 +units=m +no_defs"))
-    wgs <- CRS("+init=epsg:4326")
+    wgs <- sp::CRS(SRS_string = 'GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]],
+        ID["EPSG",6326]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8901]],
+    CS[ellipsoidal,2],
+        AXIS["longitude",east,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+        AXIS["latitude",north,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World."],
+        BBOX[-90,-180,90,180]]]')
     
     # input data checks
     expect_error(getDEM(), 
@@ -18,10 +35,10 @@ test_that("General tests", {
     expect_error(getDEM(c(1,2,3)), "'filename' must be type 'character'")
     expect_error(getDEM(c(1,2,3)), "'filename' must have length 1")
     expect_error(getDEM(ext = c(1,2,3)), "ovide a CRS, you must specify 'crs'.")
-    expect_error(getDEM(ext = c(1,2,3), crs = c32), "'ext' must be type 'Extent'")
-    expect_error(getDEM(ext = extent(1,2,3,4), crs = c32),
+    expect_error(getDEM(ext = c(1,2,3), crs = utm32n), "'ext' must be type 'Extent'")
+    expect_error(getDEM(ext = extent(1,2,3,4), crs = utm32n),
                  "'ext' does NOT overlap with the active floodplain of River R")
-    expect_error(getDEM(ext = extent(1,2,3,4), crs = c33),
+    expect_error(getDEM(ext = extent(1,2,3,4), crs = utm33n),
                  "'ext' does NOT overlap with the active floodplain of River E")
     expect_error(getDEM(ext = extent(1,2,3,4), crs = "c"),
                  "'crs' must be type 'CRS'.")
@@ -42,20 +59,20 @@ test_that("General tests", {
         expect_message(getDEM(filename = filename, ext = ext),
                        "'ext' will be used to crop the supplied raster file.",
                        fixed = TRUE)
-        expect_message(getDEM(filename = filename, ext = ext, crs = c32),
+        expect_message(getDEM(filename = filename, ext = ext, crs = utm32n),
                        "'ext' will be used to crop the supplied raster file.",
                        fixed = TRUE)
-        expect_error(getDEM(filename = filename, ext = ext, crs = c33),
+        expect_error(getDEM(filename = filename, ext = ext, crs = utm33n),
                        "does not agree with the crs of the raster suppl",
                        fixed = TRUE)
         
         tmp_dem1 <- rasterTmpFile(prefix = "r_test_dem_")
         if (file.exists(tmp_dem1)) {unlink(tmp_dem1)}
-        d <- getDEM(filename = tmp_dem1, ext = ext, crs = c32)
+        d <- getDEM(filename = tmp_dem1, ext = ext, crs = utm32n)
         
         expect_equal(file.exists(tmp_dem1), TRUE)
         expect_equal(extent(d), ext)
-        expect_equal(crs(d), c32)
+        expect_equal(d@crs@projargs, utm32n@projargs)
         
         unlink(tmp_dem1)
     }
@@ -76,10 +93,10 @@ test_that("General tests", {
                                                  5749000, 5750000)),
                    "'ext' will be used to crop the supplied raster file.")
     expect_error(getDEM(ext = extent(295000, 340000, 5744000, 5753000),
-                        crs = c33),
+                        crs = utm33n),
                  "'ext' is very large and covers more than 5 ")
     expect_warning(getDEM(ext = extent(300000, 330000, 5744000, 5753000),
-                          crs = c33),
+                          crs = utm33n),
                  "'ext' is large and covers more than 3 ")
     
 })
