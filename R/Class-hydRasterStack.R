@@ -91,11 +91,7 @@ methods::setClass(
                                        "sterLayer's must be c('dem', 'csa')."))
         }
         
-        # crs 
-        # define standard projections
-        etrs_1989_utm_32_string <- sp::CRS("+init=epsg:25832")
-        etrs_1989_utm_33_string <- sp::CRS("+init=epsg:25833")
-        
+        # crs
         obj_crs <- raster::crs(object)
         # check
         if (!isUTM32(obj_crs) & !isUTM33(obj_crs)) {
@@ -653,7 +649,7 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
                                      crs = crs_int)
         if (file_create_csa) {
             raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                            field = "STATION_INT",
+                                            field = "station_int",
                                             update = TRUE, updateValue = 'all')
             raster::dataType(raster.csa) <- "INT4S"
             if (!file.exists(filename_csa)) {
@@ -662,13 +658,13 @@ hydRasterStack <- function(filename_dem = '', filename_csa = '', ext, crs, ...) 
         } else {
             if (in_memory) {
                 raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                                field = "STATION_INT", 
+                                                field = "station_int", 
                                                 update = TRUE,
                                                 updateValue = 'all')
             } else {
                 tmp_csa <- raster::rasterTmpFile(prefix = "r_tmp_csa_")
                 raster.csa <- raster::rasterize(spdf.csa, raster.csa, 
-                                                field = "STATION_INT", 
+                                                field = "station_int", 
                                                 update = TRUE,
                                                 updateValue = 'all',
                                                 filename = tmp_csa)

@@ -126,11 +126,11 @@ getDEM <- function(filename = '', ext, crs, ...) {
         if (isUTM32(crs_int)) {
             zone <- "32"
             river <- "Rhein"
-            crs_int <- sp::CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
+            crs_int <- utm32n
         } else if (isUTM33(crs_int)) {
             zone <- "33"
             river <- "Elbe"
-            crs_int <- sp::CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+            crs_int <- utm33n
         } else {
             stop(errors)
         }
