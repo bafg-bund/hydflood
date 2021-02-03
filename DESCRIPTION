@@ -20,7 +20,7 @@ Depends: R (>= 3.5.0), sp, raster, rgeos, hyd1d, hoardr
 Imports: methods, stats, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
     plotrix, shiny, shinyjs, shinycssloaders, rgdal, leaflet, leaflet.extras, 
-    leaflet.esri, pangaear
+    leaflet.esri, pangaear, rgrass7
 RdMacros: Rdpack
 License: GPL-2
 Encoding: UTF-8

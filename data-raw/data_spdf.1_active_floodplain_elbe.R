@@ -9,6 +9,7 @@ if (!(file.exists("data/spdf.active_floodplain_elbe.rda"))) {
     spdf.active_floodplain_elbe <- readOGR(dsn = "data-raw",
                                            layer = "active_floodplain_elbe",
                                            verbose = FALSE)
+    crs(spdf.active_floodplain_elbe) <- UTM33N
     
     # export
     usethis::use_data(spdf.active_floodplain_elbe, overwrite = TRUE,
