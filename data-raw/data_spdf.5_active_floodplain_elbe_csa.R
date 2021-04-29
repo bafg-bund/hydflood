@@ -14,6 +14,7 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     library("rgrass7")
     library("sp")
     library("sf")
+    library("rgdal")
     initGRASS(gisBase = "/opt/i4/grassgis-7.8.5/grass78",
               gisDbase = gg_gd,
               location = gg_ln,
@@ -55,6 +56,8 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     if (! "cross_section_traces" %in% vectors_present) {
         execGRASS("v.import", input = "data-raw/cross_section_traces_elbe.shp",
                   output = "cross_section_traces", encoding = "UTF-8")
+        execGRASS("v.db.renamecolumn", map = "cross_section_traces",
+                  column = "station_in,station_int")
     }
     
     # import DEM's and compute CSA's
@@ -200,7 +203,7 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     
     # bwstr_id
     if (!"bwastr_id" %in% names(spdf.active_floodplain_elbe_csa)) {
-        spdf.hecto <- readOGR("/home/WeberA/praktikum/data-raw/VerkNetBWaStr",
+        spdf.hecto <- readOGR("/home/WeberA/elbe1d/data-raw/VerkNetBWaStr",
                               "hectometer")[, 2]
         crs(spdf.hecto) <- UTM33N
         names(spdf.hecto) <- "bwastr_id"
@@ -215,9 +218,25 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     spdf.active_floodplain_elbe_csa$bwastr_id <- 
         as.character(spdf.active_floodplain_elbe_csa$bwastr_id)
     
+    # station_true
+    if (!"station_true" %in% names(spdf.active_floodplain_elbe_csa)) {
+        load("~/.hydflood/spdf.afe_csa.rda")
+        i <- order(spdf.active_floodplain_elbe_csa$station,
+                   spdf.active_floodplain_elbe_csa$bwastr_id)
+        spdf.active_floodplain_elbe_csa <- spdf.active_floodplain_elbe_csa[i, ]
+        i <- order(spdf.afe_csa$station, spdf.afe_csa$bwastr_id)
+        spdf.afe_csa <- spdf.afe_csa[i, ]
+        
+        spdf.active_floodplain_elbe_csa$station_true <- 
+            spdf.afe_csa$station_true
+        
+        rm(i, spdf.afe_csa)
+    }
+    
     # reorder columns
     spdf.active_floodplain_elbe_csa <- spdf.active_floodplain_elbe_csa[ ,
-        c("bwastr_id", "station_int", "station", "section", "section_do")]
+        c("bwastr_id", "station_int", "station", "station_true", "section",
+          "section_do")]
     
     # export
     usethis::use_data(spdf.active_floodplain_elbe_csa,
