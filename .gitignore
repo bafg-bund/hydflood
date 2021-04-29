@@ -15,6 +15,8 @@
 # ignore directories and files
 build
 data-raw/Thumbs.db
+data-raw/*.sbn
+data-raw/*.sbx
 doc
 inst/doc
 man
