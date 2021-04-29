@@ -12,19 +12,24 @@ reference:
       - "`flood2`"
       - "`flood3`"
       - "`flood3Points`"
-      - "`getDEM`"
       - "`hydRasterStack-class`"
       - "`hydRasterStack`"
   - title: Datasets
     desc: Datasets included in hydflood
     contents:
-      - "`createTiles`"
-      - "`hydflood_cache`"
-      - "`hydflood_cache`"
       - "`spdf.active_floodplain_elbe`"
       - "`spdf.active_floodplain_rhein`"
       - "`spdf.tiles_elbe`"
       - "`spdf.tiles_rhein`"
+  - title: "Utility functions"
+    desc: Utility functions to prepare and store data
+    contents:
+      - "`createTiles`"
+      - "`getDEM`"
+      - "`hydflood_cache`"
+      - "`hydflood_cache`"
+      - "`w80ToSpatialLinesDataFrame`"
+      - "`w80ToSpatialPointsDataFrame`"
 navbar:
   left:
     - text: "How To"
