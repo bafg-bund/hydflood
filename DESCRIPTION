@@ -39,6 +39,7 @@ Collate:
     'hydflood.R'
     'hydflood-internal.R'
     'hydflood-caching.R'
+    'w80ToSpatial.R'
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: https://apps.bafg.de/gitbucket/webera/hydflood/issues
