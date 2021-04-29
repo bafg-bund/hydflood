@@ -16,11 +16,17 @@ library(hyd1d)
 library(hydflood)
 library(rgdal)
 
+if (updateGaugingData(Sys.Date() - 10)) {
+    write("", stdout())
+    write("Forced an additional update of 'df.gauging_data'", stdout())
+    write("", stdout())
+}
+
 # setwd
 setwd(Sys.getenv("hydflood")) 
 
-# temporal sequence (last X days)
-dates <- as.character(seq.Date(Sys.Date() - 8, Sys.Date() - 1,
+# temporal sequence (last X days) Sys.Date() - 8
+dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 2,
                                by = "1 day"))
 
 #####
