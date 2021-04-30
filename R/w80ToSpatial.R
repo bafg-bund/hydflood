@@ -38,7 +38,7 @@
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
 #' @param crs argument of type \code{CRS}.
-#' @param group argument of type \code{character} specifying a grouping column.
+#' @param id argument of type \code{character} specifying a grouping column.
 #' 
 #' @return \code{SpatialLinesDataFrame}.
 #' 
@@ -126,16 +126,17 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
     j <- 1
     for (i in ids) {
         d <- df[which(df@data[, id] == i), ]
-        Srl[[j]] <- Lines(list(Line(coordinates(d))), ID = paste0("i", i))
+        Srl[[j]] <- sp::Lines(list(sp::Line(sp::coordinates(d))),
+                              ID = paste0("i", i))
         j <- j + 1
     }
     
-    sl <- SpatialLines(Srl, proj4string = crs)
-    sldf <- SpatialLinesDataFrame(sl,
-                                  data.frame(id == ids,
-                                             station = unique(df$station),
-                                             station_int = unique(df$station_int),
-                                             row.names = paste0("i", ids)))
+    sl <- sp::SpatialLines(Srl, proj4string = crs)
+    sldf <- sp::SpatialLinesDataFrame(sl,
+                                      data.frame(id == ids,
+                                                 station = unique(df$station),
+                                                 station_int = unique(df$station_int),
+                                                 row.names = paste0("i", ids)))
     
     return(sldf)
 }
@@ -247,16 +248,18 @@ w80ToSpatialPointsDataFrame <- function(filename, crs) {
     df$comment <- substring(lines, 65, 78)
     df$comment[which(df$comment == "              ")] <- NA
     df$status <- substring(lines, 79, 80)
+    df$station_int <- as.integer(df$station * 1000)
+    df$station_c <- as.character(df$station_int)
     
     # make spatial
-    spdf <- SpatialPointsDataFrame(df[,c("x", "y")],
-                                   df, proj4string = crs)
+    spdf <- sp::SpatialPointsDataFrame(df[,c("x", "y")],
+                                       df, proj4string = crs)
     
     # add columns lat and lon
-    spdf$lat <- coordinates(sp::spTransform(spdf,
-                                            CRS(SRS_string = "OGC:CRS84")))[,2]
-    spdf$lon <- coordinates(sp::spTransform(spdf,
-                                            CRS(SRS_string = "OGC:CRS84")))[,1]
+    spdf$lat <- sp::coordinates(
+        sp::spTransform(spdf, CRS(SRS_string = "OGC:CRS84")))[,2]
+    spdf$lon <- sp::coordinates(
+        sp::spTransform(spdf, CRS(SRS_string = "OGC:CRS84")))[,1]
     
     return(spdf)
 }
