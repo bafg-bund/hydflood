@@ -23,7 +23,7 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     use_sp()
     execGRASS("g.proj", flags = "c", epsg = 25832)
     Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-7.8.5/grass78/etc/python:",
-                                   "/opt/i4/i4-0.0.6/lib/python3.8/site-packag",
+                                   "/opt/i4/i4-0.0.7/lib/python3.8/site-packag",
                                    "es:/opt/i4/python-3.8.5/lib/python3.8/site",
                                    "-packages"))
     
