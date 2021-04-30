@@ -1,6 +1,7 @@
 ^\.git/$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^_build\.log$
 ^_build\.R$
 ^build$
 ^\.commit$
