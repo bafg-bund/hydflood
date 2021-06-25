@@ -17,6 +17,8 @@ build
 data-raw/Thumbs.db
 data-raw/*.sbn
 data-raw/*.sbx
+data-raw/raster.dem_eb*
+data-raw/raster.csa_eb*
 doc
 inst/doc
 man

@@ -29,7 +29,8 @@ function(input, output, session) {
         req(input$gauging_station)
         req(input$daterange)
         
-        df.gd[which(df.gd$gauging_station == input$gauging_station &
+        df.gd[which(df.gd$gauging_station ==
+                        names(gsi)[which(gsi == input$gauging_station)] &
                         (df.gd$date >= as.Date(input$daterange[1]) &
                          df.gd$date <= as.Date(input$daterange[2]))), ]
     })
@@ -45,7 +46,8 @@ function(input, output, session) {
         id_gd <- which(df.gdr()$date == input$date)
         
         # row_id in df.gsd
-        id_gsd <- which(df.gsd$gauging_station == input$gauging_station)
+        id_gsd <- which(df.gsd$gauging_station ==
+                            names(gsi)[which(gsi == input$gauging_station)])
         
         # recompute W to be relative to NHN
         W <- df.gdr()$w/100 + df.gsd$pnp[id_gsd]
@@ -73,11 +75,15 @@ function(input, output, session) {
         req(input$gauging_station)
         req(input$date)
         
-        image_path <- paste0("www/images/", input$gauging_station, "/flood3_",
+        image_path <- paste0("www/images/",
+                             names(gss)[which(gss == input$gauging_station)],
+                             "/flood3_",
                              strftime(input$date, "%Y%m%d"), ".png")
         if (!file.exists(image_path)){
             return(list(
-                src = paste0("www/images/", input$gauging_station, "/dem.png"),
+                src = paste0("www/images/",
+                             names(gss)[which(gss == input$gauging_station)],
+                             "/dem.png"),
                 contentType = "image/png"
             ))
         } else {
