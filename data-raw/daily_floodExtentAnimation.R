@@ -14,6 +14,7 @@ write("floodExtents for Dessau and Lenzen will be computed", stdout())
 # load hyd1d
 library(hyd1d)
 library(hydflood)
+options("rgdal_show_exportToProj4_warnings" = "none")
 library(rgdal)
 
 if (updateGaugingData(Sys.Date() - 10)) {
@@ -32,7 +33,7 @@ dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 2,
 #####
 # gauging_station_data
 wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
 df.gsd <- na.omit(df.gauging_station_data)
 coordinates <- df.gsd[, c("longitude", "latitude")]
 spdf.gsd <- SpatialPointsDataFrame(coords = coordinates, data = df.gsd,
@@ -231,4 +232,83 @@ for (a_date in dates) {
     }
 }
 
+##########
+# ElBiota-Areas
+# dates <- as.character(seq.Date(as.Date("2020-01-01"), Sys.Date() - 2,
+#                                by = "1 day"))
+if (require("ElBiota")) {
+    
+    # loop over areas
+    for (an_area in areas_esc) {
+        
+        print(an_area)
+        
+        spdf.area <- spdf.areas_sel[which(spdf.areas_sel$mapset == an_area), ]
+        
+        if (! file.exists(paste0("data-raw/raster.dem_", an_area, ".tif"))) {
+            r <- getDEM(paste0("data-raw/raster.dem_", an_area, ".tif"),
+                        ext = extent(spdf.area), crs = crs)
+        } else {
+            r <- raster(paste0("data-raw/raster.dem_", an_area, ".tif"))
+        }
+        
+        x <- hydRasterStack(filename_dem = paste0("data-raw/raster.dem_",
+                                                  an_area, ".tif"),
+                            filename_csa = paste0("data-raw/raster.csa_",
+                                                  an_area, ".tif"))
+        
+        # export a dem plot
+        dir.create(paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_00",
+                          "0_586_UFD/data/png/flood3_daily/", an_area),
+                   FALSE, TRUE)
+        dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_58",
+                      "6_UFD/data/png/flood3_daily/", an_area, "/dem.png")
+        if (!file.exists(dem)) {
+            png(filename = dem, width = 960, height = 640, units = "px")
+            plot(r, col = dem_colfunc((24 - 9)*2), legend.width = 1,
+                 horizontal = TRUE, bty = "n",
+                 legend.args = list(text = "elevation (m)"))
+            # points(spdf.gsd_L, pch = 21, bg = "white")
+            # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
+            # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+            dev.off()
+        }
+        
+        # loop over all dates
+        for (a_date in dates) {
+            
+            write(paste0(an_area, ": ", a_date), stdout())
+            
+            f_out <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_",
+                            "000_586_UFD/data/png/flood3_daily/", an_area,
+                            "/flood3_", gsub("-", "", a_date), ".png")
+            
+            if (file.exists(f_out)) {
+                write("  exists already", stdout())
+            } else {
+                write("  will be computed", stdout())
+                
+                # compute flood extent
+                flood_extent <- flood3(x, as.Date(a_date))
+                flood_extent[flood_extent == 0] <- NA
+                
+                # plotting with raster functions
+                png(filename = f_out, width = 960, height = 640, units = "px")
+                plot(r, col = dem_colfunc((24 - 9)*2),
+                     legend.width = 1, horizontal = TRUE, bty = "n",
+                     legend.args = list(text = "elevation (m)"))
+                plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
+                # points(spdf.gsd_L, pch = 21, bg = "white")
+                # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
+                # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+                dev.off()
+                
+            }
+        }
+    }
+}
+
+
+
+#
 q("no")
