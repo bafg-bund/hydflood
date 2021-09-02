@@ -244,6 +244,7 @@ if (require("ElBiota")) {
         print(an_area)
         
         spdf.area <- spdf.areas_sel[which(spdf.areas_sel$mapset == an_area), ]
+        sac <- spdf.sac[which(spdf.sac$mapset == an_area), ]
         
         if (! file.exists(paste0("data-raw/raster.dem_", an_area, ".tif"))) {
             r <- getDEM(paste0("data-raw/raster.dem_", an_area, ".tif"),
@@ -268,9 +269,8 @@ if (require("ElBiota")) {
             plot(r, col = dem_colfunc((24 - 9)*2), legend.width = 1,
                  horizontal = TRUE, bty = "n",
                  legend.args = list(text = "elevation (m)"))
-            # points(spdf.gsd_L, pch = 21, bg = "white")
-            # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
-            # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+            points(sac, pch = 21, bg = "white", cex = 0.8)
+            text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
             dev.off()
         }
         
@@ -298,9 +298,8 @@ if (require("ElBiota")) {
                      legend.width = 1, horizontal = TRUE, bty = "n",
                      legend.args = list(text = "elevation (m)"))
                 plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-                # points(spdf.gsd_L, pch = 21, bg = "white")
-                # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
-                # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+                points(sac, pch = 21, bg = "white", cex = 0.8)
+                text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
                 dev.off()
                 
             }
