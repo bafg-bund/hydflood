@@ -1,19 +1,22 @@
 #' @name w80ToSpatialLinesDataFrame
 #' @rdname w80ToSpatialLinesDataFrame
 #' 
-#' @title Function to convert w80-files to \code{SpatialLinesDataFrame})
+#' @title Function to convert w80-files to \code{SpatialLinesDataFrame}.
 #' 
-#' @description This function converts w80-files, an asci-format with 80
+#' @description This function converts w80-files, an ascii-format with 80
 #'   characters per line for spatial point data used by the German Waterway and
 #'   Navigation Authorities (WSV). Every single row codes for one point:
 #'   
-#'   \code{| 1 |2 | 3     |4|            5              |       6       |     7   | 8 |}
-#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01}
-#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01}
+#'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
+#'   
+#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01} \cr
+#'   
+#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01} \cr
 #'   
 #'   Within each row very specific sections code for specific attributes:
 #'   
-#'   | section | column(s) | attribute | colum name result |
+#'   | **section** | **column(s)** | **attribute** | **column name in result** |
+#'   | :---: | :--- | :--- | ---: |
 #'   | 1 | 1 | state id, here W=WSV | sid |
 #'   | 1 | 2-5 | Federal Waterway ID | fwid |
 #'   | 2 | 6-8 | WSV point type | wsvpt |
@@ -33,7 +36,9 @@
 #'   | 8 | 85-86 | point status | status |
 #'   
 #'   In a second step these points are aggregated to a
-#'   \code{SpatialLinesDataFrame} using the grouping column \code{group}.
+#'   \code{SpatialLinesDataFrame} using the grouping column \code{id}.
+#' 
+#' @md
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
@@ -45,7 +50,7 @@
 #' @examples \dontrun{
 #'   library(hydflood)
 #'   c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#'   splf <- w80ToSpatialLinesDataFrame("data-raw/test.w80", c)
+#'   sldf <- w80ToSpatialLinesDataFrame("data-raw/test.w80", c, "station_int")
 #' }
 #' 
 #' @export
@@ -145,19 +150,22 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
 #' @name w80ToSpatialPointsDataFrame
 #' @rdname w80ToSpatialPointsDataFrame
 #' 
-#' @title Function to convert w80-files to \code{SpatialPointsDataFrame})
+#' @title Function to convert w80-files to \code{SpatialPointsDataFrame}.
 #' 
 #' @description This function converts w80-files, an asci-format with 80
 #'   characters per line for spatial point data used by the German Waterway and
 #'   Navigation Authorities (WSV). Every single row codes for one point:
 #'   
-#'   \code{| 1 |2 | 3     |4|            5              |       6       |     7   | 8 |}
-#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01}
-#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01}
+#'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
+#'   
+#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01} \cr
+#'   
+#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01} \cr
 #'   
 #'   Within each row very specific sections code for specific attributes:
 #'   
-#'   | section | column(s) | attribute | colum name result |
+#'   | **section** | **column(s)** | **attribute** | **column name in result** |
+#'   | :---: | :--- | :--- | ---: |
 #'   | 1 | 1 | state id, here W=WSV | sid |
 #'   | 1 | 2-5 | Federal Waterway ID | fwid |
 #'   | 2 | 6-8 | WSV point type | wsvpt |
@@ -175,6 +183,8 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
 #'   | 6 | 62-64 | type of measurement | tom |
 #'   | 7 | 65-84 | comment | comment |
 #'   | 8 | 85-86 | point status | status |
+#' 
+#' @md
 #' 
 #' @param filename argument of length 1 and type \code{"character"} specifying
 #'   an existing w80-file.
