@@ -42,18 +42,20 @@ function(input, output, session) {
         req(input$daterange)
         req(input$date)
         
+        gs <- names(gsi)[which(gsi == input$gauging_station)]
+        
         # row_id in df.gdr()
         id_gd <- which(df.gdr()$date == input$date)
         
         # row_id in df.gsd
-        id_gsd <- which(df.gsd$gauging_station ==
-                            names(gsi)[which(gsi == input$gauging_station)])
+        id_gsd <- which(df.gsd$gauging_station == gs)
         
         # recompute W to be relative to NHN
         W <- df.gdr()$w/100 + df.gsd$pnp[id_gsd]
         
         # plot
-        par(oma = c(0, 0, 0, 0), mar = c(0, 6.5, 0, 0), xaxt = "n", xaxs = "i")
+        par(oma = c(0, 0, 0, 0), mar = c(0, 6.5, 0, 0), xaxt = "n", xaxs = "i",
+            cex.main = 0.8)
         plot(W ~ df.gdr()$date, type = "l", col = "darkblue",
              xlab = "Zeit", ylab = "Wasserstand (m über NHN)",
              frame.plot = FALSE)
@@ -63,6 +65,8 @@ function(input, output, session) {
         abline(h = W[id_gd], lty = 3, lwd = 0.5, col = "darkblue")
         points(df.gdr()$date[id_gd], W[id_gd], col = "darkblue",
                pch = 20, cex = 2)
+        text(mean(c(min(df.gdr()$date), max(df.gdr()$date))),
+             max(W), labels = paste0("Pegel: ", gs))
         boxed.labels(min(df.gdr()$date) + (max(df.gdr()$date) -
                                               min(df.gdr()$date)) * 0.95,
                      df.gsd$pnp[id_gsd] + df.gsd$mw[id_gsd],
