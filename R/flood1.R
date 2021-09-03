@@ -22,7 +22,7 @@
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
 #'   have length larger 0. Values of \code{seq} must be in the 
-#'   temporal range between 1990-01-01 and yesterday (\code{Sys.Date() - 1}). 
+#'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1}). 
 #'   Internally \code{\link[hyd1d]{waterLevelFlood1}} uses \code{\link[hyd1d]{getGaugingDataW}}
 #'   to obtain daily water level information from \code{\link[hyd1d]{df.gauging_data}}.
 #' @param gauging_station has to be type \code{character} and has to have a
@@ -269,11 +269,11 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                 type_date <- FALSE
             }
             if (all(class(seq) == "Date")) {
-                if (any(seq < as.Date("1990-01-01")) |
+                if (any(seq < as.Date("1960-01-01")) |
                     any(seq > Sys.Date() - 1)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Val",
                                                "ues of 'seq' must be betwe",
-                                               "en 1990-01-01 and yesterda",
+                                               "en 1960-01-01 and yesterda",
                                                "y."))
                 }
                 type_date <- TRUE
