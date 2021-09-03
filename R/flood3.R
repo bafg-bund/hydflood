@@ -26,7 +26,7 @@
 #'   - 2678400}) and now (\code{Sys.time()}). Then 
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} is used internally for the water
 #'   level computations. If \code{seq} is type \code{Date} values must be in the
-#'   temporal range between 1990-01-01 and yesterday (\code{Sys.Date() - 1}) 
+#'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1}) 
 #'   and \code{\link[hyd1d]{waterLevel}} is used internally.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
@@ -168,11 +168,11 @@ flood3 <- function(x, seq, filename = '', ...) {
                 type_date <- FALSE
             }
             if (all(class(seq) == "Date")) {
-                if (any(seq < as.Date("1990-01-01")) |
+                if (any(seq < as.Date("1960-01-01")) |
                     any(seq > Sys.Date() - 1)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Val",
                                                "ues of 'seq' must be betwe",
-                                               "en 1990-01-01 and yesterda",
+                                               "en 1960-01-01 and yesterda",
                                                "y."))
                 }
                 type_date <- TRUE
