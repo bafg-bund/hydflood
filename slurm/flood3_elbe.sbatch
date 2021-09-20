@@ -2,7 +2,7 @@
 #SBATCH --job-name=flood3elbe
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --mail-user=arnd.weber@bafg.de
-#SBATCH --partition=PSMCentOS              # queue for array jobs without mpiexec/mpirun
+#SBATCH --partition=CentOS              # queue for array jobs without mpiexec/mpirun
 #SBATCH --array=1-49%3                  # 1-49%10
 #SBATCH --ntasks=1                      # number of tasks per node
 #SBATCH --time=20-00:00                 # time DD-HH:MM
