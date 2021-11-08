@@ -14,6 +14,7 @@
 
 # ignore directories and files
 build
+data-raw/raster.*.tif
 data-raw/Thumbs.db
 doc
 inst/doc
@@ -28,4 +29,5 @@ shinyapps/flood3/www
 shinyapps/flood3/scripts/cleanup.log
 shinyapps/flood3daily/www
 shinyapps/flood3wms/www/Thumbs.db
+slurm/log
 vignettes/movie
