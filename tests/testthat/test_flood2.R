@@ -39,12 +39,12 @@ test_that("flood2: checks", {
                  "'seq' or elements of it must not be NA.")
     
     # seq range Date
-    seq <- seq(as.Date("1988-12-21"), as.Date("1988-12-22"), by = "days")
+    seq <- seq(as.Date("1958-12-21"), as.Date("1958-12-22"), by = "days")
     expect_error(flood2(x, seq),
-                 "'seq' must be between 1990-01-01 and yesterday")
+                 "'seq' must be between 1960-01-01 and yesterday")
     seq <- seq(as.Date("2050-12-21"), as.Date("2050-12-22"), by = "days")
     expect_error(flood2(x, seq),
-                 "'seq' must be between 1990-01-01 and yesterday")
+                 "'seq' must be between 1960-01-01 and yesterday")
     
     # seq range POSIX
     now <- Sys.time()

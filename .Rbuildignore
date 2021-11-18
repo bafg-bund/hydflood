@@ -10,6 +10,7 @@
 ^docs$
 ^\.gitlab-ci\.yml$
 ^_install\.R$
+^makefile$
 ^Meta$
 ^public$
 ^README_files$
