@@ -17,11 +17,14 @@ build
 data-raw/Thumbs.db
 data-raw/*.sbn
 data-raw/*.sbx
-data-raw/raster.dem_eb*
-data-raw/raster.csa_eb*
+data-raw/raster.dem_*
+data-raw/raster.csa_*
+data-raw/spdf.*.rda
 doc
+/doc/
 inst/doc
 man
+/Meta/
 Meta
 public
 README_files/figure-markdown_github/Thumbs.db
@@ -34,5 +37,5 @@ shinyapps/flood3daily/www
 shinyapps/flood3wms/www/Thumbs.db
 slurm/log
 vignettes/movie
-/doc/
-/Meta/
+vignettes/*.mp4
+

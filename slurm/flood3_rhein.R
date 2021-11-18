@@ -27,10 +27,10 @@ dem <- paste0(hfc, "/", n, "_DEM.tif")
 csa <- paste0(hfc, "/", n, "_CSA.tif")
 
 #####
-# loop over the available years to produce annua flood3 rasters
+# loop over the available years to produce annual flood3 rasters
 products <- list()
 
-for (a_year in 1990:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
+for (a_year in 1960:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
   print(a_year)
   
   # output file
@@ -77,6 +77,29 @@ if (file.exists(f_sd)) {
 } else {
   print(paste0(f_sd, " will be computed"))
   calc(stack(products), fun = sd, na.rm = TRUE, filename = f_sd,
+       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+}
+
+# reference period 1960 - 1989
+f_mean <- paste0(o, "/", n, "_flood3_mean_1960_1989.tif")
+
+if (file.exists(f_mean)) {
+  print(paste0(f_mean, " exists already"))
+} else {
+  print(paste0(f_mean, " will be computed"))
+  calc(stack(products[paste0("flood3_", 1960:1989)]),
+       fun = mean, na.rm = TRUE, filename = f_mean,
+       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+}
+
+f_sd <- paste0(o, "/", n, "_flood3_sd_1960_1989.tif")
+
+if (file.exists(f_sd)) {
+  print(paste0(f_sd, " exists already"))
+} else {
+  print(paste0(f_sd, " will be computed"))
+  calc(stack(products[paste0("flood3_", 1960:1989)]),
+       fun = sd, na.rm = TRUE, filename = f_sd,
        format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
