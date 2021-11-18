@@ -43,6 +43,6 @@ Collate:
     'w80ToSpatial.R'
     'zzz.R'
 VignetteBuilder: knitr
-BugReports: https://apps.bafg.de/gitbucket/webera/hydflood/issues
+BugReports: http://gitlab.lan.bafg.de/auenoekologie/hydflood/issues
 URL: http://r.bafg.de/~WeberA/hydflood/index.html, 
-    https://apps.bafg.de/gitbucket/webera/hydflood
+    http://gitlab.lan.bafg.de/auenoekologie/hydflood
