@@ -24,12 +24,8 @@ knitr::opts_chunk$set(
     root.dir = "vignettes"
 )
 
-if (Sys.info()['nodename'] == "r.bafg.de") {
-    base_hyd1d <- "http://r.bafg.de/~WeberA/hyd1d/"
-} else {
-    base_hyd1d <- "https://www.aqualogy.de/R/packages/hyd1d/"
-}
 
+base_hyd1d <- "http://r.bafg.de/~WeberA/hyd1d/"
 ```
 
 <!-- Indent in html version TOC
