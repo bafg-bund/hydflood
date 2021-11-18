@@ -2,8 +2,8 @@ Package: hydflood
 Type: Package
 Title: Algorythms to compute flood extent and duration along German federal 
     waterways Elbe and Rhine
-Version: 0.2.0
-Date: 2021-02-04
+Version: 0.2.1
+Date: 2021-11-18
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
