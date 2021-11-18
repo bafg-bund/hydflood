@@ -30,3 +30,15 @@ syncscr2rh:
 mvlog:
 	mv /home/WeberA/sbatch/log/flood3_* /home/WeberA/hydflood/slurm/log/
 
+aq:
+	sed -i -e 's#http://r.bafg.de/~WeberA#https://www.aqualogy.de/R/packages#g' DESCRIPTION
+	sed -i -e 's#http://gitlab.lan.bafg.de/auenoekologie#https://git.aqualogy.de/arnd#g' DESCRIPTION
+	sed -i -e 's#gitlab.lan.bafg.de/auenoekologie#git.aqualogy.de/arnd#g' README.Rmd
+	sed -i -e 's#gitlab.lan.bafg.de/auenoekologie#git.aqualogy.de/arnd#g' README.md
+	sed -i -e 's#gitlab.lan.bafg.de/auenoekologie#git.aqualogy.de/arnd#g' vignettes/hydflood.Rmd
+	sed -i -e 's#http://r.bafg.de/~WeberA#https://www.aqualogy.de/R/packages#g' vignettes/hydflood.Rmd
+	sed -i -e 's#http://r.bafg.de/~WeberA#https://www.aqualogy.de/R/packages#g' pkgdown/_pkgdown.yml
+	sed -i -e 's#http://r.bafg.de/shiny/WeberA/07-#https://www.aqualogy.de/shiny/#g' pkgdown/_pkgdown.yml
+	sed -i -e 's#http://r.bafg.de/shiny/WeberA/08-#https://www.aqualogy.de/shiny/#g' pkgdown/_pkgdown.yml
+	sed -i -e 's#http://r.bafg.de/shiny/WeberA/10-#https://www.aqualogy.de/shiny/#g' pkgdown/_pkgdown.yml
+	sed -i -e 's#http://r.bafg.de/~WeberA#https://www.aqualogy.de/R/packages#g' inst/CITATION
