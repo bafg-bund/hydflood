@@ -1,10 +1,10 @@
 
-# store spdf.active_floodplain_elbe_csa as external dataset
-if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
+# store sf.afe_csa as external dataset
+if (!(file.exists("data-raw/sf.afe_csa.rda"))) {
     
     # load missing dataset
-    if (! exists("spdf.tiles_elbe")) {
-        load("data/spdf.tiles_elbe.rda")
+    if (! exists("sf.tiles_elbe")) {
+        load("data/sf.tiles_elbe.rda")
     }
     
     # initialize GrassGIS
@@ -12,16 +12,14 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     gg_ln <- "ELBE_Binnen"
     gg_ma <- "PERMANENT"
     library("rgrass7")
-    library("sp")
-    library("sf")
-    library("rgdal")
+    library("tidyverse")
     initGRASS(gisBase = "/opt/i4/grassgis-7.8.5/grass78",
               gisDbase = gg_gd,
               location = gg_ln,
               mapset = gg_ma,
               override = TRUE,
               remove_GISRC = TRUE)
-    use_sp()
+    use_sf()
     execGRASS("g.proj", flags = "c", epsg = 25833)
     Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-7.8.5/grass78/etc/python:",
                                    "/opt/i4/i4-0.0.7/lib/python3.8/site-packag",
@@ -39,9 +37,9 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
                                           type = "vector", intern = TRUE)
     
     # files
-    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", spdf.tiles_elbe$name,
+    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_elbe$name,
                         "_DEM.tif")
-    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", spdf.tiles_elbe$name,
+    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_elbe$name,
                         "_CSA.tif")
     
     # import missing vector data
@@ -61,15 +59,15 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     }
     
     # import DEM's and compute CSA's
-    for (i in 1:length(spdf.tiles_elbe)) {
+    for (i in 1:nrow(sf.tiles_elbe)) {
         # create or change into a mapset
         if (! dir.exists(paste(sep = "/", gg_gd, gg_ln,
-                               spdf.tiles_elbe$name[i]))) {
+                               sf.tiles_elbe$name[i]))) {
             execGRASS("g.mapset", flags = c("c", "quiet"),
-                      mapset = spdf.tiles_elbe$name[i], location = gg_ln)
+                      mapset = sf.tiles_elbe$name[i], location = gg_ln)
         } else {
             execGRASS("g.mapset", flags = c("quiet"),
-                      mapset = spdf.tiles_elbe$name[i], location = gg_ln)
+                      mapset = sf.tiles_elbe$name[i], location = gg_ln)
         }
         
         # import the DEM's
@@ -110,21 +108,21 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
                       output = cache_csa[i], createopt = c("TFW=NO",
                                                            "COMPRESS=LZW"))
             execGRASS("g.region", region = paste0("region_",
-                                                  spdf.tiles_elbe$name[i],
+                                                  sf.tiles_elbe$name[i],
                                                   "@PERMANENT"))
         }
         
-        if (! paste0(substr(spdf.tiles_elbe$name[i], 1, 5),
+        if (! paste0(substr(sf.tiles_elbe$name[i], 1, 5),
                      "cross_section_areas") %in% vectors_present_m) {
             execGRASS("r.to.vect", input = "CROSS_SECTION_AREAS",
-                      output = paste0(substr(spdf.tiles_elbe$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_elbe$name[i], 1, 5),
                                       "cross_section_areas"),
                       type = "area", column = "station_int",
                       flags = c("quiet", "overwrite"))
             execGRASS("v.extract",
-                      input = paste0(substr(spdf.tiles_elbe$name[i], 1, 5),
+                      input = paste0(substr(sf.tiles_elbe$name[i], 1, 5),
                                             "cross_section_areas"),
-                      output = paste0(substr(spdf.tiles_elbe$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_elbe$name[i], 1, 5),
                                       "cross_section_areas_sel"),
                       where = paste0("station_int >= ",
                                      df.sections_elbe$from_km[i] * 1000,
@@ -132,9 +130,9 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
                                      df.sections_elbe$to_km[i] * 1000),
                       flags = c("quiet", "overwrite"))
             execGRASS("g.rename", flags = c("quiet", "overwrite"),
-                      vector = paste0(substr(spdf.tiles_elbe$name[i], 1, 5),
+                      vector = paste0(substr(sf.tiles_elbe$name[i], 1, 5),
                                       "cross_section_areas_sel,",
-                                      substr(spdf.tiles_elbe$name[i], 1, 5),
+                                      substr(sf.tiles_elbe$name[i], 1, 5),
                                       "cross_section_areas"))
         }
     }
@@ -145,8 +143,8 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
     if (! "cross_section_areas" %in% vectors_present) {
         execGRASS("v.patch", flags = c("quiet", "e", "overwrite"),
                   input = paste0(
-                      paste0(substr(spdf.tiles_elbe$name, 1, 5),
-                             "cross_section_areas@", spdf.tiles_elbe$name),
+                      paste0(substr(sf.tiles_elbe$name, 1, 5),
+                             "cross_section_areas@", sf.tiles_elbe$name),
                       collapse = ","),
                   output = "cross_section_areas")
         execGRASS("v.dissolve", input = "cross_section_areas",
@@ -154,104 +152,89 @@ if (!(file.exists("data-raw/spdf.active_floodplain_elbe_csa.rda"))) {
                   flags = "overwrite")
     }
     
-    spdf.active_floodplain_elbe_csa <- readVECT("cross_section_areas@PERMANENT")
-    crs(spdf.active_floodplain_elbe_csa) <- UTM33N
-    names(spdf.active_floodplain_elbe_csa) <- "station_int"
-    spdf.active_floodplain_elbe_csa$station <- as.numeric(
-        spdf.active_floodplain_elbe_csa$station_int / 1000)
+    sf.afe_csa <- readVECT("cross_section_areas@PERMANENT")
+    sf.afe_csa <- sf.afe_csa %>%
+                      st_cast("POLYGON")  %>%
+                      aggregate(list(.$station_int), first) %>%
+                      st_cast("MULTIPOLYGON")
     
     # section
-    if (!"section" %in% names(spdf.active_floodplain_elbe_csa)) {
-        spdf.tiles <- spdf.tiles_elbe[,c("name")]
-        names(spdf.tiles) <- "section"
-        sf.af <- st_as_sf(spdf.active_floodplain_elbe_csa)
-        sf.t <- st_as_sf(spdf.tiles)
-        sf.aft <- st_join(sf.af, sf.t)
-        sf.aft <- sf.aft[!grepl(".", row.names(sf.aft), fixed = TRUE), ]
-        spdf.active_floodplain_elbe_csa <- as(sf.aft, "Spatial")
-        rm(spdf.tiles, sf.af, sf.t, sf.aft)
+    if (!"section" %in% names(sf.afe_csa)) {
+        sf.tiles <- sf.tiles_elbe[, "name"]
+        names(sf.tiles)[1] <- "section"
+        sf.afe_csa <- st_join(sf.afe_csa, sf.tiles)
+        sf.afe_csa <- sf.afe_csa[!grepl(".", row.names(sf.afe_csa),
+                                        fixed = TRUE), ]
+        rm(sf.tiles)
     }
     
-    spdf.active_floodplain_elbe_csa$section <- 
-        as.character(spdf.active_floodplain_elbe_csa$section)
+    sf.afe_csa$section <- as.character(sf.afe_csa$section)
     
     # section_do
-    if (!"section_do" %in% names(spdf.active_floodplain_elbe_csa)) {
+    if (!"section_do" %in% names(sf.afe_csa)) {
         
-        spdf.active_floodplain_elbe_csa$section_do <- 
-            rep(NA_character_, nrow(spdf.active_floodplain_elbe_csa))
+        sf.afe_csa$section_do <- rep(NA_character_, nrow(sf.afe_csa))
         
-        spdf.tiles <- spdf.tiles_elbe[,c("name")]
-        names(spdf.tiles) <- "section"
+        sf.tiles <- sf.tiles_elbe[,c("name")]
+        names(sf.tiles)[1] <- "section"
         
-        for (i in 1:(nrow(spdf.tiles) - 1)) {
+        for (i in 1:(nrow(sf.tiles) - 1)) {
             # in section
-            section <- spdf.tiles$section[i]
-            id_sec <- row.names(spdf.active_floodplain_elbe_csa[
-                which(spdf.active_floodplain_elbe_csa$section == section), ])
+            section <- sf.tiles$section[i]
+            id_sec <- row.names(sf.afe_csa[which(sf.afe_csa$section == section), ])
             
             # in downstream tile
-            section_do <- spdf.tiles$section[i + 1]
-            spdf.tile_sel <- spdf.tiles[i + 1,]
-            id_sel <- row.names(spdf.active_floodplain_elbe_csa[spdf.tile_sel,])
+            section_do <- sf.tiles$section[i + 1]
+            sf.tile_sel <- sf.tiles[i + 1, ]
+            id_sel <- row.names(sf.afe_csa[sf.tile_sel, ])
             
             id <- id_sec[id_sec %in% id_sel]
-            spdf.active_floodplain_elbe_csa[id, "section_do"] <- as.character(section_do)
+            sf.afe_csa[id, "section_do"] <- as.character(section_do)
         }
-        rm(i)
+        rm(i, id, id_sec, id_sel, sf.tile_sel, sf.tiles, section, section_do)
     }
+    
+    sf.afe_csa$section_do <- as.character(sf.afe_csa$section_do)
     
     # bwstr_id
-    if (!"bwastr_id" %in% names(spdf.active_floodplain_elbe_csa)) {
-        spdf.hecto <- readOGR("/home/WeberA/elbe1d/data-raw/VerkNetBWaStr",
-                              "hectometer")[, 2]
-        crs(spdf.hecto) <- UTM33N
-        names(spdf.hecto) <- "bwastr_id"
-        sf.af <- st_as_sf(spdf.active_floodplain_elbe_csa)
-        sf.t <- st_as_sf(spdf.hecto)
-        sf.aft <- st_join(sf.af, sf.t)
-        sf.aft <- sf.aft[!grepl(".", row.names(sf.aft), fixed = TRUE), ]
-        spdf.active_floodplain_elbe_csa <- as(sf.aft, "Spatial")
-        rm(spdf.hecto, sf.af, sf.t, sf.aft)
+    if (!"bwastr_id" %in% names(sf.afe_csa)) {
+        sf.hecto <- st_zm(st_read("/home/WeberA/elbe1d/data-raw/VerkNetBWaStr/hectometer.shp"))
+        sf.hecto <- sf.hecto[, "BWASTR_ID"]
+        names(sf.hecto)[1] <- "bwastr_id"
+        sf.afe_csa <- st_join(sf.afe_csa, sf.hecto)
+        rm(sf.hecto)
     }
     
-    spdf.active_floodplain_elbe_csa$bwastr_id <- 
-        as.character(spdf.active_floodplain_elbe_csa$bwastr_id)
+    sf.afe_csa$bwastr_id <- as.character(sf.afe_csa$bwastr_id)
     
     # station_true
-    if (!"station_true" %in% names(spdf.active_floodplain_elbe_csa)) {
+    if (!"station_true" %in% names(sf.afe_csa)) {
         load("~/.hydflood/spdf.afe_csa.rda")
-        i <- order(spdf.active_floodplain_elbe_csa$station,
-                   spdf.active_floodplain_elbe_csa$bwastr_id)
-        spdf.active_floodplain_elbe_csa <- spdf.active_floodplain_elbe_csa[i, ]
         i <- order(spdf.afe_csa$station, spdf.afe_csa$bwastr_id)
         spdf.afe_csa <- spdf.afe_csa[i, ]
         
-        spdf.active_floodplain_elbe_csa$station_true <- 
-            spdf.afe_csa$station_true
+        sf.afe_csa$station_true <- spdf.afe_csa$station_true
         
         rm(i, spdf.afe_csa)
     }
     
     # reorder columns
-    spdf.active_floodplain_elbe_csa <- spdf.active_floodplain_elbe_csa[ ,
+    sf.afe_csa <- sf.afe_csa[ ,
         c("bwastr_id", "station_int", "station", "station_true", "section",
           "section_do")]
     
     # export
-    usethis::use_data(spdf.active_floodplain_elbe_csa,
-                      overwrite = TRUE, compress = "bzip2")
-    system("mv data/spdf.active_floodplain_elbe_csa.rda data-raw/")
-    system("cp data-raw/spdf.active_floodplain_elbe_csa.rda ~/.hydflood/")
+    usethis::use_data(sf.afe_csa, overwrite = TRUE, compress = "bzip2")
+    system("mv data/sf.afe_csa.rda data-raw/")
+    system("cp data-raw/sf.afe_csa.rda ~/.hydflood/")
     
     # clean up
-    rm(spdf.active_floodplain_elbe_csa, spdf.tiles, spdf.tile_sel,
-       cache_csa, cache_dem, df.sections_elbe, id, id_sec, id_sel,
-       rasters_present, rasters_present_m, section, section_do, vectors_present,
-       vectors_present_m, gg_gd, gg_ln, gg_ma, spdf.tiles_elbe)
+    rm(sf.afe_csa, cache_csa, cache_dem, df.sections_elbe, sf.tiles_elbe,
+       rasters_present, rasters_present_m, vectors_present, vectors_present_m,
+       gg_gd, gg_ln, gg_ma)
     
 } else {
-    write("data-raw/spdf.active_floodplain_elbe_csa.rda exists already", 
+    write("data-raw/sf.afe_csa.rda exists already", 
           stderr())
 }
 
