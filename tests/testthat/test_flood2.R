@@ -1,5 +1,4 @@
 library(testthat)
-options("rgdal_show_exportToProj4_warnings" =  "none")
 library(hydflood)
 
 context("flood2")
@@ -8,8 +7,8 @@ test_that("flood2: checks", {
     
     # Elbe
     hf <- Sys.getenv("hydflood")
-    x <- hydRasterStack(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"), 
-                        filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
+    x <- hydSpatRaster(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"),
+                       filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -19,8 +18,7 @@ test_that("flood2: checks", {
     expect_error(flood2(seq = seq), "The 'x' argument has to be supplied.")
     
     # x class
-    expect_error(flood2(x = x$dem, seq = seq),
-                 "'x' must be type 'hydRasterStack'")
+    expect_error(flood2(x = seq), "'x' must be type 'SpatRaster'")
     
     # seq missing
     expect_error(flood2(x), "The 'seq' argument has to be supplied.")
@@ -69,8 +67,8 @@ test_that("flood2: Elbe", {
     
     # Elbe
     hf <- Sys.getenv("hydflood")
-    x <- hydRasterStack(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"), 
-                        filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
+    x <- hydSpatRaster(filename_dem = paste0(hf, "/data-raw/raster.dem.tif"), 
+                       filename_csa = paste0(hf, "/data-raw/raster.csa.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -78,12 +76,9 @@ test_that("flood2: Elbe", {
     # compute a flood duration
     fd <- flood2(x = x, seq = seq)
     
-    expect_equal(class(fd)[1], "RasterLayer")
-    expect_equal(maxValue(fd), 31)
-    expect_equal(minValue(fd), 0)
-    expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood::flood2() for th",
-                        "e following temporal sequence with length 31:"))
+    expect_equal(class(fd)[1], "SpatRaster")
+    expect_equal(fd@ptr$range_max, length(seq))
+    expect_equal(fd@ptr$range_min, 0)
     
 })
 
@@ -92,10 +87,10 @@ test_that("flood2: Rhein", {
     
     # Rhein
     hf <- Sys.getenv("hydflood")
-    x <- hydRasterStack(filename_dem = paste0(hf, 
-                                              "/data-raw/raster.dem_plittersdorf.tif"), 
-                        filename_csa = paste0(hf, 
-                                              "/data-raw/raster.csa_plittersdorf.tif"))
+    x <- hydSpatRaster(filename_dem =
+                           paste0(hf, "/data-raw/raster.dem_plittersdorf.tif"),
+                       filename_csa = 
+                           paste0(hf, "/data-raw/raster.csa_plittersdorf.tif"))
     
     # create a temporal sequence
     seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -103,11 +98,8 @@ test_that("flood2: Rhein", {
     # compute a flood duration
     fd <- flood2(x = x, seq = seq)
     
-    expect_equal(class(fd)[1], "RasterLayer")
-    expect_equal(maxValue(fd), 31)
-    expect_equal(minValue(fd), 0)
-    expect_equal(fd@data@attributes[[1]][1], 
-                 paste0("flood duration computed by hydflood::flood2() for th",
-                        "e following temporal sequence with length 31:"))
+    expect_equal(class(fd)[1], "SpatRaster")
+    expect_equal(fd@ptr$range_max, length(seq))
+    expect_equal(fd@ptr$range_min, 0)
     
 })

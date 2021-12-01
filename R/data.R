@@ -1,5 +1,5 @@
-#' @name spdf.active_floodplain_elbe
-#' @rdname spdf.active_floodplain_elbe
+#' @name sf.afe
+#' @rdname sf.afe
 #' 
 #' @title Active floodplain along River Elbe
 #' 
@@ -14,7 +14,7 @@
 #'   flood protection measures and manually improved with recent digital 
 #'   elevation models and aerial images at a scale < 1:10000.
 #' 
-#' @format A \code{SpatialPolygonsDataFrame} containing 1 polygon 
+#' @format A \code{sf} containing 1 polygon 
 #' 
 #' @references 
 #'   \insertRef{brunotte_flussauen_2009}{hydflood}
@@ -23,10 +23,39 @@
 #'   
 #'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
-"spdf.active_floodplain_elbe"
+"sf.afe"
 
-#' @name spdf.active_floodplain_rhein
-#' @rdname spdf.active_floodplain_rhein
+#' @name sf.af
+#' @rdname sf.af
+#' @title Obtain projected versions of sf.afe and sf.afr
+#' 
+#' @description Obtain projected versions of sf.afe and sf.afr
+#' 
+#' @param name either 'Elbe' or 'Rhein'.
+#' 
+#' @return \code{sf} with the projected active floodplain 
+#' 
+#' @examples 
+#'   library(hydflood)
+#'   sf.af(name = "Elbe")
+#' 
+#' @export
+sf.af <- function(name = NULL) {
+    if (name == "Elbe") {
+        x <- sf.afe
+        sf::st_crs(x) <- sf::st_crs(25833)
+        return(x)
+    } else if (name == "Rhein") {
+        x <- sf.afr
+        sf::st_crs(x) <- sf::st_crs(25832)
+        return(x)
+    } else {
+        stop("error")
+    }
+}
+
+#' @name sf.afr
+#' @rdname sf.afr
 #' 
 #' @title Active floodplain along River Rhine
 #' 
@@ -41,7 +70,7 @@
 #'   flood protection measures and manually improved with recent digital 
 #'   elevation models and aerial images at a scale < 1:10000.
 #' 
-#' @format A \code{SpatialPolygonsDataFrame} containing 1 polygon 
+#' @format A \code{sf} containing 1 polygon 
 #' 
 #' @references 
 #'   \insertRef{brunotte_flussauen_2009}{hydflood}
@@ -50,10 +79,10 @@
 #'   
 #'   \insertRef{bfn_auenzustandsbericht_2009}{hydflood}
 #' 
-"spdf.active_floodplain_rhein"
+"sf.afr"
 
-#' @name spdf.tiles_elbe
-#' @rdname spdf.tiles_elbe
+#' @name sf.tiles_elbe
+#' @rdname sf.tiles_elbe
 #' 
 #' @title Tiling along the active floodplain of River Elbe
 #' 
@@ -65,7 +94,7 @@
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{SpatialPolygonsDataFrame} containing 49 polygons with 11 attributes:
+#' @format A \code{sf} containing 49 polygons with 11 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
 #'   \item{name}{of the tile (type \code{character}).} 
@@ -85,10 +114,10 @@
 #'   
 #'   \insertRef{weber_dgm_elbe_2020}{hydflood}
 #' 
-"spdf.tiles_elbe"
+"sf.tiles_elbe"
 
-#' @name spdf.tiles_rhein
-#' @rdname spdf.tiles_rhein
+#' @name sf.tiles_rhein
+#' @rdname sf.tiles_rhein
 #' 
 #' @title Tiling along the active floodplain of River Rhine
 #' 
@@ -101,7 +130,7 @@
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{SpatialPolygonsDataFrame} containing 40 polygons with 11 attributes:
+#' @format A \code{sf} containing 40 polygons with 11 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
 #'   \item{name}{of the tile (type \code{character}).} 
@@ -121,4 +150,33 @@
 #'   
 #'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #' 
-"spdf.tiles_rhein"
+"sf.tiles_rhein"
+
+#' @name sf.tiles
+#' @rdname sf.tiles
+#' @title Obtain projected versions of sf.tiles_elbe and sf.tiles_rhein
+#' 
+#' @description Obtain projected versions of sf.tiles_elbe and sf.tiles_rhein
+#' 
+#' @param name either 'Elbe' or 'Rhein'.
+#' 
+#' @return \code{sf} with projected tiles
+#' 
+#' @examples 
+#'   library(hydflood)
+#'   sf.tiles(name = "Elbe")
+#' 
+#' @export
+sf.tiles <- function(name = NULL) {
+    if (name == "Elbe") {
+        x <- sf.tiles_elbe
+        sf::st_crs(x) <- sf::st_crs(25833)
+        return(x)
+    } else if (name == "Rhein") {
+        x <- sf.tiles_rhein
+        sf::st_crs(x) <- sf::st_crs(25832)
+        return(x)
+    } else {
+        stop("error")
+    }
+}

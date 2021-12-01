@@ -39,24 +39,24 @@
 #'   increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}},
-#'   \code{\link[hyd1d]{waterLevelPegelonline}},
-#'   \code{\link[sp]{SpatialPointsDataFrame-class}}
+#'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
 #' @examples \dontrun{
 #' library(hydflood)
 #' 
-#' # create a random SpatialPoints object
-#' c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#' e <- extent(309000, 310000, 5749000, 5750000)
-#' sp.area <- hydflood:::extent2polygon(e, c)
+#' # create a random points object
+#' c <- st_crs(25833)
+#' e <- c(xmin = 309000, xmax = 310000, ymin = 5749000, ymax = 5750000)
 #' set.seed(123)
-#' sp <- spsample(sp.area, n = 10, "random")
+#' points <- st_sample(hydflood:::extent2polygon(e, c), size = 10, "random")
+#' p <- data.frame(id = 1:10)
+#' st_geometry(p) <- points
 #' 
 #' # create a temporal sequence
 #' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
 #' 
 #' # compute a flood duration
-#' spdf <- flood3Points(x = sp, seq = seq)
+#' p <- flood3Points(x = p, seq = seq)
 #' }
 #' 
 #' @export
@@ -76,78 +76,42 @@ flood3Points <- function(x, seq) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! class(x)[1] %in% c("SpatialPoints" , "SpatialPointsDataFrame")) {
-            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be eit",
-                                       "her type 'SpatialPoints' or 'SpatialPo",
-                                       "intsDataFrame'."))
+        if (! all(class(x) %in% c("sf", "data.frame"))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be typ",
+                                       "e 'sf' and 'data.frame'."))
         }
         
         # crs
-        if ( !isUTM32(x@proj4string) & !isUTM33(x@proj4string)) {
+        if ( !isUTM32(x) & !isUTM33(x)) {
             errors <- c(errors, paste0("Error ", l(errors), ": The projection",
                                        " of x must be either 'ETRS 1989 UTM 32",
                                        "N' or 'ETRS 1989 UTM 33N'."))
         } else {
-            if (isUTM32(x@proj4string)) {
-                zone <- "32"
+            if (isUTM32(x)) {
                 river <- "Rhein"
-                raster::crs(x) <- utm32n
-                # within <- rgeos::gContains(spdf.tiles_rhein, x, byid = TRUE)[,1]
-                # if (any(within)) {
-                #     spdf.tiles <- spdf.tiles_rhein[within,]
-                # } else {
-                #     spdf.tiles <- spdf.tiles_rhein[x,]
-                # }
-                spdf.tiles <- spdf.tiles_rhein[x,]
-            } else if (isUTM33(x@proj4string)) {
-                zone <- "33"
+            } else if (isUTM33(x)) {
                 river <- "Elbe"
-                raster::crs(x) <- utm33n
-                # within <- rgeos::gContains(x, spdf.tiles_elbe, byid = TRUE)[,1]
-                # if (any(within)) {
-                #     spdf.tiles <- spdf.tiles_elbe[within,]
-                # } else {
-                #     spdf.tiles <- spdf.tiles_elbe[x,]
-                # }
-                spdf.tiles <- spdf.tiles_elbe[x,]
             } else {
                 stop(errors)
             }
-            # rm(within)
         }
         
         # check position
         if (exists("river")) {
-            # access the spdf.active_floodplain_* data
-            active_floodplain <- paste0("spdf.active_floodplain_",
-                                        tolower(river))
-            get(active_floodplain, pos = -1)
-            if (river == "Elbe") {
-                l.over <- x[spdf.active_floodplain_elbe,]
-                if (length(l.over) == 0) {
-                    errors <- c(errors, paste0("Error ", l(errors), ": 'x' doe",
-                                               "s NOT overlap with the active ",
-                                               "floodplain of River Elbe."))
-                } else if (length(l.over) < length(x)) {
-                    message(paste0("'x' does not fully overlap with the active",
-                                   " floodplain of River Elbe.\nFlood duration",
-                                   "s are computed only for overlapping points",
-                                   "."))
-                }
-            } else if (river == "Rhein") {
-                l.over <- x[spdf.active_floodplain_rhein,]
-                if (length(l.over) == 0) {
-                    errors <- c(errors, paste0("Error ", l(errors), ": 'x' doe",
-                                               "s NOT overlap with the active ",
-                                               "floodplain of River Rhein."))
-                } else if (length(l.over) < length(x)) {
-                    message(paste0("'x' does not fully overlap with the active",
-                                   " floodplain of River Rhine.\nFlood duratio",
-                                   "ns are computed only for overlapping point",
-                                   "s."))
-                }
+            sf.tiles <- sf.tiles(name = river)
+            sf.tiles$tile_name <- sf.tiles$name
+            sf.tiles[, which(! names(sf.tiles) %in% c("tile_name", "geometry",
+                                                      "url"))] <- NULL
+            af <- sf.af(name = river)
+            if (nrow(x[af,]) == 0) {
+                errors <- c(errors, paste0("Error ", l(errors), ": 'x' does NO",
+                                           "T overlap with the active floodpla",
+                                           "in of River ", river, "."))
+            } else if (nrow(x[af,]) < nrow(x)) {
+                message(paste0("'x' does not fully overlap with the active flo",
+                               "odplain of River ", river, ".\nFlood durations",
+                               " are computed only for overlapping points."))
             }
-            rm(l.over)
         }
     }
     
@@ -209,68 +173,53 @@ flood3Points <- function(x, seq) {
     # preprocessing
     #####
     # get columns 'dem' and 'csa'
-    if (class(x)[1] == "SpatialPoints") {
-        x <- sp::SpatialPointsDataFrame(sp::coordinates(x),
-            data.frame(id_tmp = 1:length(x),
-                       tile_name = rep(NA_character_, length(x)),
-                       stringsAsFactors = FALSE),
-            proj4string = x@proj4string)
-    } else {
-        if (!"id_tmp" %in% names(x)) {
-            x$id_tmp <- 1:length(x)
-        }
+    if (!"id_tmp" %in% names(x)) {
+            x$id_tmp <- 1:nrow(x)
     }
     
     tile_name <- FALSE
     if (!"dem" %in% names(x)) {
-        x$dem <- numeric(length(x))
+        x$dem <- numeric(nrow(x))
         if (!"tile_name" %in% names(x)) {
-            x$tile_name <- rep(NA_character_, length(x))
+            x <- sf::st_join(x, sf.tiles, largest = TRUE)
+            x$url <- NULL
             tile_name <- TRUE
         } else {
             warning("Attribute column 'tile_name' has been updated!")
         }
-        for (i in 1:length(spdf.tiles)) {
-            id <- x[spdf.tiles[i,], ]$id_tmp
-            x$tile_name[id] <- spdf.tiles$name[i]
-            f <- paste0(hydflood_cache$cache_path_get(), "/", spdf.tiles$name[i],
-                        "_DEM.tif")
+        for (i in unique(x$tile_name)) {
+            id <- x[which(x$tile_name == i), ]$id_tmp
+            f <- paste0(hydflood_cache$cache_path_get(), "/", i, "_DEM.tif")
             if (!file.exists(f)) {
-                utils::download.file(spdf.tiles$url[i], f, quiet = TRUE)
+                utils::download.file(
+                    sf.tiles$url[which(sf.tiles$tile_name == i)],
+                    f, quiet = TRUE)
             }
-            x$dem[id] <- round(raster::extract(raster::raster(f), x[id, ]), 2)
-            if (length(id) == length(x)) {
-                break
-            }
+            x$dem[id] <- round(terra::extract(terra::rast(f),
+                                              sf::st_coordinates(x[id, ]))[,1],
+                               2)
         }
     }
     
     if (! "csa" %in% names(x)) {
-        csa_file <- paste0(hydflood_cache$cache_path_get(), "/spdf.active_floo",
-                           "dplain_", tolower(river), "_csa.rda")
+        csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
+                           tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
-            url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/spdf", 
-                          ".active_floodplain_", tolower(river), "_csa.rda")
+            url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/sf",
+                          ".af", tolower(substring(river, 1, 1)), "_csa.rda")
             utils::download.file(url, csa_file, quiet = TRUE)
         }
         load(csa_file)
         if (river == "Elbe") {
-            assign("spdf.active_floodplain_csa",
-                   spdf.active_floodplain_elbe_csa)
+            assign("sf.af_csa", sf.afe_csa)
         } else {
-            assign("spdf.active_floodplain_csa",
-                   spdf.active_floodplain_rhein_csa)
+            assign("sf.af_csa", sf.afr_csa)
         }
-        
-        x$csa <- rep(NA_integer_, length(x))
-        spdf.csa <- spdf.active_floodplain_elbe_csa[x, ]
-        for (i in 1:length(spdf.csa)) {
-            id <- x[spdf.csa[i,], ]$id_tmp
-            x$csa[id] <- spdf.csa[i,]$station_int
-            if (length(id) == length(x)) {
-                break
-            }
-        }
+        # subset sf.af_csa
+        sf.af_csa <- sf.af_csa[which(sf.af_csa$section %in% unique(x$tile_name)),
+                               "station_int"]
+        names(sf.af_csa)[1] <- "csa"
+        x <- sf::st_join(x, sf.af_csa)
     }
     
     #####
@@ -280,7 +229,7 @@ flood3Points <- function(x, seq) {
     if ("flood3" %in% names(x)) {
         warning("Attribute column 'flood3' has been updated!")
     }
-    x$flood3 <- rep(NA_integer_, length(x))
+    x$flood3 <- rep(NA_integer_, nrow(x))
     x$flood3[id_nna] <- 0
     
     wldf_initial <- WaterLevelDataFrame(river = river, time = as.POSIXct(NA),
@@ -301,7 +250,7 @@ flood3Points <- function(x, seq) {
             wldf <- hyd1d::waterLevelPegelonline(wldf)
         }
         df <- as.data.frame(wldf)
-        xdf <- merge(x@data, df, by.x = "csa", by.y = "station_int",
+        xdf <- merge(x, df, by.x = "csa", by.y = "station_int",
                      all.x = TRUE, incomparables = NA)
         id <- xdf$id_tmp[which(xdf$w > xdf$dem)]
         x$flood3[id] <- x$flood3[id] + 1

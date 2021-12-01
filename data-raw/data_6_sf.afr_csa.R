@@ -1,10 +1,10 @@
 
-# store spdf.active_floodplain_rhein_csa as external dataset
-if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
+# store sf.afr_csa as external dataset
+if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     
     # load missing dataset
-    if (! exists("spdf.tiles_rhein")) {
-        load("data/spdf.tiles_rhein.rda")
+    if (! exists("sf.tiles_rhein")) {
+        load("data/sf.tiles_rhein.rda")
     }
     
     # initialize GrassGIS
@@ -12,15 +12,14 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     gg_ln <- "RHEIN"
     gg_ma <- "PERMANENT"
     library("rgrass7")
-    library("sp")
-    library("sf")
+    library("tidyverse")
     initGRASS(gisBase = "/opt/i4/grassgis-7.8.5/grass78",
               gisDbase = gg_gd,
               location = gg_ln,
               mapset = gg_ma,
               override = TRUE,
               remove_GISRC = TRUE)
-    use_sp()
+    use_sf()
     execGRASS("g.proj", flags = "c", epsg = 25832)
     Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-7.8.5/grass78/etc/python:",
                                    "/opt/i4/i4-0.0.7/lib/python3.8/site-packag",
@@ -36,23 +35,17 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
                                           type = "raster", intern = TRUE)
     vectors_present <- rgrass7::execGRASS("g.list", mapset = ".", 
                                           type = "vector", intern = TRUE)
-    regions_present <- rgrass7::execGRASS("g.list", mapset = ".", 
-                                          type = "region", intern = TRUE)
     
     # files
-    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/",
-                        spdf.tiles_rhein$name, "_DEM.tif")
-    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/",
-                        spdf.tiles_rhein$name, "_CSA.tif")
+    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhein$name,
+                        "_DEM.tif")
+    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhein$name,
+                        "_CSA.tif")
     
     # import missing vector data
     if (! "active_floodplain" %in% vectors_present) {
         execGRASS("v.import", input = "data-raw/active_floodplain_rhein.shp",
                   output = "active_floodplain", encoding = "UTF-8")
-    }
-    if (! "region_total" %in% regions_present) {
-        execGRASS("g.region", vector = "active_floodplain",
-                  save = "region_total")
     }
     if (! "tiles" %in% vectors_present) {
         execGRASS("v.import", input = "data-raw/tiles_rhein.shp",
@@ -61,47 +54,42 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     if (! "cross_section_traces" %in% vectors_present) {
         execGRASS("v.import", input = "data-raw/cross_section_traces_rhein.shp",
                   output = "cross_section_traces", encoding = "UTF-8")
+        execGRASS("v.db.renamecolumn", map = "cross_section_traces",
+                  column = "station_in,station_int")
     }
     
     # import DEM's and compute CSA's
-    for (i in 1:length(spdf.tiles_rhein)) {
+    for (i in 1:nrow(sf.tiles_rhein)) {
         # create or change into a mapset
         if (! dir.exists(paste(sep = "/", gg_gd, gg_ln,
-                               spdf.tiles_rhein$name[i]))) {
+                               sf.tiles_rhein$name[i]))) {
             execGRASS("g.mapset", flags = c("c", "quiet"),
-                      mapset = spdf.tiles_rhein$name[i], location = gg_ln)
+                      mapset = sf.tiles_rhein$name[i], location = gg_ln)
         } else {
             execGRASS("g.mapset", flags = c("quiet"),
-                      mapset = spdf.tiles_rhein$name[i], location = gg_ln)
+                      mapset = sf.tiles_rhein$name[i], location = gg_ln)
         }
         
-        rasters_present_m <- rgrass7::execGRASS("g.list", mapset = ".",
-                                                type = "raster", intern = TRUE)
-        vectors_present_m <- rgrass7::execGRASS("g.list", mapset = ".",
-                                                type = "vector", intern = TRUE)
-        
         # import the DEM's
+        rasters_present_m <- rgrass7::execGRASS("g.list", mapset = ".", 
+                                                type = "raster", intern = TRUE)
+        vectors_present_m <- rgrass7::execGRASS("g.list", mapset = ".", 
+                                                type = "vector", intern = TRUE)
         if (! "DEM" %in% rasters_present_m) {
             execGRASS("r.in.gdal", flags = c("quiet", "overwrite"),
                       input = cache_dem[i], output = "DEM")
         }
-        
-        # produce the CSA's
-        execGRASS("g.region", flags = c("quiet", "overwrite"), raster = "DEM")
-        
         if (! "ACTIVE_FLOODPLAIN"  %in% rasters_present_m) {
             execGRASS("v.to.rast", flags = c("quiet", "overwrite"),
                       input = "active_floodplain@PERMANENT",
                       output = "ACTIVE_FLOODPLAIN", use = "val")
         }
-        
         if (! "CROSS_SECTION_TRACES"  %in% rasters_present_m) {
             execGRASS("v.to.rast", flags = c("quiet", "overwrite"),
                       input = "cross_section_traces@PERMANENT",
                       output = "CROSS_SECTION_TRACES", use = "attr",
-                      attribute_column = "station_in")
+                      attribute_column = "station_int")
         }
-        
         if (! "CROSS_SECTION_AREAS"  %in% rasters_present_m) {
             execGRASS("r.grow.distance", flags = c("quiet", "overwrite"),
                       input = "CROSS_SECTION_TRACES",
@@ -114,27 +102,27 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
         }
         
         if (! file.exists(cache_csa[i])) {
+            execGRASS("g.region", raster = "DEM")
             execGRASS("r.out.gdal", input = "CROSS_SECTION_AREAS",
-                      type = "Int32", nodata=-999, flags = c("c", "f"),
+                      type = "Int32", nodata=-999, flags = c("c", "f", "overwrite"),
                       output = cache_csa[i], createopt = c("TFW=NO",
                                                            "COMPRESS=LZW"))
+            execGRASS("g.region", region = paste0("region_",
+                                                  sf.tiles_rhein$name[i],
+                                                  "@PERMANENT"))
         }
         
-        if (! paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
+        if (! paste0(substr(sf.tiles_rhein$name[i], 1, 5),
                      "cross_section_areas") %in% vectors_present_m) {
             execGRASS("r.to.vect", input = "CROSS_SECTION_AREAS",
-                      output = paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
                                       "cross_section_areas"),
-                      type = "area", column = "station_in",
+                      type = "area", column = "station_int",
                       flags = c("quiet", "overwrite"))
-            execGRASS("v.db.renamecolumn",
-                      map = paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
-                                   "cross_section_areas"),
-                      column = "station_in,station_int")
             execGRASS("v.extract",
-                      input = paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
+                      input = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
                                      "cross_section_areas"),
-                      output = paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
                                       "cross_section_areas_sel"),
                       where = paste0("station_int >= ",
                                      df.sections_rhein$from_km[i] * 1000,
@@ -142,9 +130,9 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
                                      df.sections_rhein$to_km[i] * 1000),
                       flags = c("quiet", "overwrite"))
             execGRASS("g.rename", flags = c("quiet", "overwrite"),
-                      vector = paste0(substr(spdf.tiles_rhein$name[i], 1, 5),
+                      vector = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
                                       "cross_section_areas_sel,",
-                                      substr(spdf.tiles_rhein$name[i], 1, 5),
+                                      substr(sf.tiles_rhein$name[i], 1, 5),
                                       "cross_section_areas"))
         }
     }
@@ -155,8 +143,8 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
     if (! "cross_section_areas" %in% vectors_present) {
         execGRASS("v.patch", flags = c("quiet", "e", "overwrite"),
                   input = paste0(
-                      paste0(substr(spdf.tiles_rhein$name, 1, 5),
-                             "cross_section_areas@", spdf.tiles_rhein$name),
+                      paste0(substr(sf.tiles_rhein$name, 1, 5),
+                             "cross_section_areas@", sf.tiles_rhein$name),
                       collapse = ","),
                   output = "cross_section_areas")
         execGRASS("v.dissolve", input = "cross_section_areas",
@@ -164,78 +152,75 @@ if (!(file.exists("data-raw/spdf.active_floodplain_rhein_csa.rda"))) {
                   flags = "overwrite")
     }
     
-    spdf.active_floodplain_rhein_csa <- readVECT("cross_section_areas@PERMANENT")
-    crs(spdf.active_floodplain_rhein_csa) <- UTM32N
-    names(spdf.active_floodplain_rhein_csa) <- "station_int"
-    spdf.active_floodplain_rhein_csa$station <- as.numeric(
-        spdf.active_floodplain_rhein_csa$station_int / 1000)
+    sf.afr_csa <- readVECT("cross_section_areas@PERMANENT")
+    names(sf.afr_csa)[1] <- "station_int"
+    sf.afr_csa$station <- as.numeric(sf.afr_csa$station_int / 1000)
+    sf.afr_csa <- sf.afr_csa %>%
+        st_cast("POLYGON")  %>%
+        aggregate(list(.$station_int), first) %>%
+        st_cast("MULTIPOLYGON")
     
     # section
-    if (!"section" %in% names(spdf.active_floodplain_rhein_csa)) {
-        spdf.tiles <- spdf.tiles_rhein[,c("name")]
-        names(spdf.tiles) <- "section"
-        sf.af <- st_as_sf(spdf.active_floodplain_rhein_csa)
-        sf.t <- st_as_sf(spdf.tiles)
-        sf.aft <- st_join(sf.af, sf.t)
-        sf.aft <- sf.aft[!grepl(".", row.names(sf.aft), fixed = TRUE), ]
-        spdf.active_floodplain_rhein_csa <- as(sf.aft, "Spatial")
-        rm(spdf.tiles, sf.af, sf.t, sf.aft)
+    if (!"section" %in% names(sf.afr_csa)) {
+        sf.tiles <- sf.tiles_rhein[, "name"]
+        names(sf.tiles)[1] <- "section"
+        sf.afr_csa <- st_join(sf.afr_csa, sf.tiles)
+        sf.afr_csa <- sf.afr_csa[!grepl(".", row.names(sf.afr_csa),
+                                        fixed = TRUE), ]
+        rm(sf.tiles)
     }
     
-    spdf.active_floodplain_rhein_csa$section <- 
-        as.character(spdf.active_floodplain_rhein_csa$section)
+    sf.afr_csa$section <- as.character(sf.afr_csa$section)
     
     # section_do
-    if (!"section_do" %in% names(spdf.active_floodplain_rhein_csa)) {
+    if (!"section_do" %in% names(sf.afr_csa)) {
         
-        spdf.active_floodplain_rhein_csa$section_do <- 
-            rep(NA_character_, nrow(spdf.active_floodplain_rhein_csa))
+        sf.afr_csa$section_do <- rep(NA_character_, nrow(sf.afr_csa))
         
-        spdf.tiles <- spdf.tiles_rhein[,c("name")]
-        names(spdf.tiles) <- "section"
+        sf.tiles <- sf.tiles_rhein[,c("name")]
+        names(sf.tiles)[1] <- "section"
         
-        for (i in 1:(nrow(spdf.tiles) - 1)) {
+        for (i in 1:(nrow(sf.tiles) - 1)) {
             # in section
-            section <- spdf.tiles$section[i]
-            id_sec <- row.names(spdf.active_floodplain_rhein_csa[
-                which(spdf.active_floodplain_rhein_csa$section == section), ])
+            section <- sf.tiles$section[i]
+            id_sec <- row.names(sf.afr_csa[which(sf.afr_csa$section == section), ])
             
             # in downstream tile
-            section_do <- spdf.tiles$section[i + 1]
-            spdf.tile_sel <- spdf.tiles[i + 1,]
-            id_sel <- row.names(spdf.active_floodplain_rhein_csa[spdf.tile_sel,])
+            section_do <- sf.tiles$section[i + 1]
+            sf.tile_sel <- sf.tiles[i + 1, ]
+            id_sel <- row.names(sf.afr_csa[sf.tile_sel, ])
             
             id <- id_sec[id_sec %in% id_sel]
-            spdf.active_floodplain_rhein_csa[id, "section_do"] <- 
-                as.character(section_do)
+            sf.afr_csa[id, "section_do"] <- as.character(section_do)
         }
-        rm(i)
+        rm(i, id, id_sec, id_sel, sf.tile_sel, sf.tiles, section, section_do)
     }
+    
+    sf.afr_csa$section_do <- as.character(sf.afr_csa$section_do)
     
     # bwstr_id
-    if (!"bwastr_id" %in% names(spdf.active_floodplain_rhein_csa)) {
-        spdf.active_floodplain_rhein_csa$bwastr_id <- "3901"
+    if (!"bwastr_id" %in% names(sf.afr_csa)) {
+        sf.afr_csa$bwastr_id <- "3901"
     }
     
-    # reorder columns
-    spdf.active_floodplain_rhein_csa <- spdf.active_floodplain_rhein_csa[ ,
-        c("bwastr_id", "station_int", "station", "section", "section_do")]
+    sf.afr_csa$bwastr_id <- as.character(sf.afr_csa$bwastr_id)
     
-    # export
-    usethis::use_data(spdf.active_floodplain_rhein_csa,
-                      overwrite = TRUE, compress = "bzip2")
-    system("mv data/spdf.active_floodplain_rhein_csa.rda data-raw/")
-    system("cp data-raw/spdf.active_floodplain_rhein_csa.rda ~/.hydflood/")
+    # station_true
+    
+    # reorder columns
+    sf.afr_csa <- sf.afr_csa[ , c("bwastr_id", "station_int", "station",
+                                  "section", "section_do")]
+    
+    usethis::use_data(sf.afr_csa, overwrite = TRUE, compress = "bzip2")
+    system("mv data/sf.afr_csa.rda data-raw/")
+    system("cp data-raw/sf.afr_csa.rda ~/.hydflood/")
     
     # clean up
-    rm(spdf.active_floodplain_rhein_csa, spdf.tiles, spdf.tile_sel,
-       cache_csa, cache_dem, df.sections_rhein, id, id_sec, id_sel,
-       rasters_present, rasters_present_m, regions_present, section,
-       section_do, vectors_present, vectors_present_m, gg_gd, gg_ln, gg_ma,
-       spdf.tiles_rhein)
+    rm(sf.afr_csa, cache_csa, cache_dem, df.sections_rhein, sf.tiles_rhein,
+       rasters_present, rasters_present_m, vectors_present, vectors_present_m,
+       gg_gd, gg_ln, gg_ma)
     
 } else {
-    write("data-raw/spdf.active_floodplain_rhein_csa.rda exists already", 
+    write("data-raw/sf.afr_csa.rda exists already", 
           stderr())
 }
-
