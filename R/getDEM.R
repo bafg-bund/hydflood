@@ -47,7 +47,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
     
     ##
     # filename
-    if (class(filename) != "character") {
+    if (!inherits(filename, "character")) {
         errors <- c(errors, paste0("Error ", l(errors), ": 'filename' ",
                                    "must be type 'character'."))
     }
@@ -98,9 +98,9 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     }
     if (!missing(crs)) {
-        if (class(crs)[[1]] != "CRS" & class(crs)[[1]] != "crs") {
+        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must be t",
-                                       "ype 'CRS'."))
+                                       "ype 'CRS' or 'crs'."))
             stop(paste0(errors, collapse="\n  "))
         }
         if (crs_int_dem) {
@@ -147,7 +147,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     }
     if (!missing(ext)) {
-        if (class(ext) != "SpatExtent") {
+        if (!inherits(ext, "SpatExtent")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'ext' must ",
                                        "be type 'SpatExtent'."))
             stop(paste0(errors, collapse="\n  "))
@@ -261,12 +261,12 @@ getDEM <- function(filename = '', ext, crs, ...) {
     
     if (length(merge_files) == 1) {
         merge_rasters <- list("x" = merge_files)
-    } else if (length(merge_files) > 1){
-        merge_rasters <- list("x" = terra::src(merge_files))
+    } else if (length(merge_files) > 1) {
+        merge_rasters <- list("x" = terra::sprc(merge_files))
         if (file_create_dem) {
             merge_rasters[["filename"]] <- filename
-            if (length(args) > 0){
-                for (i in 1:length(args)){
+            if (length(args) > 0) {
+                for (i in 1:length(args)) {
                     merge_rasters[[names(args)[i]]] <- args[i]
                 }
             }

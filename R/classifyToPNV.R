@@ -20,7 +20,7 @@
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
 #' @return SpatRaster object containing potential natural vegetation 
-#'   distibution.
+#'   distribution.
 #' 
 #' @references 
 #'   \insertRef{ochs_potential_2020}{hydflood}
@@ -56,7 +56,7 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
     
     ##
     # x
-    if (class(x) != "SpatRaster") {
+    if (!inherits(x, "SpatRaster")) {
         errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be type 'S",
                                    "patRaster'."))
     }
@@ -76,7 +76,7 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
     ##
     # rcl
     if (!is.null(rcl)) {
-        if (class(rcl) != "data.frame") {
+        if (!inherits(rcl, "data.frame")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'rcl' must be t",
                                        "ype 'data.frame'."))
         }
@@ -98,23 +98,23 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
         }
         if (l(errors) != "1") {stop(paste0(errors, collapse="\n  "))}
         
-        if (class(rcl$from) != "numeric" & class(rcl$from) != "integer") {
+        if (!inherits(rcl$from, "numeric") & !inherits(rcl$from, "integer")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$from",
                                        ")' must be either 'numeric' or 'intege",
                                        "r'."))
         }
-        if (class(rcl$to) != "numeric" & class(rcl$to) != "integer") {
+        if (!inherits(rcl$to, "numeric") & !inherits(rcl$to, "integer")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$to",
                                        ")' must be either 'numeric' or 'intege",
                                        "r'."))
         }
-        if (class(rcl$class) != "integer") {
-            errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$from",
-                                       ")' must be 'integer'."))
+        if (!inherits(rcl$class, "integer")) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$clas",
+                                       "s)' must be 'integer'."))
         }
-        if (class(rcl$vegtype) != "character") {
-            errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$from",
-                                       ")' must be 'character'."))
+        if (!inherits(rcl$vegtype, "character")) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'class(rcl$vegt",
+                                       "ype)' must be 'character'."))
         }
         if (l(errors) != "1") {stop(paste0(errors, collapse="\n  "))}
         
@@ -125,12 +125,12 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
                                        "er."))
         }
     } else {
-        rcl <- df.pnv
+        rcl <- hydflood::df.pnv
     }
     
     ##
     # filename
-    if (class(filename) != "character") {
+    if (!inherits(filename, "character")) {
         errors <- c(errors, paste0("Error ", l(errors), ": 'filename' ",
                                    "must be type 'character'."))
     }

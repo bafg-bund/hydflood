@@ -37,7 +37,7 @@ createTiles <- function(x, size_x, size_y, subset = TRUE) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! class(x)[1] %in% c("sf")) {
+        if (! inherits(x, "sf")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be typ",
                                        "e 'sf'."))
         }
@@ -49,7 +49,7 @@ createTiles <- function(x, size_x, size_y, subset = TRUE) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! class(size_x) == "numeric") {
+        if (! inherits(size_x, "numeric")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'size_x' must b",
                                        "e type 'numeric'."))
         }
@@ -61,14 +61,14 @@ createTiles <- function(x, size_x, size_y, subset = TRUE) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! class(size_y) == "numeric") {
+        if (! inherits(size_y, "numeric")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'size_y' must b",
                                        "e type 'numeric'."))
         }
     }
     
-    if (! missing(subset)) {
-        if (class(subset) == "logical") {
+    if (!missing(subset)) {
+        if (!inherits(subset, "logical")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'subset' must b",
                                    "e type 'logical'."))
         }

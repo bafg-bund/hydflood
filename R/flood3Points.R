@@ -76,7 +76,7 @@ flood3Points <- function(x, seq) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! all(class(x) %in% c("sf", "data.frame"))) {
+        if (! all(c(inherits(x, "sf"), inherits(x, "data.frame")))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be typ",
                                        "e 'sf' and 'data.frame'."))
         }
@@ -121,8 +121,8 @@ flood3Points <- function(x, seq) {
                                    "has to be supplied."))
     } else {
         # class
-        if (! (all(class(seq) == "Date")) &
-            ! (all(class(seq) == c("POSIXct", "POSIXt")))) {
+        if (!inherits(seq, "Date") &
+            !all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' must be e",
                                        "ither type 'Date' or c('POSIXct', 'POS",
                                        "IXt')."))
@@ -133,13 +133,13 @@ flood3Points <- function(x, seq) {
                                        " length larger 0."))
         }
         # NA and possible range
-        if (any(is.na(seq))){
+        if (any(is.na(seq))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' or elemen",
                                        "ts of it must not be NA."))
         } else {
             time_min <- trunc(Sys.time() - as.difftime(31, units = "days"),
                               units = "days")
-            if (all(class(seq) == c("POSIXct", "POSIXt"))) {
+            if (all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
                 if (any(seq < time_min)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Values ",
                                                "of 'seq' must be between ",
@@ -150,7 +150,7 @@ flood3Points <- function(x, seq) {
                 }
                 type_date <- FALSE
             }
-            if (all(class(seq) == "Date")) {
+            if (inherits(seq, "Date")) {
                 if (any(seq < as.Date("1960-01-01")) |
                     any(seq > Sys.Date() - 1)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Values ",
