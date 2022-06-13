@@ -22,16 +22,25 @@ if (length(args) != 1) {
 verbose <- TRUE
 quiet <- !verbose
 
-# output paths
-out_dir <- paste0("vignettes/movie/dessau/", year,"/")
-dir.create(out_dir, verbose, TRUE)
-
-# convert the jpg-files to an mp4 video
-system(paste0("ffmpeg -y -framerate 1 -i ", out_dir, "flood3_%03d.jpg -c:v ",
-              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3-1fps.mp4"))
-
-system(paste0("ffmpeg -y -framerate 2 -i ", out_dir, "flood3_%03d.jpg -c:v ",
-              "libx264 -r 30 -pix_fmt yuv420p ", out_dir, "flood3-2fps.mp4"))
+for (year in c("2002", "2013", "2016")) {
+    # output paths
+    out_dir <- paste0("vignettes/movie/dessau/", year,"_en/")
+    dir.create(out_dir, verbose, TRUE)
+    
+    # convert the jpg-files to an mp4 video
+    if (!file.exists(paste0(out_dir, "flood3-1fps.mp4"))) {
+        system(paste0("ffmpeg -y -framerate 1 -i ", out_dir, "flood3_%03d.jpg ",
+                      "-c:v libx264 -r 30 -pix_fmt yuv420p ", out_dir,
+                      "flood3-1fps.mp4"))
+    }
+    
+    
+    if (!file.exists(paste0(out_dir, "flood3-2fps.mp4"))) {
+        system(paste0("ffmpeg -y -framerate 2 -i ", out_dir, "flood3_%03d.jpg ",
+                      "-c:v libx264 -r 30 -pix_fmt yuv420p ", out_dir,
+                      "flood3-2fps.mp4"))
+    }
+}
 
 # quit R
 q("no")

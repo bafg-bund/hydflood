@@ -2,7 +2,7 @@
 # movie_jpg_dessau.R
 #
 # author: arnd.weber@bafg.de
-# date:   01.08.2018
+# date:   27.05.2022
 #
 # purpose:
 #   - plot a sequence of 3D plots with water level data near Dessau
@@ -16,6 +16,12 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 3) {
     stop("Three argument must be supplied (date_min, date_max, id)!\n",
         call. = FALSE)
+    date_min <- as.POSIXct("2016-01-01")
+    date_max <- as.POSIXct("2016-12-31")
+    j <- as.numeric(1)
+    year <- strftime(date_min, "%Y")
+    year_p <- as.character(as.numeric(year) + 1)
+    
 } else {
     date_min <- as.POSIXct(args[1])
     date_max <- as.POSIXct(args[2])
@@ -25,8 +31,8 @@ if (length(args) != 3) {
 }
 
 # # testing
-# date_min <- as.POSIXct("2002-01-01")
-# date_max <- as.POSIXct("2002-12-31")
+# date_min <- as.POSIXct("2016-01-01")
+# date_max <- as.POSIXct("2016-12-31")
 # j <- 1
 # year <- strftime(date_min, "%Y")
 # year_p <- as.character(as.numeric(year) + 1)
@@ -46,7 +52,7 @@ verbose <- TRUE
 quiet <- !verbose
 
 # output paths
-out_dir <- paste0("vignettes/movie/dessau/", year,"/")
+out_dir <- paste0("movie/dessau/", year,"_en/")
 dir.create(out_dir, verbose, TRUE)
 
 #####
@@ -84,7 +90,7 @@ ext <- extent(309000, 310000, 5749000, 5750000)
 ##
 # import and convert raster data
 #raster.dem <- raster("data-raw/raster.dem_dessau.tif")
-raster.dem <- raster("data-raw/raster.dem.tif")
+raster.dem <- raster("raster.dem.tif")
 raster.dem <- raster::crop(raster.dem, ext)
 
 # get rid of some dem artefacts
@@ -94,7 +100,7 @@ df.dem <- as.data.frame(raster.dem, xy = TRUE, na.rm = FALSE)
 ma.dem <- as.matrix(raster.dem)
 
 #raster.csa <- raster("data-raw/raster.csa_dessau.tif")
-raster.csa <- raster("data-raw/raster.csa.tif")
+raster.csa <- raster("raster.csa.tif")
 raster.csa <- raster::crop(raster.csa, ext)
 
 df.csa <- as.data.frame(raster.csa, xy = TRUE, na.rm = FALSE)
@@ -102,7 +108,7 @@ ma.csa <- as.matrix(raster.csa)
 
 ##
 # import hectometer
-spdf.hectometer <- readOGR("data-raw", "doc_hectometer_dessau", 
+spdf.hectometer <- readOGR(".", "doc_hectometer_dessau", 
                            verbose = verbose, pointDropZ = TRUE)
 spdf.hectometer <- crop(spdf.hectometer, ext)
 sp.hectometer <- SpatialPoints(spdf.hectometer, 
@@ -110,9 +116,11 @@ sp.hectometer <- SpatialPoints(spdf.hectometer,
 
 ##
 # import csa polygons
-spdf.csa <- readOGR("data-raw", "doc_csa_dessau", 
-                    verbose = verbose, pointDropZ = TRUE)
+#csa_rast <- spdf.csa
+spdf.csa <- readOGR(".", "doc_csa_dessau_fixed", verbose = verbose, pointDropZ = TRUE) 
+                 #p4s = "+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs ")
 spdf.csa <- crop(spdf.csa, ext)
+#spdf.csa <- rasterToPolygons(raster.csa, dissolve = TRUE)
 
 df.csa_borders <- data.frame(x0 = numeric(), y0 = numeric(), z0 = numeric(), 
                              x1 = numeric(), y1 = numeric(), z1 = numeric())
@@ -142,7 +150,7 @@ for (k in 1:nrow(spdf.csa)) {
 
 #####
 # wldf
-station_int <- unique(raster.csa)
+station_int <- as.integer(unique(raster.csa))
 wldf_template <- WaterLevelDataFrame(river = "Elbe", time = as.POSIXct(NA),
                                      station_int = station_int)
 
@@ -153,7 +161,7 @@ wldf_template <- WaterLevelDataFrame(river = "Elbe", time = as.POSIXct(NA),
 seq <- seq(date_min, date_max, "days")
 
 # subset df.gauging_data for w plotting
-load(paste0(lib, "hyd1d/data/df.gauging_data_latest.rda"))
+df.gauging_data <- readRDS("~/.hyd1d/df.gauging_data_latest.RDS")
 id <- which(df.gauging_data$gauging_station == "DESSAU" &
                 df.gauging_data$date >= as.Date(date_min) &
                 df.gauging_data$date <= as.Date(date_max))
@@ -222,11 +230,15 @@ for (h in seq[j]) {
     # plot w sequence
     plot(x = df.gd$date, y = df.gd$wl, 
          type = "l", ylim = c(53, 61), xlab = NA, xaxt = "n",
-         ylab = "W am Pegel Dessau (m über NHN (DHHN92))",
+         ylab = "water level measured in Dessau (m a.s.l.)",
          col = "darkblue")
     abline(h = mw, lty = 3, col = 1)
-    boxed.labels(as.Date(paste0(year, "-11-15")), mw, "MW", cex = 0.8, 
-                 border = FALSE)
+    if (as.character(year) == "2013") {
+        x_mw <- as.Date(paste0(year, "-03-15"))
+    } else {
+        x_mw <- as.Date(paste0(year, "-10-30"))
+    }
+    boxed.labels(x_mw, mw, "mean water", cex = 0.8, border = FALSE)
     points(as.Date(i), df.gd$wl[which(df.gd$date == as.Date(i))], 
            cex = 1, pch = 21, col = "darkblue", bg = "darkblue")
     axis.Date(1, at = as.Date(paste0(year, c("-02-01", "-03-01", "-04-01",
@@ -236,7 +248,7 @@ for (h in seq[j]) {
               tck = -0.02, labels = FALSE)
     axis.Date(1, at = c(as.Date(paste0(year, "-01-01")), 
                         as.Date(paste0(year, "-07-01")), 
-                        as.Date(paste0(year_p, "-01-01"))), format = "%d.%m.", 
+                        as.Date(paste0(year_p, "-01-01"))), format = "%Y-%m-%d", 
               tck = -0.05, labels = TRUE)
     axis(2, at = c(53, 55, 57, 59, 61), tck = -0.02, labels = FALSE)
     box()
@@ -249,7 +261,7 @@ for (h in seq[j]) {
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = 0.2), 
-            clab = c("m über NHN", "(DHHN92)", "", "DGM"),
+            clab = c("m a.s.l.", "", "DEM"),
             zlim = c(zmin, zmax), expand = 10, box = FALSE,
             scale = FALSE, plot = TRUE, phi = phi, theta = theta,
             lighting = TRUE, lphi = lphi, ltheta = ltheta, shade = 0.5)
@@ -261,7 +273,7 @@ for (h in seq[j]) {
             colkey = list(length = 0.3,
                           width = 0.4,
                           shift = -0.2),
-            clab = c("Wasserspiegel")) #,
+            clab = c("water level")) #,
             #image = list(side = "zmin"))
     persp3D(x = unique(df.dem$y), y = - unique(df.dem$x), z = ma.wl_contour,
             add = TRUE,
@@ -312,13 +324,13 @@ for (h in seq[j]) {
            add = TRUE)
     
     # title
-    title(strftime(i, "%d.%m.%Y"), outer = TRUE, line = -2, font = 1)
+    title(strftime(i, "%Y-%m-%d"), outer = TRUE, line = -2, font = 1)
     
     # close plotting device
     dev.off()
     
     # increase counter j
-    j <- j + 1
+    #j <- j + 1
     
 }
 

@@ -1,0 +1,139 @@
+---
+title: "hydflood - map"
+author: "Arnd Weber"
+date: "`r Sys.Date()`"
+output:
+  html_document
+---
+
+
+``` {r map, fig.width = 6, fig.height = 8}
+library(hydflood)
+library(prettymapr)
+library(ggplot2)
+library(maps)
+library(rosm)
+library(sfheaders)
+
+sf.afe_wgs84 <- st_transform(sf.af("Elbe"), st_crs(4326))
+sf.afe_wgs84 <- sfheaders::sf_remove_holes(sf.afe_wgs84)
+sf.afe_wgs84$river <- "Elbe"
+coords_e <- st_coordinates(sf.afe_wgs84)
+coords_e <- coords_e[coords_e[, "L1"] == 1, ]
+cent_e <- st_centroid(sf.afe_wgs84, of_largest_polygon = TRUE)
+cent_e$X <- st_coordinates(cent_e)[,"X"]
+cent_e$Y <- st_coordinates(cent_e)[,"Y"]
+sf.afr_wgs84 <- st_transform(sf.af("Rhein"), st_crs(4326))
+sf.afr_wgs84 <- st_cast(sf.afr_wgs84, "MULTIPOLYGON")
+sf.afr_wgs84$river <- "Rhine"
+coords_r <- st_coordinates(sf.afr_wgs84)
+coords_r <- coords_r[coords_r[, "L1"] == 1, ]
+# cent_r <- st_centroid(sf.afr_wgs84, of_largest_polygon = TRUE)
+# cent_r$X <- st_coordinates(cent_r)[,"X"]
+# cent_r$Y <- st_coordinates(cent_r)[,"Y"]
+sf.af <- rbind(sf.afe_wgs84, sf.afr_wgs84)
+cent_r <- st_as_sf(data.frame(X = 8.2, Y = 50.5, river = "Rhine"),
+                   coords = c("X", "Y"), remove = FALSE, crs = st_crs(4326))
+
+sf.gs <- st_as_sf(df.gauging_station_data[
+    which((df.gauging_station_data$river == "ELBE" |
+           (df.gauging_station_data$river == "RHEIN" & 
+                df.gauging_station_data$km > 336)) &
+              df.gauging_station_data$data_present),],
+    coords = c("longitude", "latitude"), remove = FALSE, crs = st_crs(4326))
+
+id.gs <- which(sf.gs$gauging_station %in% c("LENZEN", "DESSAU"))
+sf.gs$size <- 1
+sf.gs$size[id.gs] <- 2
+sf.gs$size <- as.factor(sf.gs$size)
+
+sf.gs$fill <- "blue"
+sf.gs$fill[id.gs] <- "red"
+sf.gs$fill <- as.factor(sf.gs$fill)
+
+# Retrievethe map data
+germany <- map_data("world", region = "Germany")
+n <- max(germany$lat)
+s <- min(germany$lat)
+e <- max(germany$long)
+w <- min(germany$long)
+
+# centroid
+library("rnaturalearth")
+library("rnaturalearthdata")
+library("rnaturalearthhires")
+germany <- ne_countries(country = "Germany", scale = "large", returnclass = "sf")
+germany_points <- st_centroid(germany)
+germany_points$X <- st_coordinates(germany_points)[,"X"]
+germany_points$Y <- st_coordinates(germany_points)[,"Y"]
+
+# plot
+bb <- makebbox(n, e, s, w)
+col <- rgb(0, 0, 255, max = 255, alpha = 100, names = "blue40")
+prettymap({
+        osm.plot(bb, type = "cartolight", quiet = TRUE)
+        osm.polygon(x = coords_e[, 1], y = coords_e[, 2], col = col)
+        osm.polygon(x = coords_r[, 1], y = coords_r[, 2], col = col)
+        osm.points(x = sf.gs$longitude, y = sf.gs$latitude, pch = 21,
+                   bg = "blue", cex = 0.7)
+        osm.points(x = sf.gs$longitude[id.gs], y = sf.gs$latitude[id.gs],
+                   pch = 21, bg = "red", cex = 1)
+        osm.text(x = sf.gs$longitude[id.gs], y = sf.gs$latitude[id.gs] - 0.1,
+                 labels = sf.gs$gauging_station[id.gs], col = "red",
+                 adj = c(1, 1), offset = 1)
+        osm.text(germany_points$X, germany_points$Y, labels = "Germany",
+                 cex = 1.5)
+        osm.text(cent_e$X, cent_e$Y, labels = cent_e$river, cex = 1.2)
+        osm.text(cent_r$X, cent_r$Y, labels = cent_r$river, cex = 1.2)
+    },
+    scale.style = "ticks", scale.tick.cex = 0.5, scale.plotepsg = 3857,
+    drawarrow = TRUE, arrow.scale = 0.5
+)
+```
+
+
+``` {r ggmap, fig.width = 6, fig.height = 8}
+theme_set(theme_bw())
+
+library("ggspatial")
+library("ggmap")
+
+col <- c("1" = "blue", "2" = "red")
+
+ggplot() +
+    geom_sf(data = germany) +
+    geom_sf(data = sf.af, fill = "grey20", color = "grey20") +
+    geom_sf(data = sf.gs, aes(colour = size), size = 1.5) +
+    geom_sf(data = sf.gs[which(sf.gs$gauging_station == "DESSAU"),],
+            fill = "red", color = "red", size = 2.5) +
+    geom_text(data = sf.gs[which(sf.gs$gauging_station == "DESSAU"),],
+                  aes(x = longitude - 0.2, y = latitude, label = gauging_station),
+              color = "red", vjust = 2, size = 4) +
+    geom_sf(data = sf.gs[which(sf.gs$gauging_station == "LENZEN"),],
+            fill = "red", color = "red", size = 2.5) +
+    geom_text(data = sf.gs[which(sf.gs$gauging_station == "LENZEN"),],
+                  aes(x = longitude - 0.4, y = latitude, label = gauging_station),
+              color = "red", vjust = 2, size = 4) +
+    geom_text(data = germany_points, aes(x = X, y = Y, label = name),
+              fontface = "bold", size = 8, check_overlap = FALSE) +
+    geom_text(data = cent_e, aes(x = X + 0.2, y = Y, label = river),
+              size = 6, check_overlap = FALSE) +
+    geom_text(data = cent_r, aes(x = X + 0.2, y = Y, label = river),
+              size = 6, check_overlap = FALSE) +
+    annotation_scale(location = "bl", width_hint = 0.5) +
+    annotation_north_arrow(location = "tl", which_north = "true",
+        style = north_arrow_fancy_orienteering) +
+    labs(x = "Longitude", y = "Latitude", colour = "") +
+    scale_color_manual(values = col, labels = c("gauging station", "test area")) + 
+    theme(legend.position = c(0.75, 0.97), legend.direction = "horizontal")
+    #theme(legend.position = "bottom")
+ggsave("map.png", width = 6, height = 8, dpi = 600)
+```
+
+
+``` {r ggmap1, fig.width = 6, fig.height = 8, eval = FALSE}
+bb <- st_bbox(germany)
+names(bb) <- c("left", "bottom", "right", "top")
+basemap <- qmap(location = bb, source = "osm", zoom = 7, color = "bw")
+basemap
+```

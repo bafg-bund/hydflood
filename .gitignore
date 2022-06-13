@@ -37,5 +37,13 @@ shinyapps/flood3daily/www
 shinyapps/flood3wms/www/Thumbs.db
 slurm/log
 vignettes/movie
+vignettes/rosm.cache
+vignettes/wms-legenden
 vignettes/*.mp4
+vignettes/*.png
+vignettes/*.Rdata
+vignettes/*.tab
+vignettes/*.tif
+
+
 
