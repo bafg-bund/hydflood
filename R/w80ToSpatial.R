@@ -1,7 +1,7 @@
-#' @name w80ToSpatialLinesDataFrame
-#' @rdname w80ToSpatialLinesDataFrame
+#' @name w80ToSFL
+#' @rdname w80ToSFL
 #' 
-#' @title Function to convert w80-files to \code{SpatialLinesDataFrame}.
+#' @title Function to convert w80-files to \code{sfc_LINESTRING}.
 #' 
 #' @description This function converts w80-files, an ascii-format with 80
 #'   characters per line for spatial point data used by the German Waterway and
@@ -36,26 +36,26 @@
 #'   | 8 | 85-86 | point status | status |
 #'   
 #'   In a second step these points are aggregated to a
-#'   \code{SpatialLinesDataFrame} using the grouping column \code{id}.
+#'   \code{sfc_LINESTRING} using the grouping column \code{id}.
 #' 
 #' @md
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{CRS}.
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}.
 #' @param id argument of type \code{character} specifying a grouping column.
 #' 
-#' @return \code{SpatialLinesDataFrame}.
+#' @return \code{sfc_LINESTRING}.
 #' 
 #' @examples \dontrun{
 #'   library(hydflood)
-#'   c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#'   sldf <- w80ToSpatialLinesDataFrame("data-raw/test.w80", c, "station_int")
+#'   c <- crs("EPSG:25833")
+#'   sl <- w80ToSFL("data-raw/test.w80", c, "station_int")
 #' }
 #' 
 #' @export
 #' 
-w80ToSpatialLinesDataFrame <- function(filename, crs,
+w80ToSFL <- function(filename, crs,
                                        id = c("sid", "fwid", "wsvpt",
                                               "station", "bank", "id", "x",
                                               "y", "date_coor", "acc_coor",
@@ -67,7 +67,7 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(class(crs) == "CRS")
+    stopifnot(class(crs) == "CRS" | class(crs) == "crs")
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)
@@ -122,35 +122,33 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
     df$status <- substring(lines, 79, 80)
     df$station_int <- as.integer(df$station * 1000)
     df$station_c <- as.character(df$station_int)
-    sp::coordinates(df) <- ~x+y
     
     ## list of Lines per id, each with one Line in a list
-    ids <- unique(df@data[, id])
-    Srl <- vector("list", length(ids))
-    names(Srl) <- paste0("i", ids)
-    j <- 1
+    ids <- unique(df[, id])
+    l <- vector("list", length(ids))
+    names(l) <- paste0("i", ids)
+    station <- numeric(length(ids))
+    names(station) <- paste0("i", ids)
+    station_int <- numeric(length(ids))
+    names(station_int) <- paste0("i", ids)
     for (i in ids) {
-        d <- df[which(df@data[, id] == i), ]
-        Srl[[j]] <- sp::Lines(list(sp::Line(sp::coordinates(d))),
-                              ID = paste0("i", i))
-        j <- j + 1
+        id <- which(df[, id] == i)
+        d <- df[id, c("x", "y")]
+        l[[paste0("i", i)]] <- sf::st_linestring(as.matrix(d))
+        station[paste0("i", i)] <- unique(df$station[id])
+        station_int[paste0("i", i)] <- unique(df$station_int[id])
     }
     
-    sl <- sp::SpatialLines(Srl, proj4string = crs)
-    sldf <- sp::SpatialLinesDataFrame(sl,
-                                      data.frame(id == ids,
-                                                 station = unique(df$station),
-                                                 station_int = unique(df$station_int),
-                                                 row.names = paste0("i", ids)))
-    
-    return(sldf)
+    lines <- sf::st_sfc(l, crs = crs)
+    lines <- sf::st_sf(lines, data.frame(ids, station, station_int))
+    return(lines)
 }
 
 
-#' @name w80ToSpatialPointsDataFrame
-#' @rdname w80ToSpatialPointsDataFrame
+#' @name w80ToSFP
+#' @rdname w80ToSFP
 #' 
-#' @title Function to convert w80-files to \code{SpatialPointsDataFrame}.
+#' @title Function to convert w80-files to \code{sfc_POINT}.
 #' 
 #' @description This function converts w80-files, an asci-format with 80
 #'   characters per line for spatial point data used by the German Waterway and
@@ -186,26 +184,25 @@ w80ToSpatialLinesDataFrame <- function(filename, crs,
 #' 
 #' @md
 #' 
-#' @param filename argument of length 1 and type \code{"character"} specifying
+#' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{CRS}
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}.
 #' 
-#' @return \code{SpatialPointsDataFrame}.
+#' @return \code{sfc_POINT}.
 #' 
 #' @examples \dontrun{
 #'   library(hydflood)
-#'   c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#'   spdf <- w80ToSpatialPointsDataFrame("data-raw/test.w80", c)
+#'   sf <- w80ToSFP("data-raw/test.w80", crs("EPSG:25833"))
 #' }
 #' 
 #' @export
 #' 
-w80ToSpatialPointsDataFrame <- function(filename, crs) {
+w80ToSFP <- function(filename, crs) {
     
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(class(crs) == "CRS")
+    stopifnot(class(crs) == "CRS" | class(crs) == "crs")
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)
@@ -262,15 +259,12 @@ w80ToSpatialPointsDataFrame <- function(filename, crs) {
     df$station_c <- as.character(df$station_int)
     
     # make spatial
-    spdf <- sp::SpatialPointsDataFrame(df[,c("x", "y")],
-                                       df, proj4string = crs)
+    sf <- sf::st_as_sf(df, coords = c("x", "y"), crs = crs)
     
     # add columns lat and lon
-    spdf$lat <- sp::coordinates(
-        sp::spTransform(spdf, CRS(SRS_string = "OGC:CRS84")))[,2]
-    spdf$lon <- sp::coordinates(
-        sp::spTransform(spdf, CRS(SRS_string = "OGC:CRS84")))[,1]
+    sf$lat <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$Y
+    sf$lon <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$X
     
-    return(spdf)
+    return(sf)
 }
 

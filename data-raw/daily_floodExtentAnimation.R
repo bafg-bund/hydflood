@@ -6,6 +6,7 @@
 #
 # purpose: 
 #   - compute daily flood extent for Dessau and Lenzen
+#   - keep plotting with raster due to layout changes
 #
 ##################################################
 
@@ -14,14 +15,13 @@ write("floodExtents for Dessau and Lenzen will be computed", stdout())
 # load hyd1d
 library(hyd1d)
 library(hydflood)
-options("rgdal_show_exportToProj4_warnings" = "none")
-library(rgdal)
+library(raster)
 
-if (updateGaugingData(Sys.Date() - 10)) {
-    write("", stdout())
-    write("Forced an additional update of 'df.gauging_data'", stdout())
-    write("", stdout())
-}
+# if (updateGaugingData(Sys.Date() - 10)) {
+#     write("", stdout())
+#     write("Forced an additional update of 'df.gauging_data'", stdout())
+#     write("", stdout())
+# }
 
 # setwd
 setwd(Sys.getenv("hydflood")) 
@@ -32,16 +32,15 @@ dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 2,
 
 #####
 # gauging_station_data
-wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-crs <- CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
+wgs84 <- st_crs("EPSG:4326")
+crs <- st_crs("EPSG:25833")
 df.gsd <- na.omit(df.gauging_station_data)
-coordinates <- df.gsd[, c("longitude", "latitude")]
-spdf.gsd <- SpatialPointsDataFrame(coords = coordinates, data = df.gsd,
-                                   proj4string = wgs84)
-spdf.gsd_D <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("ROSSLAU", "DESSAU")), ]
-spdf.gsd_D <- spTransform(spdf.gsd_D, crs)
-spdf.gsd_L <- spdf.gsd[which(spdf.gsd$gauging_station %in% c("SCHNACKENBURG", "LENZEN")), ]
-spdf.gsd_L <- spTransform(spdf.gsd_L, crs)
+sf.gsd <- st_as_sf(df.gsd, coords = c("longitude", "latitude"), crs = wgs84)
+sf.gsd_D <- sf.gsd[which(sf.gsd$gauging_station %in% c("ROSSLAU", "DESSAU")), ]
+sf.gsd_D <- st_transform(sf.gsd_D, crs)
+sf.gsd_L <- sf.gsd[which(sf.gsd$gauging_station %in% c("SCHNACKENBURG",
+                                                       "LENZEN")), ]
+sf.gsd_L <- st_transform(sf.gsd_L, crs)
 
 #####
 # color function
@@ -49,38 +48,42 @@ dem_colfunc <- colorRampPalette(c("saddlebrown", "yellow", "darkgreen"))
 
 #####
 # DESSAU
-ext_D <- extent(306050, 311870, 5747870, 5752220)
-dem <- raster("data-raw/raster.dem_dessau.tif")
-crs(dem) <- crs
+ext_D <- ext(306050, 311870, 5747870, 5752220)
+dem <- rast("data-raw/raster.dem_dessau.tif")
 dem_plot <- dem
 dem_plot[dem_plot > 62] <- 62
 dem_plot[dem_plot < 50] <- 50
-csa <- raster("data-raw/raster.csa_dessau.tif")
-crs(csa) <- crs
-x <- hydRasterStack(filename_dem = "data-raw/raster.dem_dessau.tif",
-                    filename_csa = "data-raw/raster.csa_dessau.tif")
-# mask <- readOGR(dsn="data-raw", layer="doc_mask_dessau")
-# mask <- spTransform(mask, wgs84)
-# mask_floodplain <- readOGR(dsn="data-raw", layer="doc_mask_dessau_floodplain")
-# mask_floodplain <- spTransform(mask_floodplain, wgs84)
-# mask_floodplain <- crop(mask_floodplain, mask)
-
-# x <- sort(unique(mask@polygons[[1]]@Polygons[[1]]@coords[,1]))
-# y <- sort(unique(mask@polygons[[1]]@Polygons[[1]]@coords[,2]))
-# extent_wgs84 <- extent(x[2], x[3], y[2], y[3])
+csa <- rast("data-raw/raster.csa_dessau.tif")
+x <- hydSpatRaster(filename_dem = "data-raw/raster.dem_dessau.tif",
+                   filename_csa = "data-raw/raster.csa_dessau.tif")
+# mask <- st_read(dsn = "data-raw", layer = "doc_mask_dessau")
+# mask <- st_transform(mask, wgs84)
+# mask$SHAPE_Leng <- NULL
+# mask$SHAPE_Area <- NULL
+# mask_floodplain <- st_read(dsn = "data-raw", layer="doc_mask_dessau_floodplain")
+# mask_floodplain <- st_transform(mask_floodplain, wgs84)
+# mask_floodplain$SHAPE_Leng <- NULL
+# mask_floodplain$SHAPE_Area <- NULL
+# mask_floodplain <- st_intersection(mask_floodplain, mask)
+# extent_wgs84 <- ext(mask)
 
 # export a dem plot
 dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
               "ta/png/flood3_daily/DESSAU/dem.png")
 if (!file.exists(dem)) {
     png(filename = dem, width = 960, height = 640, units = "px")
-    plot(dem_plot, col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
+    plot(raster(dem_plot), col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
          legend.width = 1, horizontal = TRUE, bty = "n",
          legend.args = list(text = "elevation (m)"),
          xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2))
-    points(spdf.gsd_D, pch = 21, bg = "white")
-    text(spdf.gsd_D[1,], pos = 3, labels = spdf.gsd_D$gauging_station[1])
-    text(spdf.gsd_D[2,], pos = 1, labels = spdf.gsd_D$gauging_station[2])
+    # plot(dem_plot, col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
+    #      bty = "n", xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2),
+    #      plg = list(title = "elevation (m)", horiz = TRUE, width = 1))
+    plot(sf.gsd_D$geometry, pch = 21, bg = "white", add =TRUE)
+    text(st_coordinates(sf.gsd_D[1, ]), pos = 3,
+         labels = sf.gsd_D$gauging_station[1])
+    text(st_coordinates(sf.gsd_D[2, ]), pos = 1,
+         labels = sf.gsd_D$gauging_station[2])
     dev.off()
 }
 
@@ -99,77 +102,72 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        flood_extent <- flood3(x, as.Date(a_date))
-        flood_extent[flood_extent == 0] <- NA
+        flood_extent <- tryCatch({
+            flood_extent <- flood3(x, as.Date(a_date))
+            flood_extent[flood_extent == 0] <- NA
+        },
+        error = function(cond) {NA})
         
         # plotting with raster functions
-        png(filename = f_out, width = 960, height = 640, units = "px")
-        plot(dem_plot, col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
-             legend.width = 1, horizontal = TRUE, bty = "n",
-             legend.args = list(text = "elevation (m)"),
-             xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2))
-        plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-        points(spdf.gsd_D, pch = 21, bg = "white")
-        text(spdf.gsd_D[1,], pos = 3, labels = spdf.gsd_D$gauging_station[1])
-        text(spdf.gsd_D[2,], pos = 1, labels = spdf.gsd_D$gauging_station[2])
-        dev.off()
-        
-        # attempts with tmap
-        # flood_extent_wgs84 <- projectRaster(flood_extent, crs = wgs84,
-        #                                     method = "ngb")
-        # tmap_options(
-        #     max.raster = c(plot = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows,
-        #                    view = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows))
-        #
-        # # plot flood extent
-        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) +
-        #     # fill for mask floodplain
-        #     tm_fill(col = "white", alpha = 0.5) +
-        # # airial image background
-        # tm_view(alpha = 1, basemaps = "Esri.WorldImagery") +
-        # # flood extent
-        # tm_shape(flood_extent_wgs84) +
-        #     tm_raster(col = "blue3", alpha = 1)
-        #
-        #
-        # map <- tm_shape(mask_floodplain, projection = wgs84,
-        #                 bbox = extent_wgs84) +
-        #     tm_fill(col = "white", alpha = 0.5)
-        #
-        # map <- map + tm_view(alpha = 1, basemaps = "Esri.WorldImagery")
-        # # gauging_stations
-        # tm_markers()
-        
+        if (!is.na(flood_extent)) {
+            png(filename = f_out, width = 960, height = 640, units = "px")
+            plot(raster(dem_plot), col = dem_colfunc((62 - 50)*2),
+                 xlim = c(305000, 313000), legend.width = 1, horizontal = TRUE,
+                 bty = "n", legend.args = list(text = "elevation (m)"),
+                 xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2))
+            # plot(dem_plot, col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
+            #      bty = "n", xaxp = c(306000, 312000, 3), yaxp = c(5748000, 5752000, 2),
+            #      plg = list(title = "elevation (m)", horiz = TRUE, width = 1))
+            plot(raster(flood_extent), col = "blue", add = TRUE, legend = FALSE)
+            plot(sf.gsd_D$geometry, pch = 21, bg = "white", add =TRUE)
+            text(st_coordinates(sf.gsd_D[1, ]), pos = 3,
+                 labels = sf.gsd_D$gauging_station[1])
+            text(st_coordinates(sf.gsd_D[2, ]), pos = 1,
+                 labels = sf.gsd_D$gauging_station[2])
+            dev.off()
+        }
     }
 }
 
 #####
 # LENZEN
-ext_L <- extent(261940, 270870, 5881635, 5887550)
-dem <- raster("data-raw/raster.dem_lenzen.tif")
+ext_L <- ext(261940, 270870, 5881635, 5887550)
+dem <- rast("data-raw/raster.dem_lenzen.tif")
 dem_plot <- dem
 dem_plot[dem_plot > 24] <- 24
 dem_plot[dem_plot < 9] <- 9
-csa <- raster("data-raw/raster.csa_lenzen.tif")
-x <- hydRasterStack(filename_dem = "data-raw/raster.dem_lenzen.tif",
-                    filename_csa = "data-raw/raster.csa_lenzen.tif")
+csa <- rast("data-raw/raster.csa_lenzen.tif")
+x <- hydSpatRaster(filename_dem = "data-raw/raster.dem_lenzen.tif",
+                   filename_csa = "data-raw/raster.csa_lenzen.tif")
 
-# mask <- readOGR(dsn="data-raw", layer="doc_mask_lenzen")
-# mask_floodplain <- readOGR(dsn="data-raw", layer="doc_mask_lenzen_floodplain")
-# mask_floodplain <- crop(mask_floodplain, mask)
+# mask <- st_read(dsn = "data-raw", layer = "doc_mask_lenzen")
+# mask <- st_transform(mask, wgs84)
+# mask$SHAPE_Leng <- NULL
+# mask$SHAPE_Area <- NULL
+# mask_floodplain <- st_read(dsn = "data-raw", layer="doc_mask_lenzen_floodplain")
+# mask_floodplain <- st_transform(mask_floodplain, wgs84)
+# mask_floodplain$SHAPE_Leng <- NULL
+# mask_floodplain$SHAPE_Area <- NULL
+# mask_floodplain <- st_intersection(mask_floodplain, mask)
+# extent_wgs84 <- ext(mask)
 
 # export a dem plot
 dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
               "ta/png/flood3_daily/LENZEN/dem.png")
 if (!file.exists(dem)) {
     png(filename = dem, width = 960, height = 640, units = "px")
-    plot(dem_plot, col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
+    plot(raster(dem_plot), col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
          legend.width = 1, horizontal = TRUE, bty = "n",
          legend.args = list(text = "elevation (m)"),
          xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1))
-    # points(spdf.gsd_L, pch = 21, bg = "white")
-    # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
-    # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
+    # plot(dem_plot, col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
+    #      bty = "n", xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1),
+    #      plg = list(title = "elevation (m)", horiz = TRUE, width = 1))
+    # plot(sf.gsd_L$geometry, pch = 21, bg = "white", add =TRUE)
+    # text(st_coordinates(sf.gsd_L[1, ]), pos = 3,
+    #      labels = sf.gsd_L$gauging_station[1])
+    # text(st_coordinates(sf.gsd_L[2, ]), pos = 1,
+    #      labels = sf.gsd_L$gauging_station[2])
     dev.off()
 }
 
@@ -188,47 +186,30 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        flood_extent <- flood3(x, as.Date(a_date))
-        flood_extent[flood_extent == 0] <- NA
+        flood_extent <- tryCatch({
+            flood_extent <- flood3(x, as.Date(a_date))
+            flood_extent[flood_extent == 0] <- NA
+        },
+        error = function(cond) {NA})
         
         # plotting with raster functions
-        png(filename = f_out, width = 960, height = 640, units = "px")
-        plot(dem_plot, col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
-             legend.width = 1, horizontal = TRUE, bty = "n",
-             legend.args = list(text = "elevation (m)"),
-             xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1))
-        plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-        # points(spdf.gsd_L, pch = 21, bg = "white")
-        # text(spdf.gsd_L[1,], pos = 3, labels = spdf.gsd_L$gauging_station[1])
-        # text(spdf.gsd_L[2,], pos = 1, labels = spdf.gsd_L$gauging_station[2])
-        dev.off()
-        
-        # attempts with tmap
-        # flood_extent_wgs84 <- projectRaster(flood_extent, crs = wgs84,
-        #                                     method = "ngb")
-        # tmap_options(
-        #     max.raster = c(plot = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows,
-        #                    view = flood_extent_wgs84@ncols * flood_extent_wgs84@nrows))
-        #
-        # # plot flood extent
-        # tm_shape(mask_floodplain, projection = wgs84, bbox = extent_wgs84) +
-        #     # fill for mask floodplain
-        #     tm_fill(col = "white", alpha = 0.5) +
-        # # airial image background
-        # tm_view(alpha = 1, basemaps = "Esri.WorldImagery") +
-        # # flood extent
-        # tm_shape(flood_extent_wgs84) +
-        #     tm_raster(col = "blue3", alpha = 1)
-        #
-        #
-        # map <- tm_shape(mask_floodplain, projection = wgs84,
-        #                 bbox = extent_wgs84) +
-        #     tm_fill(col = "white", alpha = 0.5)
-        #
-        # map <- map + tm_view(alpha = 1, basemaps = "Esri.WorldImagery")
-        # # gauging_stations
-        # tm_markers()
-        
+        if (!is.na(flood_extent)) {
+            png(filename = f_out, width = 960, height = 640, units = "px")
+            plot(raster(dem_plot), col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
+                 legend.width = 1, horizontal = TRUE, bty = "n",
+                 legend.args = list(text = "elevation (m)"),
+                 xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1))
+            # plot(dem_plot, col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
+            #      bty = "n", xaxp = c(264000, 268000, 2), yaxp = c(5884000, 5886000, 1),
+            #      plg = list(title = "elevation (m)", horiz = TRUE, width = 1))
+            plot(raster(flood_extent), col = "blue", add = TRUE, legend = FALSE)
+            # plot(sf.gsd_L$geometry, pch = 21, bg = "white", add =TRUE)
+            # text(st_coordinates(sf.gsd_L[1, ]), pos = 3,
+            #      labels = sf.gsd_L$gauging_station[1])
+            # text(st_coordinates(sf.gsd_L[2, ]), pos = 1,
+            #      labels = sf.gsd_L$gauging_station[2])
+            dev.off()
+        }
     }
 }
 
@@ -239,7 +220,7 @@ for (a_date in dates) {
 if (require("ElBiota")) {
     
     # loop over areas
-    for (an_area in areas_esc) {
+    for (an_area in spdf.areas_sel$mapset) {
         
         print(an_area)
         
@@ -248,15 +229,15 @@ if (require("ElBiota")) {
         
         if (! file.exists(paste0("data-raw/raster.dem_", an_area, ".tif"))) {
             r <- getDEM(paste0("data-raw/raster.dem_", an_area, ".tif"),
-                        ext = extent(spdf.area), crs = crs)
+                        ext = ext(spdf.area), crs = crs)
         } else {
-            r <- raster(paste0("data-raw/raster.dem_", an_area, ".tif"))
+            r <- rast(paste0("data-raw/raster.dem_", an_area, ".tif"))
         }
         
-        x <- hydRasterStack(filename_dem = paste0("data-raw/raster.dem_",
-                                                  an_area, ".tif"),
-                            filename_csa = paste0("data-raw/raster.csa_",
-                                                  an_area, ".tif"))
+        x <- hydSpatRaster(filename_dem = paste0("data-raw/raster.dem_",
+                                                 an_area, ".tif"),
+                           filename_csa = paste0("data-raw/raster.csa_",
+                                                 an_area, ".tif"))
         
         # export a dem plot
         dir.create(paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_00",
@@ -266,9 +247,11 @@ if (require("ElBiota")) {
                       "6_UFD/data/png/flood3_daily/", an_area, "/dem.png")
         if (!file.exists(dem)) {
             png(filename = dem, width = 960, height = 640, units = "px")
-            plot(r, col = dem_colfunc((24 - 9)*2), legend.width = 1,
+            plot(raster(r), col = dem_colfunc((24 - 9)*2), legend.width = 1,
                  horizontal = TRUE, bty = "n",
                  legend.args = list(text = "elevation (m)"))
+            # plot(r, col = dem_colfunc((24 - 9)*2), bty = "n",
+            #      plg = list(title = "elevation (m)", horiz = TRUE, width = 1))
             points(sac, pch = 21, bg = "white", cex = 0.8)
             text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
             dev.off()
@@ -289,19 +272,28 @@ if (require("ElBiota")) {
                 write("  will be computed", stdout())
                 
                 # compute flood extent
-                flood_extent <- flood3(x, as.Date(a_date))
-                flood_extent[flood_extent == 0] <- NA
+                flood_extent <- tryCatch({
+                    flood_extent <- flood3(x, as.Date(a_date))
+                    flood_extent[flood_extent == 0] <- NA
+                },
+                error = function(cond) {NA})
                 
                 # plotting with raster functions
-                png(filename = f_out, width = 960, height = 640, units = "px")
-                plot(r, col = dem_colfunc((24 - 9)*2),
-                     legend.width = 1, horizontal = TRUE, bty = "n",
-                     legend.args = list(text = "elevation (m)"))
-                plot(flood_extent, col = "blue", add = TRUE, legend = FALSE)
-                points(sac, pch = 21, bg = "white", cex = 0.8)
-                text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
-                dev.off()
-                
+                    if (!is.na(flood_extent)) {
+                    png(filename = f_out, width = 960, height = 640, 
+                        units = "px")
+                    plot(raster(r), col = dem_colfunc((24 - 9)*2),
+                         legend.width = 1, horizontal = TRUE, bty = "n",
+                         legend.args = list(text = "elevation (m)"))
+                    # plot(r, col = dem_colfunc((24 - 9)*2), bty = "n",
+                    #      plg = list(title = "elevation (m)", horiz = TRUE,
+                    #                 width = 1))
+                    plot(raster(flood_extent), col = "blue", add = TRUE,
+                         legend = FALSE)
+                    points(sac, pch = 21, bg = "white", cex = 0.8)
+                    text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
+                    dev.off()
+                }
             }
         }
     }

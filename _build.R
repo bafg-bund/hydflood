@@ -35,10 +35,8 @@ write("#####", stdout())
 write(" load packages", stdout())
 require(devtools)
 require(usethis)
-options("rgdal_show_exportToProj4_warnings" =  "none")
-library(rgdal)
-require(sp)
-require(raster)
+require(sf)
+require(terra)
 require(knitr)
 require(rmarkdown)
 require(pkgdown)
@@ -46,89 +44,9 @@ require(hyd1d)
 require(hoardr)
 
 # set standard projections
-UTM32N <- sp::CRS(SRS_string = 
-    'PROJCRS["ETRS89 / UTM zone 32N",
-    BASEGEOGCRS["ETRS89",
-        DATUM["European Terrestrial Reference System 1989",
-            ELLIPSOID["GRS 1980",6378137,298.257222101,
-                LENGTHUNIT["metre",1]]],
-        PRIMEM["Greenwich",0,
-            ANGLEUNIT["degree",0.0174532925199433]],
-        ID["EPSG",4258]],
-    CONVERSION["UTM zone 32N",
-        METHOD["Transverse Mercator",
-            ID["EPSG",9807]],
-        PARAMETER["Latitude of natural origin",0,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8801]],
-        PARAMETER["Longitude of natural origin",9,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8802]],
-        PARAMETER["Scale factor at natural origin",0.9996,
-            SCALEUNIT["unity",1],
-            ID["EPSG",8805]],
-        PARAMETER["False easting",500000,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8806]],
-        PARAMETER["False northing",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8807]]],
-    CS[Cartesian,2],
-        AXIS["(E)",east,
-            ORDER[1],
-            LENGTHUNIT["metre",1]],
-        AXIS["(N)",north,
-            ORDER[2],
-            LENGTHUNIT["metre",1]],
-    USAGE[
-        SCOPE["Engineering survey, topographic mapping."],
-        AREA["Europe between 6 E and 12 E: Austria; Belgium; Denmark - onshore a
-            nd offshore; Germany - onshore and offshore; Norway including - ons
-            hore and offshore; Spain - offshore."],
-        BBOX[38.76,6,83.92,12]],
-    ID["EPSG",25832]]')
-
-UTM33N <- sp::CRS(SRS_string = 
-    'PROJCRS["ETRS89 / UTM zone 33N",
-    BASEGEOGCRS["ETRS89",
-        DATUM["European Terrestrial Reference System 1989",
-            ELLIPSOID["GRS 1980",6378137,298.257222101,
-                LENGTHUNIT["metre",1]]],
-        PRIMEM["Greenwich",0,
-            ANGLEUNIT["degree",0.0174532925199433]],
-        ID["EPSG",4258]],
-    CONVERSION["UTM zone 33N",
-        METHOD["Transverse Mercator",
-            ID["EPSG",9807]],
-        PARAMETER["Latitude of natural origin",0,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8801]],
-        PARAMETER["Longitude of natural origin",15,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8802]],
-        PARAMETER["Scale factor at natural origin",0.9996,
-            SCALEUNIT["unity",1],
-            ID["EPSG",8805]],
-        PARAMETER["False easting",500000,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8806]],
-        PARAMETER["False northing",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8807]]],
-    CS[Cartesian,2],
-        AXIS["(E)",east,
-            ORDER[1],
-            LENGTHUNIT["metre",1]],
-        AXIS["(N)",north,
-            ORDER[2],
-            LENGTHUNIT["metre",1]],
-    USAGE[
-        SCOPE["Engineering survey, topographic mapping."],
-        AREA["Europe between 12 E and 18 E: Austria; Denmark - offshore and offs
-            hore; Germany - onshore and offshore; Norway including Svalbard - on
-            shore and offshore."],
-        BBOX[46.4,12,84.01,18.01]],
-    ID["EPSG",25833]]')
+wgs84 <- st_crs(4326)
+utm32n <- st_crs(25832)
+utm33n <- st_crs(25833)
 
 #####
 # session info
@@ -142,7 +60,7 @@ sessionInfo()
 #   sourced scripts
 write("#####", stdout())
 write(" data-raw", stdout())
-for (a_file in rev(list.files("data-raw", pattern = "data_spdf.*",
+for (a_file in rev(list.files("data-raw", pattern = "data_*",
                               full.names = TRUE))) {
     source(a_file)
 }

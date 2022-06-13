@@ -1,7 +1,7 @@
 #' @name flood1
 #' @rdname flood1
 #' 
-#' @title Function to compute flood extent or flood duration \code{raster} along
+#' @title Function to compute flood extent or flood duration \code{SpatRaster} along
 #'   German federal waterways Elbe and Rhine using the 1D water level algorythm
 #'   \code{hyd1d::waterLevelFlood1()}
 #' 
@@ -12,8 +12,8 @@
 #'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d} in analogy to
 #'   the INFORM 3 module 'Flut1'.
 #' 
-#' @param x has to by type \code{RasterStack} and has to include both input 
-#'   RasterLayers \code{csa} (cross section areas) and \code{dem} (digital 
+#' @param x has to by type \code{SpatRaster} and has to include both input 
+#'   layers \code{csa} (cross section areas) and \code{dem} (digital 
 #'   elevation model). To compute water levels along the River Elbe \code{x} 
 #'   has to be in the coordinate reference system 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
@@ -26,19 +26,19 @@
 #'   Internally \code{\link[hyd1d]{waterLevelFlood1}} uses \code{\link[hyd1d]{getGaugingDataW}}
 #'   to obtain daily water level information from \code{\link[hyd1d]{df.gauging_data}}.
 #' @param gauging_station has to be type \code{character} and has to have a
-#'   length of one. Permitted values are: 'SCHÖNA', 'PIRNA', 'DRESDEN',
-#'   'MEISSEN', 'RIESA', 'MÜHLBERG', 'TORGAU', 'PRETZSCH-MAUKEN', 'ELSTER',
+#'   length of one. Permitted values are: 'SCHOENA', 'PIRNA', 'DRESDEN',
+#'   'MEISSEN', 'RIESA', 'MUEHLBERG', 'TORGAU', 'PRETZSCH-MAUKEN', 'ELSTER',
 #'   'WITTENBERG', 'COSWIG', 'VOCKERODE', 'ROSSLAU', 'DESSAU', 'AKEN', 'BARBY',
-#'   'SCHÖNEBECK', 'MAGDEBURG-BUCKAU', 'MAGDEBURG-STROMBRÜCKE',
-#'   'MAGDEBURG-ROTHENSEE', 'NIEGRIPP AP', 'ROGÄTZ', 'TANGERMÜNDE', 'STORKAU',
-#'   'SANDAU', 'SCHARLEUK', 'WITTENBERGE', 'MÜGGENDORF', 'SCHNACKENBURG',
-#'   'LENZEN', 'GORLEBEN', 'DÖMITZ', 'DAMNATZ', 'HITZACKER', 'NEU DARCHAU',
+#'   'SCHOENEBECK', 'MAGDEBURG-BUCKAU', 'MAGDEBURG-STROMBRUECKE',
+#'   'MAGDEBURG-ROTHENSEE', 'NIEGRIPP AP', 'ROGAETZ', 'TANGERMUENDE', 'STORKAU',
+#'   'SANDAU', 'SCHARLEUK', 'WITTENBERGE', 'MUEGGENDORF', 'SCHNACKENBURG',
+#'   'LENZEN', 'GORLEBEN', 'DOEMITZ', 'DAMNATZ', 'HITZACKER', 'NEU DARCHAU',
 #'   'BLECKEDE', 'BOIZENBURG', 'HOHNSTORF', 'ARTLENBURG', 'GEESTHACHT',
 #'   'RHEINWEILER', 'BREISACH', 'RUST', 'OTTENHEIM', 'KEHL-KRONENHOF',
 #'   'IFFEZHEIM', 'PLITTERSDORF', 'MAXAU', 'PHILIPPSBURG', 'SPEYER', 'MANNHEIM',
 #'   'WORMS', 'NIERSTEIN-OPPENHEIM', 'MAINZ', 'OESTRICH', 'BINGEN', 'KAUB',
 #'   'SANKT GOAR', 'BOPPARD', 'BRAUBACH', 'KOBLENZ', 'ANDERNACH', 'OBERWINTER',
-#'   'BONN', 'KÖLN', 'DÜSSELDORF', 'RUHRORT', 'WESEL', 'REES', 'EMMERICH'.
+#'   'BONN', 'KOELN', 'DUESSELDORF', 'RUHRORT', 'WESEL', 'REES', 'EMMERICH'.
 #' @param uuid has to be type \code{character} and has to have a length of one.
 #'   Permitted values are: '7cb7461b-3530-4c01-8978-7f676b8f71ed',
 #'   '85d686f1-55b2-4d36-8dba-3207b50901a7',
@@ -112,24 +112,24 @@
 #'   '9598e4cb-0849-401e-bba0-689234b27644'.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
-#' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
+#' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return Raster* object with flood duration in the range of 
+#' @return SpatRaster object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq} \code{flood1()} computes 
 #'   a 1D water level using \code{\link[hyd1d]{waterLevelFlood1}} along the 
 #'   requested river section. This 1D water level is transfered to a \code{wl} 
-#'   (water level) RasterLayer, which is in fact a copy of the \code{csa} 
-#'   (cross section areas) RasterLayer, and then compared to the \code{dem} 
-#'   (digital elevation model) RasterLayer. Where the \code{wl} RasterLayer is
-#'   higher than the \code{dem} RasterLayer flood duration is increased by 1.
+#'   (water level) raster layer, which is in fact a copy of the \code{csa} 
+#'   (cross section areas) layer, and then compared to the \code{dem} 
+#'   (digital elevation model) layer. Where the \code{wl} layer is
+#'   higher than the \code{dem} layer flood duration is increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{df.gauging_data}},
 #'   \code{\link[hyd1d]{getGaugingDataW}},
-#'   \code{\link[hyd1d]{waterLevelFlood1}}, 
-#'   \code{\link[raster]{writeRaster}}, 
-#'   \code{\link[raster]{rasterOptions}}
+#'   \code{\link[hyd1d]{waterLevelFlood1}},
+#'   \code{\link[terra]{writeRaster}}, 
+#'   \code{\link[terra]{terraOptions}}
 #' 
 #' @references 
 #'   \insertRef{rosenzweig_inform_2011}{hydflood}
@@ -138,9 +138,9 @@
 #' library(hydflood)
 #' 
 #' # import the raster data and create a raster stack
-#' c <- crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs")
-#' e <- extent(309000, 310000, 5749000, 5750000)
-#' x <- hydRasterStack(ext = e, crs = c)
+#' c <- crs("EPSG:25833")
+#' e <- ext(309000, 310000, 5749000, 5750000)
+#' x <- hydSpatRaster(ext = e, crs = c)
 #' 
 #' # create a temporal sequence
 #' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
@@ -152,6 +152,8 @@
 #' @export
 #' 
 flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
+    
+    options("rgdal_show_exportToProj4_warnings" =  "none")
     
     #####
     # check requirements
@@ -166,58 +168,44 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (class(x) != "hydRasterStack") {
+        if (class(x)[1] != "SpatRaster") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
-                                       "type 'hydRasterStack'."))
+                                       "type 'SpatRaster'."))
         }
         
-        # names
-        if (!(all(names(x) == c("dem", "csa")))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": names(x) ",
-                                       "must be c('dem', 'csa')."))
+        if (!all(c("dem", "csa") %in% names(x))) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'names(x)' must",
+                                       " be 'dem' and 'csa'."))
         }
-        
-        # crs
-        crs_string <- raster::crs(x, asText = TRUE)
-        
-        if ( !(raster::compareCRS(crs_string, utm32n)) & 
-             !(raster::compareCRS(crs_string, utm33n))) {
-            errors <- c(errors, paste0("Error ", l(errors), ": The projection",
-                                       " of x must be either 'ETRS 1989 UTM 32",
-                                       "N' or 'ETRS 1989 UTM 33N'."))
+    }
+    
+    if (l(errors) != "1") {
+        stop(paste0(errors, collapse="\n  "))
+    }
+    
+    # crs
+    if (! isUTM32(x) & !isUTM33(x)) {
+        errors <- c(errors, paste0("Error ", l(errors), ": The projection",
+                                   " of x must be either 'ETRS 1989 UTM 32",
+                                   "N' or 'ETRS 1989 UTM 33N'."))
+    } else {
+        if (isUTM32(x)) {
+            river <- "Rhein"
+        } else if (isUTM33(x)) {
+            river <- "Elbe"
         } else {
-            if (raster::compareCRS(crs_string, utm32n)) {
-                zone <- "32"
-                river <- "Rhein"
-            } else if (raster::compareCRS(crs_string, utm33n)) {
-                zone <- "33"
-                river <- "Elbe"
-            } else {
-                stop(errors)
-            }
+            stop(errors)
         }
-        
-        # check position
-        if (exists("river")) {
-            # access the spdf.active_floodplain_* data
-            active_floodplain <- paste0("spdf.active_floodplain_", 
-                                        tolower(river))
-            get(active_floodplain, pos = -1)
-            if (river == "Elbe") {
-                l.over <- spdf.active_floodplain_elbe[rasterextent2polygon(x),]
-                if (! (length(l.over) > 0)) {
-                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
-                                               "NOT overlap with the active fl",
-                                               "oodplain of River Elbe."))
-                }
-            } else if (river == "Rhein") {
-                l.over <- spdf.active_floodplain_rhein[rasterextent2polygon(x),]
-                if (! (length(l.over) > 0)) {
-                    errors <- c(errors, paste0("Error ", l(errors), ": x does ",
-                                               "NOT overlap with the active fl",
-                                               "oodplain of River Rhine."))
-                }
-            }
+    }
+    
+    # check position
+    sf.ext <- rasterextent2polygon(x)
+    if (exists("river")) {
+        af <- sf.af(name = river)
+        if (! (nrow(af[sf.ext,]) > 0)) {
+            errors <- c(errors, paste0("Error ", l(errors), ": The selected 'e",
+                                       "xt' does NOT overlap with the active f",
+                                       "loodplain of River ", river, "."))
         }
     }
     
@@ -226,7 +214,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     }
     
     # initialize the WaterLevelDataFrame
-    station_int <- as.integer(raster::unique(x$csa))
+    station_int <- as.integer(terra::unique(x$csa)$csa)
     wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
                                                time = as.POSIXct(NA),
                                                station_int = station_int)
@@ -285,10 +273,9 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     ##
     # gauging_station &| uuid
     #  get the names of all available gauging_stations
-    get("df.gauging_station_data", pos = -1)
-    id <- which(df.gauging_station_data$data_present & 
-                    df.gauging_station_data$river == toupper(river))
-    df.gauging_station_data_sel <- df.gauging_station_data[id, ]
+    id <- which(hyd1d::df.gauging_station_data$data_present & 
+                    hyd1d::df.gauging_station_data$river == toupper(river))
+    df.gauging_station_data_sel <- hyd1d::df.gauging_station_data[id, ]
     gs <- df.gauging_station_data_sel$gauging_station
     uuids <- df.gauging_station_data_sel$uuid
     
@@ -425,8 +412,8 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     # preprocessing
     #####
     # individual raster needed for the processing
-    csa <- x$csa
-    dem <- x$dem
+    csa <- raster::raster(x$csa)
+    dem <- raster::raster(x$dem)
     
     # out template
     out <- raster::raster(csa)
@@ -450,7 +437,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
         filename <- raster::rasterTmpFile()
     }
     if (filename != '') {
-        out <- raster::writeStart(out, filename, ...)
+        out <- terra::writeStart(out, filename, ...)
         todisk <- TRUE
     } else {
         vv <- matrix(ncol = nrow(out), nrow = ncol(out))
@@ -475,9 +462,18 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
         wldfs[[j]] <- hyd1d::waterLevelFlood1(wldf, uuid = uuid_internal)
         j <- j + 1
     }
+    rm(j)
     
     ##
     # raster processing
+    # for (j in 1:length(seq)) {
+    #     wldf <- wldfs[[j]]
+    #     for (a_station in station_int) {
+    #         waterlevel[csa == a_station] <- wldf$w[which(wldf$station_int == 
+    #                                                      a_station)]
+    #     }
+    #     out[dem < waterlevel] <- out[dem < waterlevel] + 1
+    # }
     bs <- raster::blockSize(csa)
     pb <- raster::pbCreate(bs$n, ...)
     
@@ -487,30 +483,30 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
             v_csa <- raster::getValues(csa, row = bs$row[i], nrows = bs$nrows[i])
             # get unique stations for the csa subset
             v_stations <- stats::na.omit(unique(v_csa))
-            # copy v_csa to v_fd to create a template results vector with the 
+            # copy v_csa to v_fd to create a template results vector with the
             # same size and type
             v_fd <- rep(0, length(v_csa))
             
             # vectorize digital elevation model (numeric)
             v_dem <- raster::getValues(dem, row = bs$row[i], nrows = bs$nrows[i])
-            # copy v_dem to v_fwl to create a template vector with the same 
+            # copy v_dem to v_fwl to create a template vector with the same
             # size and type
             v_wl <- rep(-999, length(v_csa))
             
             # handle NA's
-            id_na <- is.na(v_csa) | is.na(v_dem) 
+            id_na <- is.na(v_csa) | is.na(v_dem)
             id_nona <- !id_na
             
             # loop over all time steps
             for (j in 1:length(seq)) {
                 # transfer the water level info to v_wl
                 for (a_station in v_stations) {
-                    v_wl[v_csa == a_station] <- 
+                    v_wl[v_csa == a_station] <-
                                wldfs[[j]]$w[wldfs[[j]]$station_int == a_station]
                 }
                 
                 # compare the water level raster to the dem
-                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <- 
+                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <-
                     v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] + 1
             }
             
@@ -518,40 +514,41 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
             v_fd[id_na] <- NA
             
             # write the resulting flood durations into out
-            out <- raster::writeValues(out, v_fd, bs$row[i])
+            out <- terra::writeValues(out, v_fd, start = bs$row[i],
+                                      nrows = bs$nrows[i])
             raster::pbStep(pb, i)
         }
-        out <- raster::writeStop(out)
+        out <- terra::writeStop(out)
     } else {
         for (i in 1:bs$n) {
             # vectorize cross section areas (integer)
             v_csa <- raster::getValues(csa, row = bs$row[i], nrows = bs$nrows[i])
             # get unique stations for the csa subset
             v_stations <- stats::na.omit(unique(v_csa))
-            # copy v_csa to v_fd to create a template results vector with the 
+            # copy v_csa to v_fd to create a template results vector with the
             # same size and type
             v_fd <- rep(0, length(v_csa))
             
             # vectorize digital elevation model (numeric)
             v_dem <- raster::getValues(dem, row = bs$row[i], nrows = bs$nrows[i])
-            # copy v_dem to v_fwl to create a template vector with the same 
+            # copy v_dem to v_fwl to create a template vector with the same
             # size and type
             v_wl <- rep(-999, length(v_csa))
             
             # handle NA's
-            id_na <- is.na(v_csa) | is.na(v_dem) 
+            id_na <- is.na(v_csa) | is.na(v_dem)
             id_nona <- !id_na
             
             # loop over all time steps
             for (j in 1:length(seq)) {
                 # transfer the water level info to v_wl
                 for (a_station in v_stations) {
-                    v_wl[v_csa == a_station] <- 
+                    v_wl[v_csa == a_station] <-
                         wldfs[[j]]$w[wldfs[[j]]$station_int == a_station]
                 }
                 
                 # compare the water level raster to the dem
-                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <- 
+                v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] <-
                     v_fd[id_nona][v_dem[id_nona] < v_wl[id_nona]] + 1
             }
             
@@ -565,6 +562,11 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
         out <- raster::setValues(out, as.vector(vv))
     }
     raster::pbClose(pb)
-    return(out)
+    
+    # reintroduce NA's for areas with missing dem and csa data
+    # out[is.na(csa)] <- NA
+    # out[is.na(dem)] <- NA
+    
+    return(terra::rast(out))
 }
 

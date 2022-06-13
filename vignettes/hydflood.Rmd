@@ -113,20 +113,13 @@ library(hydflood)
 ## Dependencies
 
 The package **hydflood** is build around the packages
-[`raster`](https://cran.r-project.org/package=raster) and
+[`terra`](https://cran.r-project.org/package=terra) and
 [`hyd1d`](`r paste0(base_hyd1d)`). [`hyd1d`](`r paste0(base_hyd1d)`) internally
 provides gauging data for all gauging stations along River Rhine and Elbe
 operated by the waterway and navigation authorities and computes 1D water
-levels. The package [`raster`](https://cran.r-project.org/package=raster)
-provides the S4 class `RasterStack` upon which the S4 class `hydRasterStack` is
-build and thereby enables the GIS based comparison between extrapolated water
-levels and elevation data.
-
-## S4-class hydRasterStack
-
-A `hydRasterStack` is simply a `RasterStack` containing two `RasterLayer`s: One
-named `dem`, containing a digital elevation model, the other named `csa`,
-containing the cross section areas.
+levels. The package [`terra`](https://cran.r-project.org/package=terra)
+provides the S4 class `SpatRaster` and thereby enables the GIS based comparison
+between extrapolated water levels and elevation data.
 
 ```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation modell of the waterway (DEM-W, in German: Digitales Geländemodell der Wasserstraße, DGM-W) with 1 m spatial resolution at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_dem.png')
@@ -135,8 +128,8 @@ knitr::include_graphics('./screenshot_hydflood_dem.png')
 **hydflood** provides download facilities for the official digital elevation
 models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
-by users. They just need to overlap with active floodplains of either Rhine ([`spdf.active_floodplain_rhein`](reference/spdf.active_floodplain_rhein.html)) or
-Elbe ([`spdf.active_floodplain_elbe`](reference/spdf.active_floodplain_elbe.html)).
+by users. They just need to overlap with active floodplains of either Rhine
+([`sf.afr`](reference/sf.afr.html)) or Elbe ([`sf.afe`](reference/sf.afe.html)).
 
 To create a water surface raster, which can be compared to the `dem`, a simple
 1D to 2D conversion is applied to water level data computed along the river axis
@@ -206,11 +199,11 @@ Lenzen
 
 ## Usage
 
-To initialize such a `hydRasterStack` several possibilities are implemented in 
-the initializing homonymous function `hydRasterStack`. Either you
+To initialize such a `SpatRaster` several possibilities are implemented in 
+the initializing homonymous function `hydSpatRaster`. Either you
 provide a digital elevation model and cross section areas yourself as variables
 `filename_dem` and `filename_csa` or you provide only one of them or you simply 
-provide `ext` (an object of type `Extent`) and `crs` (an object of class `CRS`).
+provide `ext` (an object of type `SpatExtent`) and `crs` (an object of class `CRS`).
 Depending on the supplied coordinate reference system (supplied through either
 `filename_dem`, `filename_csa` or `crs`) the respective river is selected: For
 River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
@@ -225,11 +218,11 @@ be fast or you should be patient.
 
 ```{r init, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
 # import the raster data and create a raster stack
-x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",
-                    filename_csa = "data-raw/raster.csa.tif")
+x <- hydSpatRaster(filename_dem = "data-raw/raster.dem.tif",
+                   filename_csa = "data-raw/raster.csa.tif")
 ```
 
-After initialinzig an object of type `hydRasterStack` everything else is 
+After initialinzig an object of type `hydSpatRaster` everything else is 
 straight forward. Create a temporal sequence `seq`:
 
 ```{r seq, eval = FALSE, error = FALSE, warning = FALSE, message = FALSE}
