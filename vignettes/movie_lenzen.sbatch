@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=flood3rhein
+#SBATCH --job-name=flood3_movie_lenzen
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --mail-user=arnd.weber@bafg.de
 #SBATCH --partition=CentOS              # queue for array jobs without mpiexec/mpirun
-#SBATCH --array=1-40%3                  # 1-40%10
+#SBATCH --array=1-365%20                  # 1-49%10
 #SBATCH --ntasks=1                      # number of tasks per node
-#SBATCH --time=20-00:00                 # time DD-HH:MM
-#SBATCH --error=log/flood3_rhein_%A_%4a.err
-#SBATCH --output=log/flood3_rhein_%A_%4a.out
+#SBATCH --time=1-00:00                  # time DD-HH:MM
+#SBATCH --error=log/flood3_movie_lenzen_2013en_%A_%4a.err
+#SBATCH --output=log/flood3_movie_lenzen_2013en_%A_%4a.out
 #SBATCH --get-user-env
 #SBATCH --export=ALL
 
@@ -27,7 +27,7 @@ module list
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
 MODELEXE=/opt/i4/R-4.2.0/bin/Rscript
-MODELSCRIPT=flood3_rhein.R
+MODELSCRIPT=movie_jpg_lenzen.R
 
 #----------------------------------------------------------------
 # Output Environment Variables
@@ -64,9 +64,6 @@ echo "=========================================="
 echo -e "\nModel output:"
 echo $MODELEXE" "$MODELSCRIPT" "$SLURM_ARRAY_TASK_ID
 
-$MODELEXE $MODELSCRIPT > log/flood3_rhein_${SLURM_ARRAY_JOB_ID}_`printf "%04d" $SLURM_ARRAY_TASK_ID`.log 2>&1 
+mkdir -p movie/lenzen/2013_en/
 
-#----------------------------------------------------------------
-# EOF
-#----------------------------------------------------------------
-
+$MODELEXE $MODELSCRIPT "2013-01-01" "2013-12-31" $SLURM_ARRAY_TASK_ID > log/flood3_movie_lenzen_2013en_${SLURM_ARRAY_JOB_ID}_`printf "%03d" $SLURM_ARRAY_TASK_ID`.log 2>&1 
