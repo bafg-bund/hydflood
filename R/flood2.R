@@ -84,7 +84,7 @@ flood2 <- function(x, seq, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (class(x)[1] != "SpatRaster") {
+        if (!inherits(x, "SpatRaster")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
                                        "type 'SpatRaster'."))
         }
@@ -136,8 +136,8 @@ flood2 <- function(x, seq, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! (all(class(seq) == "Date")) &
-            ! (all(class(seq) == c("POSIXct", "POSIXt")))) {
+        if (!inherits(seq, "Date") &
+            !all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' must be",
                                        " either type 'Date' or c('POSIXct', 'P",
                                        "OSIXt')."))
@@ -148,13 +148,13 @@ flood2 <- function(x, seq, filename = '', ...) {
                                        "ve length larger 0."))
         }
         # NA and possible range
-        if (any(is.na(seq))){
+        if (any(is.na(seq))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' or elem",
                                        "ents of it must not be NA."))
         } else {
             time_min <- trunc(Sys.time() - as.difftime(31, units = "days"),
                               units = "days")
-            if (all(class(seq) == c("POSIXct", "POSIXt"))) {
+            if (all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
                 if (any(seq < time_min)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Values ",
                                                "of 'seq' must be between ",
@@ -165,7 +165,7 @@ flood2 <- function(x, seq, filename = '', ...) {
                 }
                 type_date <- FALSE
             }
-            if (all(class(seq) == "Date")) {
+            if (inherits(seq, "Date")) {
                 if (any(seq < as.Date("1960-01-01")) |
                     any(seq > Sys.Date() - 1)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Val",
@@ -180,7 +180,7 @@ flood2 <- function(x, seq, filename = '', ...) {
     
     ## filename
     if (! missing(filename)) {
-        if (class(filename) != "character") {
+        if (!inherits(filename, "character")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'filename' must",
                                        " be type 'character'."))
         }
@@ -219,7 +219,7 @@ flood2 <- function(x, seq, filename = '', ...) {
     waterlevel <- raster::raster(dem)
     
     # initialize the WaterLevelDataFrame
-    station_int <- as.integer(terra::unique(x$csa)$csa)
+    station_int <- na.omit(as.integer(terra::unique(x$csa)$csa))
     wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
                                                time = as.POSIXct(NA),
                                                station_int = station_int)

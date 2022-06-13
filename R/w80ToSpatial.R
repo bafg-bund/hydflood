@@ -67,7 +67,7 @@ w80ToSFL <- function(filename, crs,
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(class(crs) == "CRS" | class(crs) == "crs")
+    stopifnot(inherits(crs, "CRS") | inherits(crs, "crs"))
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)
@@ -202,7 +202,7 @@ w80ToSFP <- function(filename, crs) {
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(class(crs) == "CRS" | class(crs) == "crs")
+    stopifnot(inherits(crs, "CRS") | inherits(crs, "crs"))
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)

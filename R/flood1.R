@@ -168,7 +168,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (class(x)[1] != "SpatRaster") {
+        if (!inherits(x, "SpatRaster")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be ",
                                        "type 'SpatRaster'."))
         }
@@ -214,7 +214,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     }
     
     # initialize the WaterLevelDataFrame
-    station_int <- as.integer(terra::unique(x$csa)$csa)
+    station_int <- na.omit(as.integer(terra::unique(x$csa)$csa))
     wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
                                                time = as.POSIXct(NA),
                                                station_int = station_int)
@@ -227,8 +227,8 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! (all(class(seq) == "Date")) &
-            ! (all(class(seq) == c("POSIXct", "POSIXt")))) {
+        if (!inherits(seq, "Date") &
+            !all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' must be",
                                        " either type 'Date' or c('POSIXct', 'P",
                                        "OSIXt')."))
@@ -239,13 +239,13 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                                        "ve length larger 0."))
         }
         # NA and possible range
-        if (any(is.na(seq))){
+        if (any(is.na(seq))) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'seq' or elem",
                                        "ents of it must not be NA."))
         } else {
             time_min <- trunc(Sys.time() - as.difftime(31, units = "days"),
                               units = "days")
-            if (all(class(seq) == c("POSIXct", "POSIXt"))) {
+            if (all(c(inherits(seq, "POSIXct"), inherits(seq, "POSIXt")))) {
                 if (any(seq < time_min)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Values ",
                                                "of 'seq' must be between ",
@@ -256,7 +256,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                 }
                 type_date <- FALSE
             }
-            if (all(class(seq) == "Date")) {
+            if (inherits(seq, "Date")) {
                 if (any(seq < as.Date("1960-01-01")) |
                     any(seq > Sys.Date() - 1)) {
                     errors <- c(errors, paste0("Error ", l(errors), ": Val",
@@ -283,12 +283,12 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
         errors <- c(errors, paste0("Error ", l(errors), ": The 'gauging_statio",
                                    "n' or 'uuid' argument has to be supplied."))
     } else {
-        if (!(missing(gauging_station))){
-            if (class(gauging_station) != "character"){
+        if (!(missing(gauging_station))) {
+            if (!inherits(gauging_station, "character")) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'gauging_st",
                                            "ation' must be type 'character'."))
             }
-            if (length(gauging_station) != 1){
+            if (length(gauging_station) != 1) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'gauging_st",
                                            "ation' must have length 1."))
                 stop(paste0(errors, collapse="\n  "))
@@ -313,7 +313,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                     id <- c(min(id) - 1, id, max(id) + 1)
                     gs_possible <- stats::na.omit(
                         df.gauging_station_data_sel$gauging_station[id])
-                    if (!(df.gs$gauging_station %in% gs_possible)){
+                    if (!(df.gs$gauging_station %in% gs_possible)) {
                         errors <- c(errors, paste0("Error ", l(errors), ": The",
                                                    " selected 'gauging_station",
                                                    "' has to be in the river s",
@@ -331,12 +331,12 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
             }
         }
         
-        if (!(missing(uuid))){
-            if (class(uuid) != "character"){
+        if (!(missing(uuid))) {
+            if (!inherits(uuid, "character")) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'uuid' must",
                                            " be type 'character'."))
             }
-            if (length(uuid) != 1){
+            if (length(uuid) != 1) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'uuid' must",
                                            " have length 1."))
                 stop(paste0(errors, collapse="\n  "))
@@ -353,14 +353,14 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                 df.gs <- df.gauging_station_data_sel[
                     which(uuids == uuid_internal),]
                 
-                if (df.gs$km_qps < start_f | df.gs$km_qps > end_f){
+                if (df.gs$km_qps < start_f | df.gs$km_qps > end_f) {
                     id <- which(df.gauging_station_data_sel$km_qps > 
                                     start_f & 
                                     df.gauging_station_data_sel$km_qps < end_f)
                     id <- c(min(id) - 1, id, max(id) + 1)
                     uuid_possible <- stats::na.omit(
                         df.gauging_station_data_sel$uuid[id])
-                    if (!(df.gs$uuid %in% uuid_possible)){
+                    if (!(df.gs$uuid %in% uuid_possible)) {
                         errors <- c(errors, paste0("Error ", l(errors), ": The",
                                                    " selected 'uuid' has to be",
                                                    " in the river stretch\n  c",
@@ -377,8 +377,8 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
             }
         }
         
-        if (!(missing(gauging_station)) & !(missing(uuid))){
-            if (id_gs != id_uu){
+        if (!(missing(gauging_station)) & !(missing(uuid))) {
+            if (id_gs != id_uu) {
                 errors <- c(errors, paste0("Error ", l(errors), ": 'gaugin",
                                            "g_station' and 'uuid' must fit",
                                            " to each other.\nThe uuid for ",
@@ -392,7 +392,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     
     ## filename
     if (! missing(filename)) {
-        if (class(filename) != "character") {
+        if (!inherits(filename, "character")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'filename' must",
                                        " be type 'character'."))
         }

@@ -137,13 +137,13 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     
     ##
     # filename_dem
-    if (missing(filename_dem)){
+    if (missing(filename_dem)) {
         file_exists_dem <- FALSE
         file_create_dem <- FALSE
         ext_int_dem <- FALSE
         crs_int_dem <- FALSE
     } else {
-        if (class(filename_dem) != "character") {
+        if (!inherits(filename_dem, "character")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'filename_dem' ",
                                        "must be type 'character'."))
         }
@@ -178,13 +178,13 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     
     ## 
     # filename_csa
-    if (missing(filename_csa)){
+    if (missing(filename_csa)) {
         file_exists_csa <- FALSE
         file_create_csa <- FALSE
         ext_int_csa <- FALSE
         crs_int_csa <- FALSE
     } else {
-        if (class(filename_csa) != "character") {
+        if (!inherits(filename_csa, "character")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'filename_csa' ",
                                        "must be type 'character'."))
         }
@@ -265,7 +265,7 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         ext_int <- ext_int_ras
     }
     if (!missing(ext) & is.logical(ext_int_ras)) {
-        if (class(ext) != "SpatExtent") {
+        if (!inherits(ext, "SpatExtent")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'ext' must ",
                                        "be type 'SpatExtent'."))
         } else {
@@ -302,7 +302,7 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         crs_int <- crs_int_ras
     }
     if (!missing(crs) & is.logical(crs_int_ras)) {
-        if (class(crs) != "CRS" & class(crs) != "crs") {
+        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must ",
                                        "be type 'CRS' or 'crs'."))
         } else {
@@ -435,11 +435,11 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
                            ncols = terra::xmax(ext_int) - terra::xmin(ext_int),
                            nrows = terra::ymax(ext_int) - terra::ymin(ext_int),
                            resolution = 1, vals = NA)
-        if (class(crs_int) == "crs") {
+        if (inherits(crs_int, "crs")) {
             terra::crs(csa) <- crs_int$wkt
-        } else if (class(crs_int) == "CRS") {
+        } else if (inherits(crs_int, "CRS")) {
             terra::crs(csa) <- crs_int@projargs
-        } else if (class(crs_int) == "character") {
+        } else if (inherits(crs_int, "character")) {
             terra::crs(csa) <- sf::st_crs(crs_int)$wkt
         } else {
             stop("Error")
