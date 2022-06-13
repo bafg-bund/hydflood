@@ -83,13 +83,15 @@ devtools::document(".")
 write("#####", stdout())
 write(" build vignettes", stdout())
 devtools::build_vignettes(".")
+tools::compactPDF(paths = "doc", gs_quality = "ebook")
 
 #####
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
 Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
-devtools::check(".", error_on = "never")
+devtools::check(".", document = TRUE, manual = TRUE, error_on = "never",
+                build_args = c('--compact-vignettes=both'))
 
 #####
 # build the source package
