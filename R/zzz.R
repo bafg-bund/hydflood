@@ -2,7 +2,7 @@
 
 .onLoad <- function(libname, pkgname) {
     # load package data
-    utils::data("sf.afe", "sf.afr", "sf.tiles_elbe", "sf.tiles_rhein",
+    utils::data("df.pnv", "sf.afe", "sf.afr", "sf.tiles_elbe", "sf.tiles_rhein",
                 package = pkgname, envir = parent.env(environment()))
     
     # data cache
@@ -12,15 +12,15 @@
 }
 
 .onUnload  <- function(libpath) {
-    for (a_dataset in c("sf.afe", "sf.afr", "sf.tiles_elbe", "sf.tiles_rhein",
-                        "hydflood_cache")){
+    for (a_dataset in c("df.pnv", "sf.afe", "sf.afr", "sf.tiles_elbe",
+                        "sf.tiles_rhein", "hydflood_cache")){
         if (exists(a_dataset, envir = globalenv())){
             rm(list = a_dataset, envir = globalenv())
         }
     }
 }
 
-if(getRversion() >= "2.15.1"){
-    utils::globalVariables(c("sf.afe", "sf.afr", "sf.tiles_elbe",
+if(getRversion() >= "2.15.1") {
+    utils::globalVariables(c("df.pnv", "sf.afe", "sf.afr", "sf.tiles_elbe",
                              "sf.tiles_rhein", "sf.afe_csa", "sf.afr_csa"))
 }

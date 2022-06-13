@@ -1,3 +1,29 @@
+#' @name df.pnv
+#' @rdname df.pnv
+#' @title Reference \code{data.frame} used to classify flood duration into
+#'    potential natural vegetation.
+#' 
+#' @description Reference \code{data.frame} used to classify flood duration into
+#'    potential natural vegetation (PNV). It is an extended and more detailled
+#'    table to reclassify flood duration into PNV based on Ochs et al. (2020).
+#' 
+#' @format A \code{data.frame} containing 4 columns with attributes to
+#'    reclassify flood duration into potential natural vegetation.
+#'    \describe{
+#'       \item{from}{lower limits of flood duration (included, type \code{numeric}).}
+#'       \item{to}{upper limits of flood duration (not included, type \code{numeric}).}
+#'       \item{id}{numeric replacements used to order classes (type \code{numeric}).}
+#'       \item{vegtype}{names of the potential natural vegetation classes (type \code{character}).}
+#'       \item{r}{numeric coding for the r (red) of an rgb color code.}
+#'       \item{g}{numeric coding for the g (green) of an rgb color code.}
+#'       \item{b}{numeric coding for the b (blue) of an rgb color code.}
+#'    }
+#' 
+#' @references 
+#'   \insertRef{ochs_potential_2020}{hydflood}
+#' 
+"df.pnv"
+
 #' @name sf.afe
 #' @rdname sf.afe
 #' 
