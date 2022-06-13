@@ -1,20 +1,28 @@
 title: hydflood
-url: http://r.bafg.de/~WeberA/hydflood/index.html
-destination: public
+url: https://hydflood.bafg.de/
+destination: docs
 template:
-  params:
-    bootswatch: cosmo
+  bootstrap: 5
+  bootswatch: cosmo
 reference:
-  - title: "Class and functions"
-    desc: S4 Class and functions to compute flood extent and duration
+  - title: internal
+    contents:
+      - "`hydflood`"
+  - title: "Functions"
+    desc: Functions to compute flood extent and duration
     contents:
       - "`flood1`"
       - "`flood2`"
       - "`flood3`"
       - "`flood3Points`"
       - "`hydSpatRaster`"
+  - title: Postprocessing
+    desc: Functions to postprocess flood durations
+    contents:
+      - "`df.pnv`"
+      - "`classifyToPNV`"
   - title: Datasets
-    desc: Datasets included in hydflood
+    desc: Spatial datasets included in hydflood
     contents:
       - "`sf.af`"
       - "`sf.afe`"
@@ -42,13 +50,22 @@ navbar:
       href: reference/index.html
     - text: "ShinyApps"
       menu:
-      - text: "flood3()"
+      - text: "flood3"
         href: http://r.bafg.de/shiny/WeberA/07-flood3/
-      - text: "flood3()-WMS"
+      - text: "flood3WMS"
         href: http://r.bafg.de/shiny/WeberA/08-flood3wms/
-      - text: "flood3() daily"
+      - text: "flood3daily"
         href: http://r.bafg.de/shiny/WeberA/10-flood3daily/
   right:
     - text: BfG
-      href: http://www.bafg.de
-
+      href: https://www.bafg.de
+footer:
+  structure: 
+    left: built_with
+    right: developed_by
+repo:
+  url:
+    home: https://gitlab.lan.bafg.de/auenoekologie/hydflood/
+    source: https://gitlab.lan.bafg.de/auenoekologie/hydflood/-/blob/main/
+    issue: https://gitlab.lan.bafg.de/auenoekologie/hydflood/issues/
+    user: https://gitlab.lan.bafg.de/auenoekologie/

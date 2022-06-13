@@ -27,11 +27,11 @@ data-raw/sf.*.rda
 data-raw/spdf.*.rda
 doc
 /doc/
+docs
 inst/doc
 man
 /Meta/
 Meta
-public
 README_files/figure-markdown_github/Thumbs.db
 shinyapps/flood3/data/df.gauging_data_latest.RDS
 shinyapps/flood3/in_process
@@ -43,7 +43,7 @@ shinyapps/flood3wms/www/Thumbs.db
 slurm/log
 vignettes/movie
 vignettes/rosm.cache
-vignettes/wms-legenden
+vignettes/wms-legends
 vignettes/*.mp4
 vignettes/*.png
 vignettes/*.Rdata

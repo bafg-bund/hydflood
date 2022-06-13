@@ -26,7 +26,7 @@ R_version <- getRversion()
 # assemble and create R version specific output paths
 build <- paste0("build/", R_version)
 dir.create(build, FALSE, TRUE)
-public <- paste0("public/", R_version)
+public <- "docs/"
 dir.create(public, FALSE, TRUE)
 
 #####
@@ -140,48 +140,53 @@ if (!(file.exists("README.md"))) {
 }
 
 # render the package website 
-pkgdown::clean_site(".")
-pkgdown::build_site(".", examples = TRUE, preview = FALSE, new_process = TRUE,
-                    override = list(destination = public))
+# pkgdown::clean_site(".")
+pkgdown::build_site(".", examples = TRUE, preview = FALSE, new_process = TRUE)
 
 # insert the BfG logo into the header
 files <- list.files(path = public, pattern = "*[.]html",
                     all.files = TRUE, full.names = FALSE, recursive = TRUE,
                     ignore.case = FALSE, include.dirs = TRUE, no.. = FALSE)
-for (a_file in files){
-    x <- readLines(paste0(public, "/", a_file))
-    if (grepl("/", a_file, fixed = TRUE)){
+for (a_file in files) {
+    x <- readLines(paste0(public, a_file))
+    if (grepl("/", a_file, fixed = TRUE)) {
         write(a_file, stdout())
-        y <- gsub('<a href="http://www.bafg.de">BfG</a>',
-                  paste0('<a href="http://www.bafg.de"><img border="0" src="..',
+        y <- gsub('href="https://www.bafg.de">BfG</a>',
+                  paste0('href="https://www.bafg.de"><img border="0" src="..',
                          '/bfg_logo.jpg" height="50px" width="114px"></a>'), x)
     } else {
-        y <- gsub('<a href="http://www.bafg.de">BfG</a>',
-                  paste0('<a href="http://www.bafg.de"><img border="0" src="bf',
+        y <- gsub('href="http://www.bafg.de">BfG</a>',
+                  paste0('href="http://www.bafg.de"><img border="0" src="bf',
                          'g_logo.jpg" height="50px" width="114px"></a>'), x)
     }
+    # edit footer
+    y <- gsub('Developed by Arnd Weber.',
+              paste0('Developed by Arnd Weber. <a href="ht',
+                     'tps://www.bafg.de/EN/Service/Imprint/imprint_node.html">',
+                     'Imprint</a>.'),
+              y)
     # remove the prefix "technical report" in references
     z <- gsub('Technical Report ', '', y)
-    cat(z, file = paste0(public, "/", a_file), sep="\n")
+    cat(z, file = paste0(public, a_file), sep="\n")
 }
 
 # clean up
-rm(a_file, files, x, y)
+rm(a_file, files, x, y, z)
 
 # copy logo
-if (!(file.exists(paste0(public, "/bfg_logo.jpg")))){
+if (!(file.exists(paste0(public, "bfg_logo.jpg")))) {
     file.copy("pkgdown/bfg_logo.jpg", public)
 }
 
 # copy README_files into public
-dir.create(paste0(public, "/README_files/figure-markdown_github"), FALSE, TRUE)
+dir.create(paste0(public, "README_files/figure-markdown_github"), FALSE, TRUE)
 file.copy("README_files/figure-markdown_github/usage-1.png", 
-          paste0(public, "/README_files/figure-markdown_github"))
+          paste0(public, "README_files/figure-markdown_github"))
 
 #####
-# create public/downloads directory and copy hydflood_*.tar.gz-files into it
-downloads <- paste0("public/", R_version, "/downloads")
-dir.create(downloads, recursive = TRUE)
+# create docs/downloads directory and copy hydflood_*.tar.gz-files into it
+downloads <- paste0(public, "downloads")
+dir.create(downloads, FALSE, TRUE)
 from <- list.files(path = build,
                    pattern = "hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
                    full.names = TRUE)
@@ -204,9 +209,9 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.1.2") {
+if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.2.0") {
     # copy html output to ~/public_html
-    system(paste0("cp -rp public/", R_version, "/* /home/", user, "/public_htm",
+    system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
                   "l/hydflood/"))
     system("permissions_html")
     
@@ -221,8 +226,8 @@ if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.1.2") {
     
     # copy package source to r.bafg.de
     system(paste0("[ -d /home/", user, "/freigaben_r/_packages/package_sources",
-                  " ] && cp -rp public/", R_version, "/downloads/hydflood_*.ta",
-                  "r.gz /home/", user, "/freigaben_r/_packages/package_sources"))
+                  " ] && cp -rp ", public, "downloads/hydflood_*.tar.gz /home/",
+                  user, "/freigaben_r/_packages/package_sources"))
 }
 
 #q("no")
