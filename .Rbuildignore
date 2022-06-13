@@ -21,4 +21,7 @@
 ^slurm$
 ^vignettes/flood3-2fps-.*\\.mp4$
 ^vignettes/Thumbs\.db$
+^vignettes/map\.Rmd$
 ^vignettes/movie$
+^vignettes/wms-legends$
+
