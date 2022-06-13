@@ -19,10 +19,10 @@ library(rgdal)
 library(hyd1d, lib.loc = paste0("~/R/", getRversion()))
 library(hydflood, lib.loc = paste0("~/R/", getRversion()))
 
-# subset spdf.tiles_rhein
-spdf.tile <- spdf.tiles_rhein[i, ]
+# subset spdf.tiles_elbe
+sf.tile <- sf.tiles("Rhein")[i, ]
 hfc <- hydflood_cache$cache_path_get()
-n <- spdf.tile$name
+n <- sf.tile$name
 dem <- paste0(hfc, "/", n, "_DEM.tif")
 csa <- paste0(hfc, "/", n, "_CSA.tif")
 
@@ -31,28 +31,28 @@ csa <- paste0(hfc, "/", n, "_CSA.tif")
 products <- list()
 
 for (a_year in 1960:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
-  print(a_year)
-  
-  # output file
-  f <- paste0(o, "/", n, "_flood3_", a_year, ".tif")
-  
-  # collect filenames for aggregation to mean and sd
-  products <- append(products, f)
-  names(products)[length(products)] <- paste0("flood3_", a_year)
-  
-  # compute ?!?
-  if (file.exists(f)) {
-    print(paste0(f, " exists already"))
-  } else {
-    print(paste0(f, " will be computed"))
-    x <- hydflood::hydRasterStack(filename_dem = dem, filename_csa = csa)
-    s <- seq.Date(from = as.Date(paste0(a_year, "-01-01")),
-                  to = as.Date(paste0(a_year, "-12-31")), by = "day")
-    print(paste0(length(s), " days in ", a_year))
-    hydflood::flood3(x, s, filename = f, format = "GTiff",
-                     options = c("COMPRESS=LZW", "TFW=NO"))
-  }
-  print("")
+    print(a_year)
+    
+    # output file
+    f <- paste0(o, "/", n, "_flood3_", a_year, ".tif")
+    
+    # collect filenames for aggregation to mean and sd
+    products <- append(products, f)
+    names(products)[length(products)] <- paste0("flood3_", a_year)
+    
+    # compute ?!?
+    if (file.exists(f)) {
+        print(paste0(f, " exists already"))
+    } else {
+        print(paste0(f, " will be computed"))
+        x <- hydflood::hydSpatRaster(filename_dem = dem, filename_csa = csa)
+        s <- seq.Date(from = as.Date(paste0(a_year, "-01-01")),
+                      to = as.Date(paste0(a_year, "-12-31")), by = "day")
+        print(paste0(length(s), " days in ", a_year))
+        hydflood::flood3(x, s, filename = f, format = "GTiff",
+                         options = c("COMPRESS=LZW", "TFW=NO"))
+    }
+    print("")
 }
 
 #####
@@ -62,68 +62,80 @@ f_mean <- paste0(o, "/", n, "_flood3_mean_1990_",
                  as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
 
 if (file.exists(f_mean)) {
-  print(paste0(f_mean, " exists already"))
+    print(paste0(f_mean, " exists already"))
 } else {
-  print(paste0(f_mean, " will be computed"))
-  calc(stack(products), fun = mean, na.rm = TRUE, filename = f_mean,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_mean, " will be computed"))
+    raster::calc(raster::stack(products), fun = mean, na.rm = TRUE,
+                 filename = f_mean, format = "GTiff",
+                 options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 f_sd <- paste0(o, "/", n, "_flood3_sd_1990_",
                as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
 
 if (file.exists(f_sd)) {
-  print(paste0(f_sd, " exists already"))
+    print(paste0(f_sd, " exists already"))
 } else {
-  print(paste0(f_sd, " will be computed"))
-  calc(stack(products), fun = sd, na.rm = TRUE, filename = f_sd,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_sd, " will be computed"))
+    raster::calc(raster::stack(products), fun = sd, na.rm = TRUE, filename = f_sd,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 # reference period 1960 - 1989
 f_mean <- paste0(o, "/", n, "_flood3_mean_1960_1989.tif")
 
 if (file.exists(f_mean)) {
-  print(paste0(f_mean, " exists already"))
+    print(paste0(f_mean, " exists already"))
 } else {
-  print(paste0(f_mean, " will be computed"))
-  calc(stack(products[paste0("flood3_", 1960:1989)]),
-       fun = mean, na.rm = TRUE, filename = f_mean,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_mean, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1960:1989)]),
+                 fun = mean, na.rm = TRUE, filename = f_mean,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 f_sd <- paste0(o, "/", n, "_flood3_sd_1960_1989.tif")
 
 if (file.exists(f_sd)) {
-  print(paste0(f_sd, " exists already"))
+    print(paste0(f_sd, " exists already"))
 } else {
-  print(paste0(f_sd, " will be computed"))
-  calc(stack(products[paste0("flood3_", 1960:1989)]),
-       fun = sd, na.rm = TRUE, filename = f_sd,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_sd, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1960:1989)]),
+                 fun = sd, na.rm = TRUE, filename = f_sd,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 # reference period 1990 - 2019
 f_mean <- paste0(o, "/", n, "_flood3_mean_1990_2019.tif")
 
 if (file.exists(f_mean)) {
-  print(paste0(f_mean, " exists already"))
+    print(paste0(f_mean, " exists already"))
 } else {
-  print(paste0(f_mean, " will be computed"))
-  calc(stack(products[paste0("flood3_", 1990:2019)]),
-       fun = mean, na.rm = TRUE, filename = f_mean,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_mean, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1990:2019)]),
+                 fun = mean, na.rm = TRUE, filename = f_mean,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 f_sd <- paste0(o, "/", n, "_flood3_sd_1990_2019.tif")
 
 if (file.exists(f_sd)) {
-  print(paste0(f_sd, " exists already"))
+    print(paste0(f_sd, " exists already"))
 } else {
-  print(paste0(f_sd, " will be computed"))
-  calc(stack(products[paste0("flood3_", 1990:2019)]),
-       fun = sd, na.rm = TRUE, filename = f_sd,
-       format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+    print(paste0(f_sd, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1990:2019)]),
+                 fun = sd, na.rm = TRUE, filename = f_sd,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+}
+
+f_mean_vt <- paste0(o, "/", n,
+                    "_flood3_mean_1990_2019_potential_natural_vegetation.tif")
+
+if (file.exists(f_mean_vt)) {
+    print(paste0(f_mean_vt, " exists already"))
+} else {
+    print(paste0(f_mean_vt, " will be computed"))
+    classifyToPNV(x = rast(f_mean), rcl = df.pnv, filename = f_mean_vt,
+                  filetype = "GTiff", gdal = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 #####

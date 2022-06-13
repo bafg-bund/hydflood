@@ -1,6 +1,6 @@
 #' cache path clear
 #' @export
-#' @rdname hydflood_cache_clear-defunct
+#' @rdname hydflood_cache
 #' @param ... ignored
 hydflood_cache_clear <- function(...) {
     .Defunct(msg = paste0("defunct, see hydflood_cache$delete() and hydflood_c",
@@ -9,7 +9,7 @@ hydflood_cache_clear <- function(...) {
 
 #' cache list 
 #' @export
-#' @rdname hydflood_cache_list-defunct
+#' @rdname hydflood_cache
 #' @param ... ignored
 hydflood_cache_list <- function(...) {
     .Defunct(msg = "defunct, see hydflood_cache$list()")

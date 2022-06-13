@@ -2,12 +2,8 @@
 # store raster.csa as external dataset
 if (!(file.exists("data/raster.csa.rda"))){
     
-    library("rgdal")
-    library("sp")
-    library("raster")
-    
     # import
-    raster.csa <- raster("data-raw/raster.csa.tif")
+    raster.csa <- rast("data-raw/raster.csa.tif")
     
     # export
     usethis::use_data(raster.csa, overwrite = TRUE, compress = "bzip2")

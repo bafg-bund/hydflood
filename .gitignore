@@ -14,11 +14,16 @@
 
 # ignore directories and files
 build
+data-raw/raster.*.tif
 data-raw/Thumbs.db
 data-raw/*.sbn
 data-raw/*.sbx
-data-raw/raster.dem_*
-data-raw/raster.csa_*
+data-raw/raster.dem.tif
+data-raw/raster.dem*.tif
+data-raw/raster.csa.tif
+data-raw/raster.csa*.tif
+data-raw/raster.csa_plittersdorf.tif
+data-raw/sf.*.rda
 data-raw/spdf.*.rda
 doc
 /doc/

@@ -10,13 +10,13 @@
 #' 
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
-#' @param ext argument of type \code{\link[raster]{extent}}.
-#' @param crs argument of type \code{\link[sp]{CRS}}. It is
+#' @param ext argument of type \code{\link[terra]{SpatExtent}}.
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}. It is
 #'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
-#' @param \dots additional arguments as for \code{\link[raster]{writeRaster}}.
+#' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return Raster* object containing elevation data for the selected floodplain
+#' @return SpatRaster object containing elevation data for the selected floodplain
 #'   region.
 #' 
 #' @references 
@@ -28,14 +28,15 @@
 #' 
 #' @examples \dontrun{
 #' library(hydflood)
-#' 
-#' dem <- getDEM(ext = extent(c(309000, 310000, 5749000, 5750000)),
-#'               crs = crs("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))
+#' dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
+#'               crs = crs("EPSG:25833"))
 #' }
 #' 
 #' @export
 #' 
 getDEM <- function(filename = '', ext, crs, ...) {
+    
+    options("rgdal_show_exportToProj4_warnings" =  "none")
     
     #####
     # validate the input data
@@ -72,10 +73,10 @@ getDEM <- function(filename = '', ext, crs, ...) {
             file_create_dem <- FALSE
             ext_int_dem <- TRUE
             crs_int_dem <- TRUE
-            raster.dem <- raster::raster(x = filename)
-            ext_dem <- raster::extent(raster.dem)
-            crs_dem <- raster::crs(raster.dem)
-            res_dem <- raster::res(raster.dem)
+            raster.dem <- terra::rast(x = filename)
+            ext_dem <- terra::ext(raster.dem)
+            crs_dem <- terra::crs(raster.dem)
+            res_dem <- terra::res(raster.dem)
         } else {
             file_exists_dem <- FALSE
             file_create_dem <- TRUE
@@ -97,13 +98,13 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     }
     if (!missing(crs)) {
-        if (class(crs)[[1]] != "CRS") {
+        if (class(crs)[[1]] != "CRS" & class(crs)[[1]] != "crs") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must be t",
                                        "ype 'CRS'."))
             stop(paste0(errors, collapse="\n  "))
         }
         if (crs_int_dem) {
-            if (!raster::compareCRS(crs, crs_dem)) {
+            if (sf::st_crs(crs) != sf::st_crs(crs_dem)) {
                 errors <- c(errors, paste0("Error ", l(errors), ": The supplie",
                                            "d 'crs' does not agree with the cr",
                                            "s of the raster supplied through '",
@@ -124,13 +125,9 @@ getDEM <- function(filename = '', ext, crs, ...) {
         stop(paste0(errors, collapse="\n  "))
     } else {
         if (isUTM32(crs_int)) {
-            zone <- "32"
             river <- "Rhein"
-            crs_int <- utm32n
         } else if (isUTM33(crs_int)) {
-            zone <- "33"
             river <- "Elbe"
-            crs_int <- utm33n
         } else {
             stop(errors)
         }
@@ -150,15 +147,15 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     }
     if (!missing(ext)) {
-        if (class(ext) != "Extent") {
+        if (class(ext) != "SpatExtent") {
             errors <- c(errors, paste0("Error ", l(errors), ": 'ext' must ",
-                                       "be type 'Extent'."))
+                                       "be type 'SpatExtent'."))
             stop(paste0(errors, collapse="\n  "))
         }
         if (ext_int_dem) {
             if (ext == ext_dem) {
                 ext_int <- ext
-            } else if (ext <= ext_dem) {
+            } else if (comp_ext(ext, ext_dem)) {
                 message("'ext' will be used to crop the supplied raster file.")
                 ext_int <- ext
                 crop <- TRUE
@@ -177,30 +174,13 @@ getDEM <- function(filename = '', ext, crs, ...) {
     ##
     # in area
     # check position
+    sf.ext <- extent2polygon(ext_int, crs_int)
     if (exists("river")) {
-        # access the spdf.active_floodplain_* data
-        active_floodplain <- paste0("spdf.active_floodplain_", tolower(river))
-        if (exists(active_floodplain, where = parent.env(environment()))){
-            get(active_floodplain, envir = parent.env(environment()))
-        } else {
-            utils::data(active_floodplain)
-        }
-        rm(active_floodplain)
-        sp.ext <- extent2polygon(ext_int, crs_int)
-        if (river == "Elbe") {
-            raster::crs(spdf.active_floodplain_elbe) <- crs_int
-            if (! (length(spdf.active_floodplain_elbe[sp.ext,]) > 0)) {
-                errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
-                                           "d 'ext' does NOT overlap with the ",
-                                           "active floodplain of River Elbe."))
-            }
-        } else if (river == "Rhein") {
-            raster::crs(spdf.active_floodplain_rhein) <- crs_int
-            if (! (length(spdf.active_floodplain_rhein[sp.ext,]) > 0)) {
-                errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
-                                           "d 'ext' does NOT overlap with the ",
-                                           "active floodplain of River Rhine."))
-            }
+        af <- sf.af(name = river)
+        if (! (nrow(af[sf.ext,]) > 0)) {
+            errors <- c(errors, paste0("Error ", l(errors), ": The selected 'e",
+                                       "xt' does NOT overlap with the active f",
+                                       "loodplain of River ", river, "."))
         }
     }
     
@@ -225,47 +205,37 @@ getDEM <- function(filename = '', ext, crs, ...) {
     #####
     # processing
     if (crop) {
-        return(raster::crop(raster.dem, sp.ext))
+        return(terra::crop(raster.dem, sf.ext))
     }
     if (file.exists(filename) & missing(ext) & missing(crs)) {
         return(raster.dem)
     }
     if (file.exists(filename)) {
-        if (raster::extent(raster::raster(filename)) == ext_int) {
+        if (terra::ext(terra::rast(filename)) == ext_int) {
             return(raster.dem)
         }
     }
     
-    nrows <- as.integer((ext_int@ymax - ext_int@ymin))
-    ncols <- as.integer((ext_int@xmax - ext_int@xmin))
-    in_memory <- raster::canProcessInMemory(raster::raster(ext_int,
-                                                           nrows = nrows,
+    nrows <- as.integer((ext_int@ptr$vector[4] - ext_int@ptr$vector[3]))
+    ncols <- as.integer((ext_int@ptr$vector[2] - ext_int@ptr$vector[1]))
+    
+    in_memory <- raster::canProcessInMemory(raster::raster(nrows = nrows,
                                                            ncols = ncols,
-                                                           crs = crs_int),
-                                            n = 2)
+                                                           xmn = xmin(ext_int),
+                                                           xmx = xmax(ext_int),
+                                                           ymn = ymin(ext_int),
+                                                           ymx = ymax(ext_int),
+                                                           resolution = 1
+                                                           ), n = 2)
     
-    if (river == "Elbe") {
-        within <- rgeos::gContains(spdf.tiles_elbe, sp.ext, byid = TRUE)[,1]
-        if (any(within)) {
-            spdf.tiles <- spdf.tiles_elbe[within,]
-        } else {
-            spdf.tiles <- spdf.tiles_elbe[sp.ext,]
-        }
-    } else {
-        within <- rgeos::gContains(spdf.tiles_rhein, sp.ext, byid = TRUE)[,1]
-        if (any(within)) {
-            spdf.tiles <- spdf.tiles_rhein[within,]
-        } else {
-            spdf.tiles <- spdf.tiles_rhein[sp.ext,]
-        }
-    }
+    sf.tiles <- sf.tiles(name = river)[sf.ext,]
     
-    if (length(spdf.tiles) > 5) {
+    if (nrow(sf.tiles) > 5) {
         stop(paste0("Error: The choosen 'ext' is very large and covers more th",
                     "an 5 DEM tiles.\n   Please reduce the size of your extent",
                     "."))
     }
-    if (length(spdf.tiles) > 3) {
+    if (nrow(sf.tiles) > 3) {
         warning(paste0("Error: The choosen 'ext' is large and covers more than",
                        " 3 DEM tiles.\n   Please reduce the size of your exten",
                        "t to avoid overly long computation times."))
@@ -274,21 +244,25 @@ getDEM <- function(filename = '', ext, crs, ...) {
     if (!dir.exists(hydflood_cache$cache_path_get())) {
         dir.create(hydflood_cache$cache_path_get(), FALSE, TRUE)
     }
-    merge_rasters <- list()
-    for (i in 1:length(spdf.tiles)) {
-        file <- paste0(hydflood_cache$cache_path_get(), "/", spdf.tiles$name[i],
+    merge_files <- list(nrow(sf.tiles))
+    for (i in 1:nrow(sf.tiles)) {
+        file <- paste0(hydflood_cache$cache_path_get(), "/", sf.tiles$name[i],
                        "_DEM.tif")
         if (!file.exists(file)) {
-            utils::download.file(spdf.tiles$url[i], file, quiet = TRUE)
+            utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
         }
-        merge_rasters <- append(merge_rasters, raster::raster(x = file))
+        merge_files[[i]] <- terra::rast(x = file)
     }
     
     # rename objects in merge_rasters
-    dem_names <-c(letters[24:26], letters[1:23])
-    names(merge_rasters) <- dem_names[1:length(merge_rasters)]
+    # dem_names <-c(letters[24:26], letters[1:23])
+    # names(merge_rasters) <- dem_names[1:length(merge_rasters)]
     
-    if (length(merge_rasters) > 1){
+    
+    if (length(merge_files) == 1) {
+        merge_rasters <- list("x" = merge_files)
+    } else if (length(merge_files) > 1){
+        merge_rasters <- list("x" = terra::src(merge_files))
         if (file_create_dem) {
             merge_rasters[["filename"]] <- filename
             if (length(args) > 0){
@@ -298,29 +272,34 @@ getDEM <- function(filename = '', ext, crs, ...) {
             }
         } else {
             if (!in_memory) {
-                tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
+                tmp_dem <- tempfile(fileext = ".tif")
                 merge_rasters[["filename"]] <- tmp_dem
             }
         }
-        merge_rasters[["overlap"]] <- TRUE
-        merge_rasters[["ext"]] <- ext_int
+        # merge_rasters[["overlap"]] <- TRUE
+        # merge_rasters[["ext"]] <- ext_int
         if (overwrite) {
             merge_rasters[["overwrite"]] <- TRUE
         }
         raster.dem <- do.call("merge", merge_rasters)
+        
+        if (ext_int <= ext(raster.dem)) {
+            raster.dem <- terra::crop(raster.dem, ext_int, filename = filename,
+                                      overwrite = TRUE, ...)
+        }
     } else {
         if (file_create_dem) {
-            raster.dem <- raster::crop(merge_rasters$x, y = ext_int)
+            raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
             if (!file.exists(filename) | overwrite) {
-                raster::writeRaster(raster.dem, filename = filename, ...)
+                terra::writeRaster(raster.dem, filename = filename, ...)
             }
         } else {
             if (!in_memory) {
-                tmp_dem <- raster::rasterTmpFile(prefix = "r_tmp_dem_")
-                raster.dem <- raster::crop(merge_rasters$x, y = ext_int,
-                                           filename = tmp_dem)
+                tmp_dem <- tempfile(fileext = ".tif")
+                raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
+                                          filename = tmp_dem)
             } else {
-                raster.dem <- raster::crop(merge_rasters$x, y = ext_int)
+                raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
             }
         }
     }
@@ -328,3 +307,4 @@ getDEM <- function(filename = '', ext, crs, ...) {
     return(raster.dem)
     
 }
+

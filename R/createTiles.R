@@ -1,29 +1,28 @@
 #' @name createTiles
 #' @rdname createTiles
 #' 
-#' @title Function to split large areas (\code{SpatialPolygonDataFrame}) into
+#' @title Function to split large areas (\code{sfc_POLYGON}) into
 #'   tiles
 #' 
 #' @description To simplify and accelerate the computation of flood duration
-#'   with \code{flood4()} in massive areas this function provides a simple
+#'   with \code{\link{flood3}} in massive areas this function provides a simple
 #'   tiling algorithm.
 #' 
-#' @param x has to by type \code{SpatialPolygon} or \code{SpatialPolygonDataFrame}.
+#' @param x has to by type \code{sf}.
 #' @param size_x tile size along the x-axis in the units of the current projection (\code{numeric}).
 #' @param size_y tile size along the y-axis in the units of the current projection (\code{numeric}).
+#' @param subset \code{boolean} determining whether all or only intersecting tiles are returned.
 #' 
-#' @return \code{SpatialPolygonsDataFrame} containing tiles covering \code{x}.
+#' @return \code{sf} containing tiles covering \code{x}.
 #' 
 #' @examples \dontrun{
 #'   library(hydflood)
-#'   data(spdf.active_floodplain_elbe)
-#'   tiles <- createTiles(x = spdf.active_floodplain_elbe,
-#'                        size_x = 10000, size_y = 10000)
+#'   tiles <- createTiles(x = sf.af(name = "Elbe"), size_x = 10000, size_y = 10000)
 #' }
 #' 
 #' @export
 #' 
-createTiles <- function(x, size_x, size_y) {
+createTiles <- function(x, size_x, size_y, subset = TRUE) {
     
     #####
     # check requirements
@@ -38,11 +37,9 @@ createTiles <- function(x, size_x, size_y) {
                                    "argument has to be supplied."))
     } else {
         # class
-        if (! class(x)[1] %in% c("SpatialPolygons",
-                                 "SpatialPolygonsDataFrame")) {
-            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be eit",
-                                       "her type 'SpatialPolygons' or 'Spatial",
-                                       "PolygonsDataFrame'."))
+        if (! class(x)[1] %in% c("sf")) {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'x' must be typ",
+                                       "e 'sf'."))
         }
     }
     
@@ -70,6 +67,13 @@ createTiles <- function(x, size_x, size_y) {
         }
     }
     
+    if (! missing(subset)) {
+        if (class(subset) == "logical") {
+            errors <- c(errors, paste0("Error ", l(errors), ": 'subset' must b",
+                                   "e type 'logical'."))
+        }
+    }
+    
     #####
     # error messages
     if (l(errors) != "1") {
@@ -78,17 +82,13 @@ createTiles <- function(x, size_x, size_y) {
     
     #####
     # processing
-    # extract extent and crs from the input area
-    ext <- raster::extent(x)
-    crs <- raster::crs(x)
-    
     # calculate the number of columns along the x-axis and the number of rows 
     # along the y-axis
-    x_min <- floor(ext@xmin / size_x) * size_x
-    y_min <- floor(ext@ymin / size_y) * size_y
+    x_min <- floor(sf::st_bbox(x)$xmin / size_x) * size_x
+    y_min <- floor(sf::st_bbox(x)$ymin / size_y) * size_y
     
-    n_col_x <- ceiling((ceiling(ext@xmax) - x_min) / size_x)
-    n_row_y <- ceiling((ceiling(ext@ymax) - y_min) / size_y)
+    n_col_x <- ceiling((ceiling(sf::st_bbox(x)$xmax) - x_min) / size_x)
+    n_row_y <- ceiling((ceiling(sf::st_bbox(x)$ymax) - y_min) / size_y)
     n_zfill <- max(nchar(as.character(n_col_x)), nchar(as.character(n_row_y)))
     
     # calculate the coordinates of the upper right corner of the extent
@@ -96,7 +96,7 @@ createTiles <- function(x, size_x, size_y) {
     y_max <- y_min + n_row_y * size_y
     
     # create "tiles"
-    l.res <- list(length = n_col_x * n_row_y)
+    l.res <- list()
     df.res <- data.frame(tile_ID = character(n_col_x * n_row_y),
                          x_column = numeric(n_col_x * n_row_y),
                          y_row = numeric(n_col_x * n_row_y),
@@ -104,22 +104,18 @@ createTiles <- function(x, size_x, size_y) {
     k <- 1
     for (i in 1:n_row_y) {
         for (j in 1:n_col_x) {
-            l.res[[k]] <- sp::Polygons(
-                list(
-                    sp::Polygon(
-                        coords = matrix(c(x_min + (j - 1) * size_x,
-                                          x_min + size_x + (j - 1) * size_x,
-                                          x_min + size_x + (j - 1) * size_x,
-                                          x_min + (j - 1) * size_x,
-                                          x_min + (j - 1) * size_x,
-                                          y_max - (i - 1) * size_y,
-                                          y_max - (i - 1) * size_y,
-                                          y_max - size_y - (i - 1) * size_y,
-                                          y_max - size_y - (i - 1) * size_y,
-                                          y_max - (i - 1) * size_y),
-                                        ncol = 2))
-                ), ID = k
-            )
+            l.res[[k]] <- sf::st_polygon(
+                list(matrix(c(x_min + (j - 1) * size_x,
+                              x_min + size_x + (j - 1) * size_x,
+                              x_min + size_x + (j - 1) * size_x,
+                              x_min + (j - 1) * size_x,
+                              x_min + (j - 1) * size_x,
+                              y_max - (i - 1) * size_y,
+                              y_max - (i - 1) * size_y,
+                              y_max - size_y - (i - 1) * size_y,
+                              y_max - size_y - (i - 1) * size_y,
+                              y_max - (i - 1) * size_y),
+                              ncol = 2)))
             df.res$tile_ID[k] <- paste0(sprintf(paste0("%0", n_zfill, "d"), j),
                                         "_",
                                         sprintf(paste0("%0", n_zfill, "d"), i))
@@ -129,7 +125,12 @@ createTiles <- function(x, size_x, size_y) {
         }
     }
     
-    return(sp::SpatialPolygonsDataFrame(
-        sp::SpatialPolygons(l.res, pO = 1:(k - 1), proj4string = crs),
-        df.res)[x,])
+    tiles <- sf::st_sfc(l.res, crs = sf::st_crs(x))
+    tiles <- sf::st_sf(tiles, df.res)
+    
+    if (subset) {
+        tiles <- tiles[x,]
+    }
+    
+    return(tiles)
 }
