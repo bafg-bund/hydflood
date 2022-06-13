@@ -98,9 +98,9 @@ function(input, output, session) {
             return(NULL)
         } else {
             if (res$river == "Elbe") {
-                return(CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))
+                return(st_crs(25833))
             } else {
-                return(CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))
+                return(st_crs(25832))
             }
         }
     })
@@ -114,38 +114,29 @@ function(input, output, session) {
     })
     
     # responsive active floodplains in WGS 1984
-    spdf.af_reactive <- reactive({
+    sf.af_reactive <- reactive({
         if (is.na(res$river)) {
             return(NULL)
         } else {
-            if (res$river == "Elbe") {
-                return(spdf.afe)
-            } else {
-                return(spdf.afr)
-            } 
+            return(st_transform(sf.af(name = res$river), crs = crs))
         }
     })
     
     # responsive active floodplains in ETRS
-    spdf.af_etrs_reactive <- reactive({
+    sf.af_etrs_reactive <- reactive({
         if (is.na(res$river)) {
             return(NULL)
         } else {
-            if (res$river == "Elbe") {
-                return(spdf.active_floodplain_elbe)
-            } else {
-                return(spdf.active_floodplain_rhein)
-            } 
+            return(sf.af(name = res$river))
         }
     })
     
-    # responsive spdf.gsd
-    spdf.gsd_reactive <- reactive({
+    # responsive sf.gsd
+    sf.gsd_reactive <- reactive({
         if (is.na(res$river)) {
             return(NULL)
         } else {
-            return(spdf.gsd[which(spdf.gsd$river == 
-                                      toupper(res$river)), ])
+            return(sf.gsd[which(sf.gsd$river == toupper(res$river)), ])
         }
     })
     
@@ -197,7 +188,7 @@ function(input, output, session) {
                              popup = htmlEscape(~gauging_station), 
                              group = "gs", color = "black", opacity = 1, 
                              fillColor = "yellow", fillOpacity = 1, 
-                             data = spdf.gsd_reactive())
+                             data = sf.gsd_reactive())
         }
     }, priority = 5)
     
@@ -250,18 +241,18 @@ function(input, output, session) {
     ###
     # responsive datasets
     ##
-    # responsive spdf.station
-    spdf.station_reactive <- reactive({
+    # responsive sf.station
+    sf.station_reactive <- reactive({
         if (is.na(res$river)) {
-            return(spdf.station[FALSE, ])
+            return(sf.station[FALSE, ])
         } else {
             if (!all(is.na(res$from_to))) {
-                return(spdf.station[
-                    which(spdf.station$river == res$river &
-                              spdf.station$station >= res$from_to[1] &
-                              spdf.station$station <= res$from_to[2]), ])
+                return(sf.station[
+                    which(sf.station$river == res$river &
+                          sf.station$station >= res$from_to[1] &
+                          sf.station$station <= res$from_to[2]), ])
             } else {
-                return(spdf.station)
+                return(sf.station)
             }
         }
     })
@@ -270,15 +261,15 @@ function(input, output, session) {
     # observe changes of input$from_to
     ##
     # modify background's extent
-    observeEvent(spdf.station_reactive(), {
+    observeEvent(sf.station_reactive(), {
         
         l <- leafletProxy("map")
         
-        if (nrow(spdf.station_reactive()) != 0) {
-            l %>% fitBounds(extent(spdf.station_reactive())@xmin,
-                            extent(spdf.station_reactive())@ymin,
-                            extent(spdf.station_reactive())@xmax,
-                            extent(spdf.station_reactive())@ymax)
+        if (nrow(sf.station_reactive()) != 0) {
+            l %>% fitBounds(st_bbox(sf.station_reactive())$xmin,
+                            st_bbox(sf.station_reactive())$ymin,
+                            st_bbox(sf.station_reactive())$xmax,
+                            st_bbox(sf.station_reactive())$ymax)
         }
     })
     
@@ -315,28 +306,28 @@ function(input, output, session) {
             if (res$restored) {
                 
                 # capture ETRS extent
-                extent_etrs <- extent(res$extent)
-                sp.extent_etrs <- as(extent_etrs, "SpatialPolygons")
-                crs(sp.extent_etrs) <- CRS(res$crs)
+                extent_etrs <- ext(res$extent)
+                sf.extent_etrs <- hydflood:::extent2polygon(
+                    extent_etrs, res$crs)
                 
                 output$area <- renderUI({
                     tagList(
                         h4("Berechnungsgebiet"),
                         p(paste0("Fläche: ", 
-                                 round(area(sp.extent_etrs) / 10000, 2),
-                                 " ha (", extent_etrs@xmax - extent_etrs@xmin, 
-                                 " x ", extent_etrs@ymax - extent_etrs@ymin, 
+                                 round(as.numeric(st_area(sf.extent_etrs)) / 10000, 2),
+                                 " ha (", xmax(extent_etrs) - xmin(extent_etrs), 
+                                 " x ", ymax(extent_etrs) - ymin(extent_etrs), 
                                  " m)")),
                         splitLayout(
                             disabled(numericInput("res_xmin", "xmin", 
-                                                  extent_etrs@xmin)),
+                                                  xmin(extent_etrs))),
                             disabled(numericInput("res_xmax", "xmax", 
-                                                  extent_etrs@xmax))),
+                                                  xmax(extent_etrs)))),
                         splitLayout(
                             disabled(numericInput("res_ymin", "ymin", 
-                                                  extent_etrs@ymin)),
+                                                  ymin(extent_etrs))),
                             disabled(numericInput("res_ymax", "ymax", 
-                                                  extent_etrs@ymax))),
+                                                  ymax(extent_etrs)))),
                         p("")
                     )
                 })
@@ -363,47 +354,50 @@ function(input, output, session) {
                                            "in!"))
         } else if (length(input.features) == 1) {
             
-            # convert the captured coordinates into a SpatialPolygons-object
+            # convert the captured coordinates into a sf-object
             input.coor <- input.features[[1]]$geometry$coordinates[[1]]
             df.coor <- data.frame(lon = rep(NA_real_, 5), 
                                   lat = rep(NA_real_, 5))
             for (i in 1:length(input.coor)) {
                 df.coor[i, ] <- c(input.coor[[i]][1], input.coor[[i]][2])
             }
-            p.area <- Polygons(list(Polygon(coords = df.coor, 
-                                            hole = FALSE)), "1")
-            sp.area <- SpatialPolygons(list(p.area), proj4string = crs)
+            df.coor$id <- 1
             
-            # check, if sp.area is part of the active floodplain
-            if (! in_af(sp.area, spdf.af_reactive())) {
+            sf.area <- st_as_sf(x = df.coor, coords = c("lon", "lat"),
+                                crs = crs, remove = FALSE) %>%
+                group_by(id) %>%
+                summarize() %>%
+                st_cast("POLYGON")
+            
+            # check, if sf.area is part of the active floodplain
+            if (! in_af(sf.area, sf.af_reactive())) {
                 o[[length(o) + 1]] <- p(paste0("Die gewählte Fläche liegt voll",
                                                "ständig außerhalb der aktiven ",
                                                "Aue. Bitte passen Sie die Lage",
                                                " an!"))
             } else {
                 # check the size
-                if (area(sp.area) > 25000000) {
+                if (as.numeric(st_area(sf.area)) > 25000000) {
                     o[[length(o) + 1]] <- p(paste0("Die gewählte Fläche ist ", 
-                                                   round(area(sp.area) / 10000, 
+                                                   round(as.numeric(st_area(sf.area)) / 10000, 
                                                          2), 
                                                    " ha groß und damit größer ",
                                                    "als die maximal erlaubten ",
                                                    "2500 ha. Bitte reduzieren ",
                                                    "Sie die Flächengröße!"))
                 } else {
-                    sp.area_etrs <- spTransform(sp.area, 
-                                                CRSobj = crs_reactive())
-                    extent_etrs <- extent(floor(extent(sp.area_etrs)@xmin),
-                                          ceiling(extent(sp.area_etrs)@xmax),
-                                          floor(extent(sp.area_etrs)@ymin),
-                                          ceiling(extent(sp.area_etrs)@ymax))
-                    sp.area_etrs_valid <- as(extent_etrs, 'SpatialPolygons')
-                    crs(sp.area_etrs_valid) <- crs_reactive()
+                    sf.area_etrs <- st_transform(sf.area, crs_reactive())
+                    extent_etrs <- ext(floor(st_bbox(sf.area_etrs)$xmin),
+                                       ceiling(st_bbox(sf.area_etrs)$xmax),
+                                       floor(st_bbox(sf.area_etrs)$ymin),
+                                       ceiling(st_bbox(sf.area_etrs)$ymax))
+                    sf.area_etrs_valid <- hydflood:::extent2polygon(extent_etrs,
+                                                                    crs_reactive())
                     
                     # add a temporary polygon and zoom
-                    sp.area_valid <- spTransform(sp.area_etrs_valid, crs)
-                    ma <- sp.area_valid@polygons[[1]]@Polygons[[1]]@coords
-                    e <- extent(sp.area_valid)
+                    sf.area_valid <- st_transform(sf.area_etrs_valid, crs)
+                    ma <- st_coordinates(sf.area_valid)
+                    bb <- st_bbox(sf.area_valid)
                     
                     l <- leafletProxy("map")
                     l %>% addPolygons(lng = ma[,1], lat = ma[,2],
@@ -411,40 +405,40 @@ function(input, output, session) {
                                       fillColor = "lightblue", 
                                       fillOpacity = 0.7,
                                       layerId = "area_tmp")
-                    l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
-                                    lat1 = e@ymin - (e@ymax - e@ymin) / 3,
-                                    lng2 = e@xmax + (e@xmax - e@xmin) / 3,
-                                    lat2 = e@ymax + (e@ymax - e@ymin) / 3)
+                    l %>% fitBounds(lng1 = bb$xmin - (bb$xmax - bb$xmin) / 3,
+                                    lat1 = bb$ymin - (bb$ymax - bb$ymin) / 3,
+                                    lng2 = bb$xmax + (bb$xmax - bb$xmin) / 3,
+                                    lat2 = bb$ymax + (bb$ymax - bb$ymin) / 3)
                     
                     # generate output
                     o[[length(o) + 1]] <- p(paste0("Die gewählte Fläche ist ", 
-                                                   round(area(sp.area) 
+                                                   round(as.numeric(st_area(sf.area)) 
                                                          / 10000, 2), " ha gro",
                                                    "ß (WGS84). Transformiert n", 
                                                    "ach ",crs_comp_reactive(), 
                                                    ", dem CRS in dem die Ber",
                                                    "echnung ausgeführt wird, i",
                                                    "st die Fläche ",
-                                                   round(area(sp.area_valid) 
+                                                   round(as.numeric(area(sf.area_valid)) 
                                                          / 10000, 2), " ha gro",
                                                    "ß und hat folgende Ausdehn",
                                                    "ung:"))
                     o[[length(o) + 1]] <- p(paste0("x-Ausdehnung: ", 
-                                                   extent_etrs@xmax - 
-                                                       extent_etrs@xmin, " m"))
+                                                   xmax(extent_etrs) - 
+                                                       xmin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
                         numericInput("xmin", "xmin", 
-                                     extent_etrs@xmin),
+                                     xmin(extent_etrs)),
                         numericInput("xmax", "xmax", 
-                                     extent_etrs@xmax))
+                                     xmax(extent_etrs)))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
-                                                   extent_etrs@ymax - 
-                                                       extent_etrs@ymin, " m"))
+                                                   ymax(extent_etrs) - 
+                                                       ymin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
                         numericInput("ymin", "ymin", 
-                                     extent_etrs@ymin),
+                                     ymin(extent_etrs)),
                         numericInput("ymax", "ymax", 
-                                     extent_etrs@ymax))
+                                     ymax(extent_etrs)))
                     o[[length(o) + 1]] <- p("")
                     o[[length(o) + 1]] <- splitLayout(
                         actionButton("area_modify", 
@@ -473,27 +467,27 @@ function(input, output, session) {
             !is.null(input$ymax) & !is.null(input$ymin)) {
             if (input$xmax > input$xmin & input$ymax > input$ymin) {
                 # capture ETRS extent
-                extent_etrs <- extent(input$xmin, input$xmax, 
-                                      input$ymin, input$ymax)
-                sp.area_etrs <- as(extent_etrs, "SpatialPolygons")
-                crs(sp.area_etrs) <- crs_reactive()
+                extent_etrs <- ext(input$xmin, input$xmax, 
+                                   input$ymin, input$ymax)
+                sf.area_etrs <- hydflood:::extent2polygon(extent_etrs,
+                                                          crs_reactive())
                 
                 # transform it to WGS84 and return the coordinates as data.frame
-                sp.area <- spTransform(sp.area_etrs, CRSobj = crs)
-                ma <- sp.area@polygons[[1]]@Polygons[[1]]@coords
+                sf.area <- st_transform(sf.area_etrs, crs)
+                ma <- st_coordinates(sf_area)
                 return(data.frame(lng = ma[, 1], lat = ma[, 2]))
             } else {
                 return(NULL)
             }
         } else if (!(all(is.na(res$extent)))) {
             # capture ETRS extent
-            extent_etrs <- extent(res$extent)
-            sp.area_etrs <- as(extent_etrs, "SpatialPolygons")
-            crs(sp.area_etrs) <- CRS(res$crs)
+            extent_etrs <- ext(res$extent)
+            sf.area_etrs <- hydflood:::extent2polygon(extent_etrs,
+                                                      st_crs(res$crs))
             
             # transform it to WGS84 and return the coordinates as data.frame
-            sp.area <- spTransform(sp.area_etrs, CRSobj = crs)
-            ma <- sp.area@polygons[[1]]@Polygons[[1]]@coords
+            sf.area <- st_transform(sf.area_etrs, crs)
+            ma <- st_coordinates(sf_area)
             return(data.frame(lng = ma[, 1], lat = ma[, 2]))
         } else {
             return(NULL)
@@ -513,15 +507,17 @@ function(input, output, session) {
                               fillColor = "lightblue", 
                               fillOpacity = 0.7,
                               layerId = "area_temp")
-            e <- extent(
-                SpatialPolygons(
-                    list(Polygons(
-                        list(Polygon(df.coor_area_reactive())), ID = 1)), 
-                    proj4string = crs))
-            l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
-                            lat1 = e@ymin - (e@ymax - e@ymin) / 3,
-                            lng2 = e@xmax + (e@xmax - e@xmin) / 3,
-                            lat2 = e@ymax + (e@ymax - e@ymin) / 3)
+            
+            df.coor <- data.frame(df.coor_area_reactive(), id = 1)
+            bb <- st_as_sf(x = df.coor, coords = c("lon", "lat"),
+                                crs = crs, remove = FALSE) %>%
+                group_by("id") %>%
+                st_cast("POLYGON")
+            
+            l %>% fitBounds(lng1 = bb$xmin - (bb$xmax - bb$xmin) / 3,
+                            lat1 = bb$ymin - (bb$ymax - bb$ymin) / 3,
+                            lng2 = bb$xmax + (bb$xmax - bb$xmin) / 3,
+                            lat2 = bb$ymax + (bb$ymax - bb$ymin) / 3)
         }
         
         o <- tagList(h4("Berechnungsgebiet"), 
@@ -558,44 +554,44 @@ function(input, output, session) {
         } else {
             
             # capture ETRS extent
-            extent_etrs <- extent(input$xmin, input$xmax, input$ymin, 
+            extent_etrs <- ext(input$xmin, input$xmax, input$ymin, 
                                   input$ymax)
-            sp.extent_etrs <- as(extent_etrs, "SpatialPolygons")
-            crs(sp.extent_etrs) <- crs_reactive()
+            sf.extent_etrs <- hydflood:::extent2polygon(extent_etrs,
+                                                        crs_reactive())
             
-            sp.extent <- spTransform(sp.extent_etrs, CRSobj = crs)
+            sf.extent <- st_transform(sf.extent_etrs, crs)
             
             # check, if it is part of the active floodplain
-            if (! in_af(sp.extent_etrs, spdf.af_etrs_reactive())) {
+            if (! in_af(sf.extent_etrs, sf.af_etrs_reactive())) {
                 o[[length(o) + 1]] <- p(paste0("Die gewählte Fläche liegt voll",
                                                "ständig außerhalb der aktiven ",
                                                "Aue. Bitte passen Sie die Lage",
                                                " an!"))
                 
-                if (area(sp.extent_etrs) > 25000000) {
+                if (as.numeric(st_area(sf.extent_etrs)) > 25000000) {
                     o[[length(o) + 1]] <- 
                         p(paste0("Die gewählte Fläche ist zudem ", 
-                                 round(area(sp.extent_etrs) / 10000, 2), 
+                                 round(as.numeric(st_area(sf.extent_etrs)) / 10000, 2), 
                                  " ha groß (", crs_comp_reactive(), 
                                  ") und damit größer als die maximal erlaubten",
                                  " 2500 ha . Bitte reduzieren Sie auch die Flä",
                                  "chengröße:"))
                     o[[length(o) + 1]] <- p(paste0("x-Ausdehnung: ", 
-                                                   extent_etrs@xmax - 
-                                                       extent_etrs@xmin, " m"))
+                                                   xmax(extent_etrs) - 
+                                                       xmin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
                         numericInput("xmin", "xmin", 
-                                     extent_etrs@xmin),
+                                     xmin(extent_etrs)),
                         numericInput("xmax", "xmax", 
-                                     extent_etrs@xmax))
+                                     xmax(extent_etrs)))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
-                                                   extent_etrs@ymax - 
-                                                       extent_etrs@ymin, " m"))
+                                                   ymax(extent_etrs) - 
+                                                       ymin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
                         numericInput("ymin", "ymin", 
-                                     extent_etrs@ymin),
+                                     ymin(extent_etrs)),
                         numericInput("ymax", "ymax", 
-                                     extent_etrs@ymax))
+                                     ymax(extent_etrs)))
                     o[[length(o) + 1]] <- p("")
                     o[[length(o) + 1]] <- splitLayout(
                         actionButton("area_modify", 
@@ -603,25 +599,25 @@ function(input, output, session) {
                         p(""))
                     o[[length(o) + 1]] <- p("")
                     
-                } else if (area(sp.extent) <= 25000000) {
+                } else if (as.numeric(st_area(sf.extent_etrs)) <= 25000000) {
                     o[[length(o) + 1]] <- 
                         p(paste0("Die gewählte Fläche ist ", 
-                                 round(area(sp.extent) / 10000, 2), " ha groß ",
+                                 round(as.numeric(st_area(sf.extent_etrs)) / 10000, 2), " ha groß ",
                                  "(", crs_comp_reactive(), "). Sie brauchen be",
                                  "i den Änderungen also nur auf die Lage zu ak",
                                  "tiven Aue achten:"))
                     o[[length(o) + 1]] <- p(paste0("x-Ausdehnung: ", 
-                                                   extent_etrs@xmax - 
-                                                       extent_etrs@xmin, " m"))
+                                                   xmax(extent_etrs) - 
+                                                       xmin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("xmin", "xmin", extent_etrs@xmin),
-                        numericInput("xmax", "xmax", extent_etrs@xmax))
+                        numericInput("xmin", "xmin", xmin(extent_etrs)),
+                        numericInput("xmax", "xmax", xmax(extent_etrs)))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
-                                                   extent_etrs@ymax - 
-                                                       extent_etrs@ymin, " m"))
+                                                   ymax(extent_etrs) - 
+                                                       ymin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("ymin", "ymin", extent_etrs@ymin),
-                        numericInput("ymax", "ymax", extent_etrs@ymax))
+                        numericInput("ymin", "ymin", ymin(extent_etrs)),
+                        numericInput("ymax", "ymax", ymax(extent_etrs)))
                     o[[length(o) + 1]] <- p("")
                     
                     o[[length(o) + 1]] <- splitLayout(
@@ -631,48 +627,48 @@ function(input, output, session) {
                     
                 }
             } else {
-                if (area(sp.extent) > 25000000) {
+                if (as.numeric(st_area(sf.extent_etrs)) > 25000000) {
                     o[[length(o) + 1]] <- 
                         p(paste0("Die gewählte Fläche ist ", 
-                                 round(area(sp.extent) / 10000, 2), " ha groß ", 
+                                 round(area(sf.extent_etrs) / 10000, 2), " ha groß ", 
                                  "(", crs_comp_reactive(), ") und damit größer", 
                                  " als die maximal erlaubten 2500 ha. Bitte re", 
                                  "duzieren Sie die Flächengröße:"))
                     o[[length(o) + 1]] <- p(paste0("x-Ausdehnung: ", 
-                                                   extent_etrs@xmax - 
-                                                       extent_etrs@xmin, " m"))
+                                                   xmax(extent_etrs) - 
+                                                       xmin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("xmin", "xmin", extent_etrs@xmin),
-                        numericInput("xmax", "xmax", extent_etrs@xmax))
+                        numericInput("xmin", "xmin", xmin(extent_etrs)),
+                        numericInput("xmax", "xmax", xmax(extent_etrs)))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
-                                                   extent_etrs@ymax - 
-                                                       extent_etrs@ymin, " m"))
+                                                   ymax(extent_etrs) - 
+                                                       ymin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("ymin", "ymin", extent_etrs@ymin),
-                        numericInput("ymax", "ymax", extent_etrs@ymax))
+                        numericInput("ymin", "ymin", ymin(extent_etrs)),
+                        numericInput("ymax", "ymax", ymax(extent_etrs)))
                     o[[length(o) + 1]] <- p("")
                     o[[length(o) + 1]] <- splitLayout(
                         actionButton("area_modify", "Gebiet ändern"),
                         p(""))
                     o[[length(o) + 1]] <- p("")
                     
-                } else if (area(sp.extent) <= 25000000) {
+                } else if (area(sf.extent_etrs) <= 25000000) {
                     o[[length(o) + 1]] <- 
                         p(paste0("Die gewählte Fläche ist ", 
-                                 round(area(sp.extent) / 10000, 2), " ha groß ",
+                                 round(area(sf.extent_etrs) / 10000, 2), " ha groß ",
                                  "(", crs_comp_reactive(), ")."))
                     o[[length(o) + 1]] <- p(paste0("x-Ausdehnung: ", 
-                                                   extent_etrs@xmax - 
-                                                       extent_etrs@xmin, " m"))
+                                                   xmax(extent_etrs) - 
+                                                       xmin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("xmin", "xmin", extent_etrs@xmin),
-                        numericInput("xmax", "xmax", extent_etrs@xmax))
+                        numericInput("xmin", "xmin", xmin(extent_etrs)),
+                        numericInput("xmax", "xmax", xmax(extent_etrs)))
                     o[[length(o) + 1]] <- p(paste0("y-Ausdehnung: ", 
-                                                   extent_etrs@ymax - 
-                                                       extent_etrs@ymin, " m"))
+                                                   ymax(extent_etrs) - 
+                                                       ymin(extent_etrs), " m"))
                     o[[length(o) + 1]] <- splitLayout(
-                        numericInput("ymin", "ymin", extent_etrs@ymin),
-                        numericInput("ymax", "ymax", extent_etrs@ymax))
+                        numericInput("ymin", "ymin", ymin(extent_etrs)),
+                        numericInput("ymax", "ymax", ymax(extent_etrs)))
                     o[[length(o) + 1]] <- p("")
                     
                     o[[length(o) + 1]] <- splitLayout(
@@ -711,10 +707,10 @@ function(input, output, session) {
                     list(Polygons(
                         list(Polygon(df.coor_area_reactive())), ID = 1)), 
                     proj4string = crs))
-            l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
-                            lat1 = e@ymin - (e@ymax - e@ymin) / 3,
-                            lng2 = e@xmax + (e@xmax - e@xmin) / 3,
-                            lat2 = e@ymax + (e@ymax - e@ymin) / 3)
+            l %>% fitBounds(lng1 = bb$xmin - (bb$xmax - bb$xmin) / 3,
+                            lat1 = bb$ymin - (bb$ymax - bb$ymin) / 3,
+                            lng2 = bb$xmax + (bb$xmax - bb$xmin) / 3,
+                            lat2 = bb$ymax + (bb$ymax - bb$ymin) / 3)
         }
         
         # modify UI
@@ -722,21 +718,20 @@ function(input, output, session) {
         disable("from_to")
         
         # capture ETRS extent
-        extent_etrs <- extent(res$extent)
-        sp.extent_etrs <- as(extent_etrs, "SpatialPolygons")
-        crs(sp.extent_etrs) <- crs_reactive()
+        extent_etrs <- ext(res$extent)
+        sf.extent_etrs <- hydflood:::extent2polygon(extent_etrs, crs_reactive())
         
         o <- tagList(h4("Berechnungsgebiet"))
         o[[length(o) + 1]] <- 
-            p(paste0("Fläche: ", round(area(sp.extent_etrs) / 10000, 2), " ha ",
-                     "(", extent_etrs@xmax - extent_etrs@xmin, " x ",
-                     extent_etrs@ymax - extent_etrs@ymin, " m)"))
+            p(paste0("Fläche: ", round(area(sf.extent_etrs) / 10000, 2), " ha ",
+                     "(", xmax(extent_etrs) - xmin(extent_etrs), " x ",
+                     ymax(extent_etrs) - ymin(extent_etrs), " m)"))
         o[[length(o) + 1]] <- splitLayout(
-            disabled(numericInput("xmin", "xmin", extent_etrs@xmin)),
-            disabled(numericInput("xmax", "xmax", extent_etrs@xmax)))
+            disabled(numericInput("xmin", "xmin", xmin(extent_etrs))),
+            disabled(numericInput("xmax", "xmax", xmax(extent_etrs))))
         o[[length(o) + 1]] <- splitLayout(
-            disabled(numericInput("ymin", "ymin", extent_etrs@ymin)),
-            disabled(numericInput("ymax", "ymax", extent_etrs@ymax)))
+            disabled(numericInput("ymin", "ymin", ymin(extent_etrs))),
+            disabled(numericInput("ymax", "ymax", ymax(extent_etrs))))
         o[[length(o) + 1]] <- p("")
         
         output$area <- renderUI({o})
@@ -793,43 +788,43 @@ function(input, output, session) {
         if (!is.na(res$crs)) {
             
             # convert extent to SpatialPolygons.*
-            extent_etrs <- extent(res$extent)
-            sp.area_etrs_valid <- as(extent_etrs, 'SpatialPolygons')
-            crs(sp.area_etrs_valid) <- crs_reactive()
-            sp.area_valid <- spTransform(sp.area_etrs_valid, crs)
+            extent_etrs <- ext(res$extent)
+            sf.area_etrs_valid <- hydflood:::extent2polygon(extent_etrs,
+                                                            crs_reactive())
+            sf.area_valid <- st_transform(sf.area_etrs_valid, crs)
             
-            # get gauging stations in sp.area_valid
-            l.gsd <- over(sp.area_valid, spdf.gsd, returnList = TRUE)
+            # get gauging stations in sf.area_valid
+            l.gsd <- over(sf.area_valid, sf.gsd, returnList = TRUE)
             
             if (nrow(l.gsd[[1]]) < 1) {
-                l.station <- over(sp.area_valid, spdf.station, 
+                l.station <- over(sf.area_valid, sf.station, 
                                   returnList = TRUE)
                 if (nrow(l.station[[1]]) < 1) {
                     return(NULL)
                 } else {
                     min_station <- min(l.station[[1]]$station)
                     ids <- numeric()
-                    id_up <- which(spdf.gsd@data$river == toupper(res$river) &
-                                       spdf.gsd@data$km_qps <= min_station)
+                    id_up <- which(sf.gsd$river == toupper(res$river) &
+                                       sf.gsd$km_qps <= min_station)
                     if (length(id_up) > 0) {ids <- append(ids, max(id_up))}
-                    id_do <- which(spdf.gsd@data$river == toupper(res$river) &
-                                       spdf.gsd@data$km_qps > min_station)
+                    id_do <- which(sf.gsd$river == toupper(res$river) &
+                                   sf.gsd$km_qps > min_station)
                     if (length(id_do) > 0) {ids <- append(ids, min(id_do))}
-                    spdf.gsd_sel <- spdf.gsd[ids, ]
+                    sf.gsd_sel <- sf.gsd[ids, ]
                     
-                    id <- which.min(abs(spdf.gsd_sel@data$km_qps - min_station))
+                    id <- which.min(abs(sf.gsd_sel$km_qps - min_station))
                     
                     if (length(id) == 1) {
-                        return(spdf.gsd_sel@data$gauging_station[id])
+                        return(sf.gsd_sel$gauging_station[id])
                     } else {
                         return(NULL)
                     }
                 }
             } else {
-                spdf.gsd_sel <- l.gsd[[1]]
-                id <- which(spdf.gsd@data$km_qps == 
-                                min(spdf.gsd_sel@data$km_qps))
-                return(spdf.gsd@data$gauging_station[id])
+                sf.gsd_sel <- l.gsd[[1]]
+                id <- which(sf.gsd$km_qps == 
+                                min(sf.gsd_sel$km_qps))
+                return(sf.gsd$gauging_station[id])
             }
         }
     })
@@ -839,7 +834,7 @@ function(input, output, session) {
         if (is.null(gs_reactive())) {
             return(NULL)
         } else {
-            spdf.gsd@data$pnp[which(spdf.gsd@data$gauging_station == 
+            sf.gsd$pnp[which(sf.gsd$gauging_station == 
                                         gs_reactive())]
         }
     })
@@ -1198,7 +1193,7 @@ function(input, output, session) {
                          popup = htmlEscape(~gauging_station), 
                          group = "gs", color = "black", opacity = 1, 
                          fillColor = "yellow", fillOpacity = 1, 
-                         data = spdf.gsd_reactive(),
+                         data = sf.gsd_reactive(),
                          options = pathOptions(pane = "gs"))
         
         # add area
@@ -1215,7 +1210,7 @@ function(input, output, session) {
                           paste0(res$extent, collapse = "-"), "_",
                           paste0(res$seq_from_to, collapse = "-"), "_wgs84.tif")
         if (file.exists(geotiff)) {
-            r <- raster(geotiff, crs = crs)
+            r <- rast(geotiff)
             ufd_col <- colorRampPalette(c("red", "yellow", "green", "darkblue"))
             pal <- colorNumeric(palette = ufd_col(10),
                                 domain = values(r),
@@ -1244,15 +1239,12 @@ function(input, output, session) {
                             pal = pal, values = values(r), opacity = 1)
         }
         
-        e <- extent(
-            SpatialPolygons(
-                list(Polygons(
-                    list(Polygon(df.coor_area_reactive())), ID = 1)), 
-                proj4string = crs))
-        l %>% fitBounds(lng1 = e@xmin - (e@xmax - e@xmin) / 3,
-                        lat1 = e@ymin - (e@ymax - e@ymin) / 3,
-                        lng2 = e@xmax + (e@xmax - e@xmin) / 3,
-                        lat2 = e@ymax + (e@ymax - e@ymin) / 3)
+        e <- ext(st_as_sf(df.coor_area_reactive(), coords = c("lon", "lat"),
+                          crs = crs))
+        l %>% fitBounds(lng1 = e$xmin - (e$xmax - e$xmin) / 3,
+                        lat1 = bb$ymin - (bb$ymax - bb$ymin) / 3,
+                        lng2 = bb$xmax + (bb$xmax - bb$xmin) / 3,
+                        lat2 = bb$ymax + (bb$ymax - bb$ymin) / 3)
         
     })
     

@@ -1,21 +1,21 @@
 ################################################################################
 # global.R
 ################################################################################
+#setwd("shinyapps/flood3")
+
 # libraries
 #####
 # load the necessary packages
 library(shiny)
 library(shinyjs)
-# library(shinycssloaders)
 library(htmltools)
 library(leaflet)
 library(leaflet.extras)
 library(sp)
 library(raster)
-library(rgdal)
-library(rgeos)
 library(hyd1d)
 library(hydflood)
+library(tidyverse)
 
 #####
 # add some additional functions
@@ -24,26 +24,6 @@ library(hydflood)
 # https://stat.ethz.ch/R-manual/R-devel/library/base/html/chartr.html
 simpleCap <- function(x) {
     paste0(toupper(substring(x, 1, 1)), tolower(substring(x, 2)))
-}
-
-###
-# convert byte substituted ascii strings to utf-8
-# https://en.wikipedia.org/wiki/List_of_Unicode_characters
-asc2utf8 <- function(x){
-    y <- iconv(x, "ASCII", "UTF-8", sub="byte")
-    # Ä
-    y <- sub("<c3><84>", "\u00c4", y)
-    # ä
-    y <- sub("<c3><a4>", "\u00e4", y)
-    # Ö
-    y <- sub("<c3><96>", "\u00d6", y)
-    # ö
-    y <- sub("<c3><b6>", "\u00f6", y)
-    # Ü
-    y <- sub("<c3><9c>", "\u00dc", y)
-    # ü
-    y <- sub("<c3><bc>", "\u00fc", y)
-    return(y)
 }
 
 ###
@@ -65,8 +45,8 @@ randomString <- function(length = 8) {
 ###
 # check, if the selected area intersects with the active floodplain
 in_af <- function(area, af) {
-    l.over <- sp::over(area, af, returnList = TRUE)
-    if (length(unlist(l.over)) == 0) {
+    l.over <- af[area,]
+    if (nrow(l.over) == 0) {
         return(FALSE)
     } else {
         return(TRUE)
@@ -89,7 +69,7 @@ enableBookmarking(store = "server")
 # set variables and initiate data needed for the computation
 ###
 # define standard projections WGS 1984, ETRS 1989 UTM 33N, ETRS 1989 UTM 32N
-crs <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+crs <- st_crs(4326)
 df.crs_comp <- data.frame(river = c("Elbe", "Rhein"),
                           crs = c("ETRS 1989 UTM 33N", "ETRS 1989 UTM 32N"))
 
@@ -103,17 +83,15 @@ df.from_to <- data.frame(river    = rivers,
                          to_val   = c(NA, 585.7, 865.7))
 
 ###
-# SpatialPointsDataFrame with all gauging stations
+# sf with all gauging stations
 # data("df.gauging_station_data", package = "hyd1d")
-# save(df.gauging_station_data, file = "df.gauging_station_data.rda")
-# load("data/df.gauging_station_data.rda")
 # df.gsd <- df.gauging_station_data[df.gauging_station_data$data_present,]
 # df.gsd <- df.gsd[-which(df.gsd$river == "RHEIN" & df.gsd$km_qps < 336.2), ]
-# df.gsd$gauging_station <- asc2utf8(df.gsd$gauging_station)
-# spdf.gsd <- SpatialPointsDataFrame(coords = df.gsd[,c("longitude", "latitude")], 
-#                                   data = df.gsd, proj4string = crs)
-# save(spdf.gsd, file = "data/spdf.gauging_station_data.rda")
-load("data/spdf.gauging_station_data.rda")
+# df.gsd <- df.gsd[-which(df.gsd$river == "WESER"), ]
+# sf.gsd <- st_as_sf(df.gsd, coords = c("longitude", "latitude"), crs = crs,
+#                    remove = FALSE)
+# save(sf.gsd, file = "data/sf.gsd.rda")
+load("data/sf.gsd.rda")
 
 ###
 # df.gauging_data
@@ -133,35 +111,37 @@ if (! file.exists(file_gd)) {
 df.gd <- readRDS(file_gd)
 
 ###
-# SpatialPolygonsDataFrames and data.frames of active floodplain polygons
-# data(list = c("spdf.active_floodplain_rhein", "spdf.active_floodplain_elbe"), 
-#      package = "hydflood")
-# load("data/spdf.active_floodplain_elbe.rda")
-# load("data/spdf.active_floodplain_rhein.rda")
-# spdf.afe <- spTransform(spdf.active_floodplain_elbe, CRSobj = crs)
-# spdf.afr <- spTransform(spdf.active_floodplain_rhein, CRSobj = crs)
-# save(list = c("spdf.afe", "spdf.afr"), file = "data/spdf.afX.rda")
-load("data/spdf.afX.rda")
+# sf and data.frames of active floodplain polygons
+# data(list = c("sf.afr", "sf.afe"), package = "hydflood")
+# sf.afe <- st_transform(sf.af(name = "Elbe"), crs)
+# sf.afr <- st_transform(sf.af(name = "Rhein"), crs)
+# save(list = c("sf.afe", "sf.afr"), file = "data/sf.afX.rda")
+load("data/sf.afX.rda")
 
-# df.coor.afe <- as.data.frame(spdf.afe@polygons[[1]]@Polygons[[1]]@coords)
-# df.coor.afr <- as.data.frame(spdf.afr@polygons[[1]]@Polygons[[1]]@coords)
+# df.coor.afe <- as.data.frame(st_coordinates(sf.afe))
+# df.coor.afe <- df.coor.afe[which(df.coor.afe$L1 == 1),]
+# df.coor.afe <- df.coor.afe[, c("X", "Y")]
 # names(df.coor.afe) <- c("lon", "lat")
+# df.coor.afr <- as.data.frame(st_coordinates(sf.afr))
+# df.coor.afr <- df.coor.afr[which(df.coor.afr$L1 == 1),]
+# df.coor.afr <- df.coor.afr[, c("X", "Y")]
 # names(df.coor.afr) <- c("lon", "lat")
 # save(list = c("df.coor.afe", "df.coor.afr"), file = "data/df.coor.afX.rda")
 load("data/df.coor.afX.rda")
 
 ###
-# SpatialPointsDataFrame of stationing
-# spdf.hectometer_elbe <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_elbe")
-# spdf.he <- spTransform(spdf.hectometer_elbe, CRSobj = crs)
-# spdf.hectometer_rhein <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_rhein")
-# spdf.hr <- spTransform(spdf.hectometer_rhein, CRSobj = crs)
-# spdf.he@data$river <- as.factor(rep("Elbe", nrow(spdf.he@data)))
-# spdf.hr@data$river <- as.factor(rep("Rhein", nrow(spdf.hr@data)))
-# spdf.station <- rbind(spdf.he, spdf.hr)
-# spdf.station@data <- cbind(spdf.station@data, as.data.frame(coordinates(spdf.station)[,1:2]))
-# names(spdf.station@data) <- c("OBJECTID", "station", "river", "longitude", "latitude")
-# spdf.station <- spdf.station[order(spdf.station$river, spdf.station$station),]
-# save(spdf.station, file = "data/spdf.station.rda")
-load("data/spdf.station.rda")
+# sf of stationing
+# sf.hectometer_elbe <- st_read(dsn = "~/hydflood/data-raw", layer = "hectometer_elbe")
+# sf.he <- st_transform(sf.hectometer_elbe, crs)
+# sf.hectometer_rhein <- st_read(dsn = "~/hydflood/data-raw", layer = "hectometer_rhein")
+# sf.hr <- st_transform(sf.hectometer_rhein, crs)
+# sf.he$river <- as.factor(rep("Elbe", nrow(sf.he)))
+# sf.hr$river <- as.factor(rep("Rhein", nrow(sf.hr)))
+# sf.station <- rbind(sf.he, sf.hr)
+# names(sf.station)[1:3] <- c("OBJECTID", "station", "river")
+# sf.station$longitude <- as.data.frame(st_coordinates(sf.station)[,1:2])[, 1]
+# sf.station$latitude <- as.data.frame(st_coordinates(sf.station)[,1:2])[, 2]
+# sf.station <- sf.station[order(sf.station$river, sf.station$station),]
+# save(sf.station, file = "data/sf.station.rda")
+load("data/sf.station.rda")
 
