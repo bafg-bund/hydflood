@@ -6,6 +6,23 @@ output:
   html_vignette:
     toc: yes
     toc_depth: 3
+  pdf_document:
+    latex_engine: pdflatex
+    keep_tex: false
+    number_sections: true
+    toc: true
+    toc_depth: 3
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+    df_print: kable
+    highlight: tango
+    includes:
+      in_header: latex/header.tex
+      before_body: latex/before_body.tex
+    pandoc_args: [
+            "--biblatex"
+        ]
 bibliography: ../inst/REFERENCES.bib
 csl: apa_modified.csl
 vignette: |
