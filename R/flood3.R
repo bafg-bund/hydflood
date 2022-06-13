@@ -218,7 +218,7 @@ flood3 <- function(x, seq, filename = '', ...) {
     waterlevel <- raster::raster(dem)
     
     # initialize the WaterLevelDataFrame
-    station_int <- as.integer(terra::unique(x$csa)$csa)
+    station_int <- na.omit(as.integer(terra::unique(x$csa)$csa))
     wldf_initial <- hyd1d::WaterLevelDataFrame(river = river,
                                                time = as.POSIXct(NA),
                                                station_int = station_int)
