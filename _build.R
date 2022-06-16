@@ -141,8 +141,7 @@ if (!(file.exists("README.md"))) {
     unlink("README.html", force = TRUE)
 }
 
-# render the package website 
-# pkgdown::clean_site(".")
+# render the package website
 pkgdown::build_site(".", examples = TRUE, preview = FALSE, new_process = TRUE)
 
 # insert the BfG logo into the header

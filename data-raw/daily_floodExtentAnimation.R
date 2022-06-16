@@ -2,10 +2,10 @@
 # daily_floodExtentAnimation.R
 #
 # author: arnd.weber@bafg.de
-# date:   23.07.2019
+# date:   16.06.2022
 #
 # purpose: 
-#   - compute daily flood extent for Dessau and Lenzen
+#   - compute daily flood extent for Dessau, Lenzen and the ElBiota areas
 #   - keep plotting with raster due to layout changes
 #
 ##################################################
@@ -25,6 +25,8 @@ library(raster)
 
 # setwd
 setwd(Sys.getenv("hydflood")) 
+p <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/Weber_etal_2022_hyd",
+            "1d_hydflood/www/hydflood/apps/flood3daily")
 
 # temporal sequence (last X days) Sys.Date() - 8
 dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 2,
@@ -68,8 +70,7 @@ x <- hydSpatRaster(filename_dem = "data-raw/raster.dem_dessau.tif",
 # extent_wgs84 <- ext(mask)
 
 # export a dem plot
-dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
-              "ta/png/flood3_daily/DESSAU/dem.png")
+dem <- paste0(p, "/DESSAU/dem.png")
 if (!file.exists(dem)) {
     png(filename = dem, width = 960, height = 640, units = "px")
     plot(raster(dem_plot), col = dem_colfunc((62 - 50)*2), xlim = c(305000, 313000),
@@ -92,9 +93,7 @@ for (a_date in dates) {
     
     write(paste0("DESSAU: ", a_date), stdout())
     
-    f_out <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_",
-                    "UFD/data/png/flood3_daily/DESSAU/flood3_",
-                    gsub("-", "", a_date), ".png")
+    f_out <- paste0(p, "/DESSAU/flood3_", gsub("-", "", a_date), ".png")
     
     if (file.exists(f_out)) {
         write("  exists already", stdout())
@@ -152,8 +151,7 @@ x <- hydSpatRaster(filename_dem = "data-raw/raster.dem_lenzen.tif",
 # extent_wgs84 <- ext(mask)
 
 # export a dem plot
-dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/da",
-              "ta/png/flood3_daily/LENZEN/dem.png")
+dem <- paste0(p, "/LENZEN/dem.png")
 if (!file.exists(dem)) {
     png(filename = dem, width = 960, height = 640, units = "px")
     plot(raster(dem_plot), col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
@@ -176,9 +174,7 @@ for (a_date in dates) {
     
     write(paste0("LENZEN: ", a_date), stdout())
     
-    f_out <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_",
-                    "UFD/data/png/flood3_daily/LENZEN/flood3_",
-                    gsub("-", "", a_date), ".png")
+    f_out <- paste0(p, "/LENZEN/flood3_", gsub("-", "", a_date), ".png")
     
     if (file.exists(f_out)) {
         write("  exists already", stdout())
@@ -240,11 +236,8 @@ if (require("ElBiota")) {
                                                  an_area, ".tif"))
         
         # export a dem plot
-        dir.create(paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_00",
-                          "0_586_UFD/data/png/flood3_daily/", an_area),
-                   FALSE, TRUE)
-        dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_58",
-                      "6_UFD/data/png/flood3_daily/", an_area, "/dem.png")
+        dir.create(paste0(p, "/", an_area), FALSE, TRUE)
+        dem <- paste0(p, "/", an_area, "/dem.png")
         if (!file.exists(dem)) {
             png(filename = dem, width = 960, height = 640, units = "px")
             plot(raster(r), col = dem_colfunc((24 - 9)*2), legend.width = 1,
@@ -262,9 +255,8 @@ if (require("ElBiota")) {
             
             write(paste0(an_area, ": ", a_date), stdout())
             
-            f_out <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_",
-                            "000_586_UFD/data/png/flood3_daily/", an_area,
-                            "/flood3_", gsub("-", "", a_date), ".png")
+            f_out <- paste0(p, "/", an_area, "/flood3_", gsub("-", "", a_date),
+                            ".png")
             
             if (file.exists(f_out)) {
                 write("  exists already", stdout())

@@ -79,24 +79,24 @@ function(input, output, session) {
         req(input$area)
         req(input$date)
         
-        image_path <- paste0("www/images/",
+        image_path <- paste0("https://hydflood.bafg.de/apps/flood3daily/",
                              names(gss)[which(gss == input$area)],
                              "/flood3_",
                              strftime(input$date, "%Y%m%d"), ".png")
-        if (!file.exists(image_path)){
-            return(list(
-                src = paste0("www/images/",
-                             "/dem.png"),
-                contentType = "image/png"
-            ))
-        } else {
+        # if (!file.exists(image_path)){
+        #     return(list(
+        #         src = paste0("/",
         #                      names(gss)[which(gss == input$area)],
+        #                      "/dem.png"),
+        #         contentType = "image/png"
+        #     ))
+        # } else {
             return(list(
                     src = image_path,
                     contentType = "image/png"
                 )
             )
-        }
+        # }
     }, deleteFile = FALSE)
     
 }
