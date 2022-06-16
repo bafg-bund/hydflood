@@ -26,11 +26,11 @@ function(input, output, session) {
     # reactive df.gauging_data
     df.gdr <- reactive({
         
-        req(input$gauging_station)
+        req(input$area)
         req(input$daterange)
         
         df.gd[which(df.gd$gauging_station ==
-                        names(gsi)[which(gsi == input$gauging_station)] &
+                        names(gsi)[which(gsi == input$area)] &
                         (df.gd$date >= as.Date(input$daterange[1]) &
                          df.gd$date <= as.Date(input$daterange[2]))), ]
     })
@@ -38,11 +38,11 @@ function(input, output, session) {
     # responsive plot
     output$plot <- renderPlot({
         
-        req(input$gauging_station)
+        req(input$area)
         req(input$daterange)
         req(input$date)
         
-        gs <- names(gsi)[which(gsi == input$gauging_station)]
+        gs <- names(gsi)[which(gsi == input$area)]
         
         # row_id in df.gdr()
         id_gd <- which(df.gdr()$date == input$date)
@@ -76,21 +76,21 @@ function(input, output, session) {
     # responsive image
     output$image <- renderImage({
         
-        req(input$gauging_station)
+        req(input$area)
         req(input$date)
         
         image_path <- paste0("www/images/",
-                             names(gss)[which(gss == input$gauging_station)],
+                             names(gss)[which(gss == input$area)],
                              "/flood3_",
                              strftime(input$date, "%Y%m%d"), ".png")
         if (!file.exists(image_path)){
             return(list(
                 src = paste0("www/images/",
-                             names(gss)[which(gss == input$gauging_station)],
                              "/dem.png"),
                 contentType = "image/png"
             ))
         } else {
+        #                      names(gss)[which(gss == input$area)],
             return(list(
                     src = image_path,
                     contentType = "image/png"

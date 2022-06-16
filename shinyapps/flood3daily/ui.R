@@ -10,7 +10,7 @@ fluidPage(
         
         # menu item gauging_station
         alignRight(selectInput(
-            inputId  = "gauging_station",
+            inputId  = "area",
             label    = "Bereich:",
             choices  = gs,
             selected = "DESSAU")),
