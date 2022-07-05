@@ -1,0 +1,18 @@
+{
+  "languages": ["en", "de"],
+  "translation": [
+      {"en": "River:", "de": "Fluss:"},
+      {"en": "Please select!", "de": "Bitte wählen Sie!"},
+      {"en": "Section (from km - to km)", "de": "Abschnitt (von km - bis km):"},
+      {"en": "Year:", "de": "Kalenderjahr:"},
+      {"en": "<p>Legend:</p><p><center>flood duration (d/y)</center></p><center><img width=\"40%\" style=\"\" src=\"legend.png\"></center>",
+       "de": "<p>Legende:</p><p><center>Überflutungsdauer (d/a)</center></p><center><img width=\"40%\" style=\"\" src=\"legend.png\"></center>"},
+      {"en": "<p>Zoomlevel:</p><p>Presently it is <strong>", "de": "<p>Zoomlevel:</p><p>Aktuell beträgt es <strong>"},
+      {"en": "</strong>, starting at <strong>12</strong>, the web map service of the flood duration and the associated legend will be displayed.</p>", 
+       "de": "</strong>, ab <strong>12</strong> wird der Web Map Service der Überflutungsdauer und die dazugehörige Legende dargestellt.</p>"},
+      {"en": "Rhine", "de": "Rhein"},
+      {"en": "Imprint", "de": "Impressum"},
+      {"en": "https://www.bafg.de/EN/Service/Imprint/imprint_node.html",
+       "de": "https://www.bafg.de/DE/Service/Impressum/impressum_node.html"}
+    ]
+}

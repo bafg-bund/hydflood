@@ -1,0 +1,18 @@
+{
+  "languages": ["en", "de"],
+  "translation": [
+      {"en": "Area:", "de": "Gebiet:"},
+      {"en": "Time interval:", "de": "Zeitraum:"},
+      {"en": "yyyy-mm-dd", "de": "dd-mm-yyyy"},
+      {"en": "en", "de": "de"},
+      {"en": " - ", "de": " bis "},
+      {"en": "Date:", "de": "Datum:"},
+      {"en": "%Y-%m-%d", "de": "%d.%m.%Y"},
+      {"en": "Time", "de": "Zeit"},
+      {"en": "water level (m a.s.l.)", "de": "Wasserstand (m über NHN)"},
+      {"en": "gauging station: ", "de": "Pegel: "},
+      {"en": "Imprint", "de": "Impressum"},
+      {"en": "https://www.bafg.de/EN/Service/Imprint/imprint_node.html",
+       "de": "https://www.bafg.de/DE/Service/Impressum/impressum_node.html"}
+    ]
+}

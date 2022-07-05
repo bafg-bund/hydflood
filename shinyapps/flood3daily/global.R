@@ -1,5 +1,7 @@
 # load the necessary packages
 library(shiny)
+library(shinyjs)
+library(shiny.i18n)
 library(hyd1d)
 library(plotrix)
 
@@ -30,4 +32,20 @@ alignRight <- function(el) {
     htmltools::tagAppendAttributes(el,
                                    style="margin-left:auto;margin-right:none;"
     )
+}
+
+# translation
+translator <- Translator$new(translation_json_path = "translation.json")
+
+# JavaScript to determine browser language
+jscode <- paste0("var language =  window.navigator.userLanguage || window.navi",
+                 "gator.language;Shiny.onInputChange('lang', language);console",
+                 ".log(language);")
+de <- function(x) {
+    if (is.null(x)) {return(FALSE)}
+    if (startsWith(x, "de")) {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
 }

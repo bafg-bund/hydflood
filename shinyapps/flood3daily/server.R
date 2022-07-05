@@ -1,17 +1,50 @@
-library(shiny)
-
 function(input, output, session) {
     
+    # determine browser language
+    runjs(jscode)
+    german <- reactive({de(input$lang)})
+    i18n <- reactive({
+        if (length(input$lang) > 0 && german()) {
+            translator$set_translation_language("de")
+        } else {
+            translator$set_translation_language("en")
+        }
+        translator
+    })
+    
     # responsive menu
+    output$menu_area <- renderUI({
+        alignRight(selectInput(
+            inputId  = "area",
+            label    = i18n()$t("Area:"),
+            choices  = gs,
+            selected = "DESSAU"))
+    })
+    
+    output$menu_daterange <- renderUI({
+        alignRight(
+            dateRangeInput("daterange",
+                           i18n()$t("Time interval:"), 
+                           start = as.Date("2015-01-01"),
+                           end = date_max, 
+                           min = as.Date("2015-01-01"),
+                           max = date_max, 
+                           format = i18n()$t("yyyy-mm-dd"),
+                           language = i18n()$t("en"),
+                           separator = i18n()$t(" - ")))
+    })
+    
     output$menu_date <- renderUI({
         
         req(input$daterange)
         
-        alignRight(sliderInput("date", "Zeit:",
+        alignRight(sliderInput("date",
+                    i18n()$t("Date:"),
                     min = as.Date(input$daterange[1]),
                     max = as.Date(input$daterange[2]),
                     value = input$daterange[1], step = 1, 
-                    timeFormat = "%d.%m.%Y", ticks = FALSE, animate = TRUE, 
+                    timeFormat = i18n()$t("%Y-%m-%d"),
+                    ticks = FALSE, animate = TRUE, 
                     animationOptions(interval = 1000, loop = TRUE)
         ))
         
@@ -20,7 +53,7 @@ function(input, output, session) {
     # title
     output$title <- renderText({
         req(input$date)
-        strftime(input$date, "%d.%m.%Y")
+        strftime(input$date, i18n()$t("%Y-%m-%d"))
     })
     
     # reactive df.gauging_data
@@ -57,7 +90,7 @@ function(input, output, session) {
         par(oma = c(0, 0, 0, 0), mar = c(0, 6.5, 0, 0), xaxt = "n", xaxs = "i",
             cex.main = 0.8)
         plot(W ~ df.gdr()$date, type = "l", col = "darkblue",
-             xlab = "Zeit", ylab = "Wasserstand (m über NHN)",
+             xlab = i18n()$t("Time"), ylab = i18n()$t("water level (m a.s.l.)"),
              frame.plot = FALSE)
         abline(h = df.gsd$pnp[id_gsd] + df.gsd$mw[id_gsd],
                lty = 3)
@@ -66,7 +99,7 @@ function(input, output, session) {
         points(df.gdr()$date[id_gd], W[id_gd], col = "darkblue",
                pch = 20, cex = 2)
         text(mean(c(min(df.gdr()$date), max(df.gdr()$date))),
-             max(W), labels = paste0("Pegel: ", gs))
+             max(W), labels = paste0(i18n()$t("gauging station: "), gs))
         boxed.labels(min(df.gdr()$date) + (max(df.gdr()$date) -
                                               min(df.gdr()$date)) * 0.95,
                      df.gsd$pnp[id_gsd] + df.gsd$mw[id_gsd],
@@ -74,7 +107,7 @@ function(input, output, session) {
     })
     
     # responsive image
-    output$image <- renderImage({
+    output$image <- renderText({
         
         req(input$area)
         req(input$date)
@@ -91,12 +124,17 @@ function(input, output, session) {
         #         contentType = "image/png"
         #     ))
         # } else {
-            return(list(
-                    src = image_path,
-                    contentType = "image/png"
-                )
+            # return(list(
+            #         src = image_path,
+            #         contentType = "image/png"
+            #     )
+            # )
+            c(
+                '<img src="',
+                image_path,
+                '">'
             )
         # }
-    }, deleteFile = FALSE)
+    })
     
 }

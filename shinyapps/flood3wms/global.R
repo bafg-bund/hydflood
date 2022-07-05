@@ -6,6 +6,7 @@
 # load the necessary packages
 library(shiny)
 library(shinyjs)
+library(shiny.i18n)
 library(htmltools)
 library(leaflet)
 library(leaflet.extras)
@@ -62,13 +63,13 @@ withinDist <- function(x, y, bb) {
 # settings
 ###
 # set english locale to produce english plot labels
-Sys.setlocale(category = "LC_MESSAGES", locale = "de_DE.utf8")
+# Sys.setlocale(category = "LC_MESSAGES", locale = "de_DE.utf8")
 #https://stackoverflow.com/questions/47750273/shiny-application-get-browser-language-settings
 #https://github.com/chrislad/multilingualShinyApp
 
 ###
 # enable server based bookmarking
-enableBookmarking(store = "server")
+# enableBookmarking(store = "server")
 
 ##########
 # set variables and initiate data needed for the computation
@@ -139,8 +140,26 @@ load("data/df.coor.afX.rda")
 # save(spdf.station, file = "data/spdf.station.rda")
 load("data/spdf.station.rda")
 
-years <- seq(1990, 2016, 1)
+years <- seq(1990, as.numeric(strftime(Sys.Date(), "%Y")) - 1, 1)
 
 url_base <- "https://geoportal.bafg.de/arcgis3/services/Flut3/"
 
-options(shiny.trace = TRUE)
+# https://geoportal.bafg.de/arcgis3/services/Flut3/2022_Rhein_1990_1999/MapServer/WMSServer?
+
+## options(shiny.trace = TRUE)
+
+# translation
+translator <- Translator$new(translation_json_path = "translation.json")
+
+# JavaScript to determine browser language
+jscode <- paste0("var language =  window.navigator.userLanguage || window.navi",
+                 "gator.language;Shiny.onInputChange('lang', language);console",
+                 ".log(language);")
+de <- function(x) {
+    if (is.null(x)) {return(FALSE)}
+    if (startsWith(x, "de")) {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
+}

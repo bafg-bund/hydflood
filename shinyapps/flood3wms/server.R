@@ -4,6 +4,18 @@
 
 function(input, output, session) {
     
+    # determine browser language
+    runjs(jscode)
+    german <- reactive({de(input$lang)})
+    i18n <- reactive({
+        if (length(input$lang) > 0 && german()) {
+            translator$set_translation_language("de")
+        } else {
+            translator$set_translation_language("en")
+        }
+        translator
+    })
+    
     # reactive values to control the UI and finally the computation
     res <- reactiveValues(
         river = NA_character_, 
@@ -45,13 +57,13 @@ function(input, output, session) {
             output$river <- renderUI(
                 selectInput(
                     inputId  = "river",
-                    label    = "Fluss:",
+                    label    = i18n()$t("River:"),
                     choices  = rivers,
-                    selected = "Bitte wählen Sie!"
+                    selected = i18n()$t("Please select!")
                 )
             )
         } else {
-            if (input$river != "Bitte wählen Sie!") {
+            if (input$river != i18n()$t("Please select!")) {
                 res$river <- input$river
                 res$from_to <- c(NA_real_, NA_real_)
                 res$map_from_to <- c(NA_real_, NA_real_)
@@ -68,7 +80,7 @@ function(input, output, session) {
             output$river <- renderUI(
                 selectInput(
                     inputId  = "river",
-                    label    = "Fluss:",
+                    label    = i18n()$t("River:"),
                     choices  = rivers,
                     selected = res$river
                 )
@@ -166,7 +178,7 @@ function(input, output, session) {
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe")
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 2,
+                              label = i18n()$t("Rhine"), color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr")
         } else {
@@ -179,7 +191,7 @@ function(input, output, session) {
             } else if (res$river == "Rhein") {
                 l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
+                                  label = i18n()$t("Rhine"), color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afr")
             } else {
@@ -188,7 +200,7 @@ function(input, output, session) {
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afe")
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
+                                  label = i18n()$t("Rhine"), color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afr")
             }
@@ -224,7 +236,7 @@ function(input, output, session) {
                     disabled(
                         sliderInput(
                             inputId = "from_to",
-                            label   = "Abschnitt (von km - bis km):",
+                            label   = i18n()$t("Section (from km - to km)"),
                             min     = df.from_to_reactive()$from_val,
                             max     = df.from_to_reactive()$to_val,
                             value   = from_to_reactive(),
@@ -469,14 +481,14 @@ function(input, output, session) {
                 output$year <- renderUI("")
             } else {
                 if (is.null(input$year)) {
-                    year <- 2016
+                    year <- as.numeric(strftime(Sys.Date(), "%Y")) - 1
                 } else {
                     year <- input$year
                 }
                 output$year <- renderUI({
                     selectInput(
                         inputId  = "year",
-                        label    = "Kalenderjahr:",
+                        label    = i18n()$t("Year:"),
                         choices  = years,
                         selected = year
                     )
@@ -518,11 +530,11 @@ function(input, output, session) {
                 #         tileOptions = WMSTileOptions(format = "image/png",
                 #                                      transparent = TRUE)),
                 #     layerId = as.character(year - (floor(year / 10) * 10)))
-                output$legend <- renderText(paste0('<p>Legende:</p><p><center>',
-                                                   'Überflutungsdauer (d/a)</c',
-                                                   'enter></p><center><img wid',
-                                                   'th="40%" style="" src="leg',
-                                                   'end.png"></center>'))
+                output$legend <- renderText(
+                    i18n()$t(
+                        paste0("<p>Legend:</p><p><center>flood duration (d/y)<",
+                               "/center></p><center><img width=\"40%\" style=",
+                               "\"\" src=\"legend.png\"></center>")))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))
@@ -534,7 +546,7 @@ function(input, output, session) {
                     l %>% removeShape(layerId = c("afe"))
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
-                                      label = "Rhein", color = "blue", 
+                                      label = i18n()$t("Rhine"), color = "blue", 
                                       weight = 2, fill = FALSE, layerId = "afr")
                 } else {
                     l %>% addPolygons(lng = df.coor.afe$lon, 
@@ -543,7 +555,7 @@ function(input, output, session) {
                                       weight = 2, fill = FALSE, layerId = "afe")
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
-                                      label = "Rhein", color = "blue", 
+                                      label = i18n()$t("Rhine"), color = "blue", 
                                       weight = 2, fill = FALSE, layerId = "afr")
                 }
             } else {
@@ -559,7 +571,7 @@ function(input, output, session) {
                     l %>% removeShape(layerId = c("afe"))
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
-                                      label = "Rhein", color = "blue", 
+                                      label = i18n()$t("Rhine"), color = "blue", 
                                       weight = 2, fill = TRUE, 
                                       fillColor = "lightblue", 
                                       fillOpacity = 0.6, layerId = "afr")
@@ -572,7 +584,7 @@ function(input, output, session) {
                                       fillOpacity = 0.6, layerId = "afe")
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
-                                      label = "Rhein", color = "blue", 
+                                      label = i18n()$t("Rhine"), color = "blue", 
                                       weight = 2, fill = TRUE, 
                                       fillColor = "lightblue", 
                                       fillOpacity = 0.6, layerId = "afr")
@@ -585,10 +597,13 @@ function(input, output, session) {
     output$zoom <- renderText({
         if (!is.null(input$map_zoom) & !is.null(input$year)) {
             if (input$map_zoom < 12) {
-                paste0('<p>Zoomlevel:</p><p>Aktuell beträgt es <strong>', 
-                       input$map_zoom, '</strong>, ab <strong>12</strong> wird',
-                       ' der Web Map Service der Überflutungsdauer und die daz',
-                       'ugehörige Legende dargestellt.</p>')
+                paste0(i18n()$t("<p>Zoomlevel:</p><p>Presently it is <strong>"),
+                       input$map_zoom, 
+                       i18n()$t(
+                           paste0("</strong>, starting at <strong>12</strong>,",
+                                  " the web map service of the flood duration ",
+                                  "and the associated legend will be displayed",
+                                  ".</p>")))
             } # else {
             #     paste0('<p>Zoomlevel:</p><p>',input$map_zoom, '</p>')
             # }

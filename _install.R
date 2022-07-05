@@ -18,7 +18,8 @@ packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack",
               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders",
               "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-              "usethis", "lattice", "pangaear", "hoardr", "rgrass7", "knitr")
+              "usethis", "lattice", "pangaear", "hoardr", "rgrass7", "knitr",
+              "shiny.i18n")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages()[, "Package"])) {
