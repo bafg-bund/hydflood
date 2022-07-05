@@ -4,8 +4,8 @@
 #' @title Function to convert w80-files to \code{sfc_LINESTRING}.
 #' 
 #' @description This function converts w80-files, an ascii-format with 80
-#'   characters per line for spatial point data used by the German Waterway and
-#'   Navigation Authorities (WSV). Every single row codes for one point:
+#'   characters per line for spatial point data used by the German Waterways and
+#'   Shipping Administration (WSV). Every single row codes for one point:
 #'   
 #'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
 #'   
@@ -42,7 +42,7 @@
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}.
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}.
 #' @param id argument of type \code{character} specifying a grouping column.
 #' 
 #' @return \code{sfc_LINESTRING}.
@@ -151,8 +151,8 @@ w80ToSFL <- function(filename, crs,
 #' @title Function to convert w80-files to \code{sfc_POINT}.
 #' 
 #' @description This function converts w80-files, an asci-format with 80
-#'   characters per line for spatial point data used by the German Waterway and
-#'   Navigation Authorities (WSV). Every single row codes for one point:
+#'   characters per line for spatial point data used by the German Waterways and
+#'   Shipping Administration (WSV). Every single row codes for one point:
 #'   
 #'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
 #'   
@@ -186,7 +186,7 @@ w80ToSFL <- function(filename, crs,
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}.
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}.
 #' 
 #' @return \code{sfc_POINT}.
 #' 

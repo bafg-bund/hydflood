@@ -15,7 +15,7 @@
 #' @param x argument of type \code{\link[terra]{SpatRaster}}.
 #' @param rcl optional argument of type \code{data.frame} with columns and
 #'    column types as specified in \code{df.pnv}.
-#' @param filename supplies an optional output filename and has to be type
+#' @param filename supplies an optional output filename of type
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 

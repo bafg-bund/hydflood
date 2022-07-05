@@ -2,16 +2,16 @@
 #' @rdname getDEM
 #' 
 #' @title Function to obtain the digital elevation models for the active
-#'   floodplains along German federal waterways Elbe and Rhine
+#'   floodplains along the German federal waterways Elbe and Rhine
 #' 
 #' @description This function downloads and patches the tiled digital elevation
-#'   models (dem) along German federal waterways Elbe and Rhine that have been
-#'   published on \href{https://www.pangaea.de}{pangaea.de}.
+#'   models (dem) along the German federal waterways Elbe and Rhine that have
+#'   been published on \href{https://www.pangaea.de}{pangaea.de}.
 #' 
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
 #' @param ext argument of type \code{\link[terra]{SpatExtent}}.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{crs}. It is
+#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. It is
 #'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.

@@ -1,27 +1,27 @@
 #' @name flood1
 #' @rdname flood1
 #' 
-#' @title Function to compute flood extent or flood duration \code{SpatRaster} along
-#'   German federal waterways Elbe and Rhine using the 1D water level algorythm
-#'   \code{hyd1d::waterLevelFlood1()}
+#' @title Function to compute flood extent or flood duration \code{SpatRaster} 
+#'   along the German federal waterways Elbe and Rhine using the 1D water level 
+#'   algorithm \code{hyd1d::waterLevelFlood1()}
 #' 
-#' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
-#'   duration for the active floodplains along German federal waterways Elbe 
+#' @description Computes flood extent, if \code{length(seq)} equals 1, or flood 
+#'   duration for the active floodplains along the German federal waterways Elbe 
 #'   and Rhine based on 1D water levels computed by
 #'   \code{\link[hyd1d]{waterLevelFlood1}} provided by package 
 #'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d} in analogy to
 #'   the INFORM 3 module 'Flut1'.
 #' 
-#' @param x has to by type \code{SpatRaster} and has to include both input 
+#' @param x has to be type \code{SpatRaster} and has to include both input 
 #'   layers \code{csa} (cross section areas) and \code{dem} (digital 
-#'   elevation model). To compute water levels along the River Elbe \code{x} 
+#'   elevation model). To compute water levels along the River Elbe, \code{x} 
 #'   has to be in the coordinate reference system 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
-#'   for River Rhine in 
+#'   for the River Rhine in 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
-#'   have length larger 0. Values of \code{seq} must be in the 
+#'   have a length larger than 0. Values of \code{seq} must be in the 
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1}). 
 #'   Internally \code{\link[hyd1d]{waterLevelFlood1}} uses \code{\link[hyd1d]{getGaugingDataW}}
 #'   to obtain daily water level information from \code{\link[hyd1d]{df.gauging_data}}.
@@ -117,13 +117,13 @@
 #' @return SpatRaster object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
-#' @details For every time step provided in \code{seq} \code{flood1()} computes 
+#' @details For every time step provided in \code{seq}, \code{flood1()} computes 
 #'   a 1D water level using \code{\link[hyd1d]{waterLevelFlood1}} along the 
 #'   requested river section. This 1D water level is transfered to a \code{wl} 
 #'   (water level) raster layer, which is in fact a copy of the \code{csa} 
 #'   (cross section areas) layer, and then compared to the \code{dem} 
 #'   (digital elevation model) layer. Where the \code{wl} layer is
-#'   higher than the \code{dem} layer flood duration is increased by 1.
+#'   higher than the \code{dem}, layer flood duration is increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{df.gauging_data}},
 #'   \code{\link[hyd1d]{getGaugingDataW}},

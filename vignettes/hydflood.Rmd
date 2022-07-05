@@ -145,8 +145,8 @@ along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-The package **hydflood** is not available from CRAN at the moment. To install 
-the recent developmental version from the GitBucket server of the Federal 
+The package **hydflood** is currently not available from CRAN. To install 
+the recent developmental version from the Git server of the Federal 
 Institute of Hydrology (BfG) execute the following commands: 
 
 ```{r install_git, eval = FALSE}
@@ -164,24 +164,24 @@ library(hydflood)
 
 ## Dependencies
 
-The package **hydflood** is build around the packages
+The package **hydflood** is built around the packages
 [`terra`](https://cran.r-project.org/package=terra) and
 [`hyd1d`](`r paste0(base_hyd1d)`). [`hyd1d`](`r paste0(base_hyd1d)`) internally
-provides gauging data for all gauging stations along River Rhine and Elbe
-operated by the waterway and navigation authorities and computes 1D water
+provides gauging data for all gauging stations along the rivers Rhine and Elbe
+operated by the German Waterway and Shipping Administration and computes 1D water
 levels. The package [`terra`](https://cran.r-project.org/package=terra)
 provides the S4 class `SpatRaster` and thereby enables the GIS based comparison
 between extrapolated water levels and elevation data.
 
-```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation modell of the waterway (DEM-W, in German: Digitales Geländemodell der Wasserstraße, DGM-W) with 1 m spatial resolution at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation model of the waterway (DEM-W, in German: Digitales Geländemodell des Wasserlaufs, DGM-W) with 1 m spatial resolution at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
 **hydflood** provides download facilities for the official digital elevation
 models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
-by users. They just need to overlap with active floodplains of either Rhine
-([`sf.afr`](reference/sf.afr.html)) or Elbe ([`sf.afe`](reference/sf.afe.html)).
+by users. They just need to overlap with active floodplains of either the Rhine
+([`sf.afr`](reference/sf.afr.html)) or the Elbe ([`sf.afe`](reference/sf.afe.html)).
 
 To create a water surface raster, which can be compared to the `dem`, a simple
 1D to 2D conversion is applied to water level data computed along the river axis
@@ -190,15 +190,15 @@ so called cross section areas (`csa`) are needed. They originate from cross
 sections used for the SOBEK models run for and incorporated into
 [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
 
-```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssections.png')
 ```
 
-```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas.png')
 ```
 
-```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustraded in Fig. 3 overlayed by the corresponding cross sections illustraded in Fig. 2 at River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustrated in Fig. 3 overlaid by the corresponding cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas_cs.png')
 ```
 
@@ -217,10 +217,10 @@ once for each river by package internal facilities during their first use.
 
 ## Computation of flood extents and durations
 
-The actual computation of a flood extent in a selected computational extent for 
+The actual computation of a flood extent in a selected computational domain for 
 a given time can be split into five steps:
 
-1. Extraction of relevant stations within the computational extent
+1. Extraction of relevant stations within the computational domain
 2. Creation of a [`WaterLevelDataFrame`](`r paste0(base_hyd1d, "reference/WaterLevelDataFrame-class.html")`) for the selected river section
 3. Computation of the 1D water level using the [`waterLevel`](`r paste0(base_hyd1d, "reference/waterLevel.html")`) function of package [`hyd1d`](`r paste0(base_hyd1d)`)
 4. Transfer of the 1D water level information from the [`WaterLevelDataFrame`](`r paste0(base_hyd1d, "reference/WaterLevelDataFrame-class.html")`) to the cross section areas (`csa`) through the join field `station_int`
@@ -258,13 +258,13 @@ provide a digital elevation model and cross section areas yourself as variables
 provide `ext` (an object of type `SpatExtent`) and `crs` (an object of class `CRS`).
 Depending on the supplied coordinate reference system (supplied through either
 `filename_dem`, `filename_csa` or `crs`) the respective river is selected: For
-River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
+the River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
 [25832](http://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
-River Elbe 'ETRS 1989 UTM 32N' (EPSG
+the River Elbe 'ETRS 1989 UTM 32N' (EPSG
 [25833](http://spatialreference.org/ref/epsg/25833/)). If you can't provide
 dem and csa yourself, `hydflood` provides csa data internally and downloads
-the official digital elevation models of the waterway and navigation 
-authorities with 1 m spatial resolution. Therefore you definitely need internet
+the official digital elevation models of the German Waterway and Shipping
+Administration with 1 m spatial resolution. Therefore you definitely need internet
 access and, due to the data volume of the elevation data, your internet should 
 be fast or you should be patient.
 
@@ -281,10 +281,10 @@ straight forward. Create a temporal sequence `seq`:
 seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
 ```
 
-And supply both of them to the `flood3` function, which will do the computation 
-and return an 'INT4S' raster with counts how often the individual cell of the 
+And supply both of them to the `flood3` function, which will do the computation
+and return an 'INT4S' raster with counts of how often the individual cell of the
 `dem` was lower than the `csa` during the temporal sequence. For each time step
-of the temporal sequence the corresponding 1D `WaterLevelDataFrame` is computed, 
+of the temporal sequence the corresponding 1D `WaterLevelDataFrame` is computed,
 joined to `csa` through the `station_int` column and compared to the `dem` so 
 that the possible values of the returned product range between 0 and 
 `length(seq)`:
