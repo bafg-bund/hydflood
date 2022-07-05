@@ -8,7 +8,7 @@
 #' your own path using \code{cache_path_set()}
 #'
 #' \code{cache_delete} only accepts 1 file name, while
-#' \code{cache_delete_all} doesn't accept any names, but deletes all files.
+#' \code{cache_delete_all} does not accept any names, but deletes all files.
 #' For deleting many specific files, use \code{cache_delete} in a
 #' \code{[lapply()]} type call.
 #'
@@ -18,11 +18,11 @@
 #' 
 #' - \code{hydflood_cache$cache_path_set()} set cache path
 #' 
-#' - \code{hydflood_cache$list()} returns a character vector of full path file names
+#' - \code{hydflood_cache$list()} return a character vector of full path file names
 #' 
-#' - \code{hydflood_cache$files()} returns file objects with metadata
+#' - \code{hydflood_cache$files()} return file objects with metadata
 #' 
-#' - \code{hydflood_cache$details()} returns files with details
+#' - \code{hydflood_cache$details()} return files with details
 #' 
 #' - \code{hydflood_cache$delete()} delete specific files
 #' 

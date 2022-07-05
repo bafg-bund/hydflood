@@ -19,13 +19,13 @@
 #'   be reused to accelerate later computations.
 #'   
 #'   An existing dataset must be either in the coordinate reference system (crs)
-#'   'ETRS 1989 UTM 32N' (epsg: 25832) for River Rhine or 'ETRS 1989 UTM 33N'
-#'   (epsg: 25833) for River Elbe. It must also overlap with the active
+#'   'ETRS 1989 UTM 32N' (epsg: 25832) for the River Rhine or 'ETRS 1989 UTM 33N'
+#'   (epsg: 25833) for the River Elbe. It must also overlap with the active
 #'   floodplains (\code{\link{sf.afe}} or \code{\link{sf.afr}}) of the river
 #'   selected through the crs.
 #'   
 #'   If argument \code{filename_csa} is specified and exists too, 
-#'   coordinate reference system (\code{\link[terra]{crs}}), extent
+#'   the coordinate reference system (\code{\link[terra]{crs}}), extent
 #'   (\code{\link[terra]{ext}}) and resolution (\code{\link[terra]{res}})
 #'   of both raster datasets must match.
 #'   
@@ -43,8 +43,8 @@
 #'   be reused to accelerate later computations.
 #'   
 #'   An existing dataset must be either in the coordinate reference system (crs)
-#'   'ETRS 1989 UTM 32N' (epsg: 25832) for River Rhine or 'ETRS 1989 UTM 33N'
-#'   (epsg: 25833) for River Elbe. It must also overlap with the active
+#'   'ETRS 1989 UTM 32N' (epsg: 25832) for the River Rhine or 'ETRS 1989 UTM 33N'
+#'   (epsg: 25833) for the River Elbe. It must also overlap with the active
 #'   floodplains (\code{\link{sf.afe}} or \code{\link{sf.afr}}) of the river
 #'   selected through the crs and be in the possible range of \code{station_int}
 #'   values: Elbe (m 0 - 585700), Rhine (m 336200 - 865700).
@@ -64,14 +64,14 @@
 #'   specified, \code{ext} must be within the extent of provided raster layers.
 #'   Then it is used to \code{\link[terra]{crop}} the supplied data.
 #' 
-#' @param crs optional argument of type \code{\link[sp]{CRS}} or \code{crs}. If
+#' @param crs optional argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. If
 #'   neither \code{filename_dem} nor \code{filename_csa} are specified,
 #'   \code{crs} is used to select the respective river (Elbe:
 #'   'ETRS 1989 UTM 33N' (epsg: 25833); Rhine: 'ETRS 1989 UTM 32N' (epsg:
 #'   25832)) and \code{\link[terra]{crop}} downloaded dem and csa
 #'   by the given \code{ext}. If either \code{filename_dem} or 
 #'   \code{filename_csa} or both are specified, \code{crs} must match their 
-#'   coordinate reference systems otherwise an error is returned.
+#'   coordinate reference systems; otherwise an error is returned.
 #' 
 #' @param \dots additional parameters passed to
 #'   \code{\link[terra]{writeRaster}}.

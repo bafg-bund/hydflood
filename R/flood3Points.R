@@ -1,37 +1,37 @@
 #' @name flood3Points
 #' @rdname flood3Points
 #' 
-#' @title Function to compute flood duration for point coordinates along German
-#'   federal waterways Elbe and Rhine using the 1D water level algorythms
+#' @title Function to compute flood duration for point coordinates along the
+#'   German federal waterways Elbe and Rhine using the 1D water level algorithms
 #'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood duration for points located in the active
-#'   floodplains along German federal waterways Elbe  and Rhine based on 1D
+#'   floodplains along the German federal waterways Elbe  and Rhine based on 1D
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package
 #'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d}.
 #' 
 #' @param x has to by type \code{SpatialPoints} or \code{SpatialPointsDataFrame}
 #'   possibly including columns \code{csa} (cross section areas) and \code{dem}
-#'   (digital elevation model). To compute water levels along the River Elbe
+#'   (digital elevation model). To compute water levels along the River Elbe,
 #'   \code{x} has to be in the coordinate reference system 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
-#'   for River Rhine in 
+#'   for the River Rhine in 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and
-#'   have length larger 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")},
+#'   have a length larger than 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")},
 #'   values must be in the temporal range between 31 days ago (\code{Sys.time()
 #'   - 2678400}) and now (\code{Sys.time()}). Then
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} is used internally for the water
-#'   level computations. If \code{seq} is type \code{Date} values must be in the
+#'   level computations. If \code{seq} is type \code{Date}, values must be in the
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1})
 #' 
 #' @return \code{SpatialPointsDataFrame} with flood duration stored in column
 #'   `flood3` in the range of \code{[0, length(seq)]}, elevation stored in
 #'   column \code{dem} and cross section areas stored in column \code{csa}.
 #' 
-#' @details For every time step provided in \code{seq} \code{flood3Points()}
+#' @details For every time step provided in \code{seq}, \code{flood3Points()}
 #'   computes a 1D water level along the requested river section. This 1D water
 #'   level is transfered to a temporary \code{wl} (water level) column and then
 #'   compared to the \code{dem} (digital elevation model) column. Where the

@@ -2,11 +2,11 @@
 #' @rdname flood3
 #' 
 #' @title Function to compute flood extent or flood duration \code{raster} along
-#'   German federal waterways Elbe and Rhine using the 1D water level algorythms
-#'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
+#'   the German federal waterways Elbe and Rhine using the 1D water level
+#'   algorithms \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
-#' @description Computes flood extent, if \code{length(seq)} equal 1, or flood 
-#'   duration for the active floodplains along German federal waterways Elbe 
+#' @description Computes flood extent, if \code{length(seq)} equals 1, or flood 
+#'   duration for the active floodplains along the German federal waterways Elbe 
 #'   and Rhine based on 1D water levels computed by
 #'   \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package 
@@ -21,26 +21,26 @@
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
-#'   have length larger 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")}, 
+#'   have a length larger than 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")}, 
 #'   values must be in the temporal range between 31 days ago (\code{Sys.time() 
 #'   - 2678400}) and now (\code{Sys.time()}). Then 
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} is used internally for the water
-#'   level computations. If \code{seq} is type \code{Date} values must be in the
+#'   level computations. If \code{seq} is type \code{Date}, values must be in the
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1}) 
 #'   and \code{\link[hyd1d]{waterLevel}} is used internally.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return Raster* object with flood duration in the range of 
+#' @return SpatRaster object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
-#' @details For every time step provided in \code{seq} \code{flood3()} computes 
+#' @details For every time step provided in \code{seq}, \code{flood3()} computes 
 #'   a 1D water level along the requested river section. This 1D water level is 
 #'   transfered to a \code{wl} (water level) raster layer, which is in fact a 
 #'   copy of the \code{csa} (cross section areas) layer, and then 
 #'   compared to the \code{dem} (digital elevation model) layer. Where the 
-#'   \code{wl} layer is higher than the \code{dem} layer flood duration is
+#'   \code{wl} layer is higher than the \code{dem}, layer flood duration is
 #'   increased by 1.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}},

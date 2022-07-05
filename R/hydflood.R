@@ -2,9 +2,9 @@
 #' @docType package
 #' 
 #' @title hydflood: A package to compute flood extent and duration along 
-#'    German federal waterways Elbe and Rhine
+#'    the German federal waterways Elbe and Rhine
 #' 
-#' @description To be done...
+#' @description To be extended ...
 #' 
 #' @import hyd1d
 #' @importFrom hoardr hoard

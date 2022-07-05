@@ -15,10 +15,10 @@
 #' 
 #' @return \code{sf} containing tiles covering \code{x}.
 #' 
-#' @examples \dontrun{
+#' @examples
 #'   library(hydflood)
 #'   tiles <- createTiles(x = sf.af(name = "Elbe"), size_x = 10000, size_y = 10000)
-#' }
+#'   plot(tiles$tile_ID)
 #' 
 #' @export
 #' 

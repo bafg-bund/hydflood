@@ -1,6 +1,6 @@
 Package: hydflood
 Type: Package
-Title: Algorythms to compute flood extent and duration along German federal 
+Title: Algorithms to compute flood extent and duration along the German federal 
     waterways Elbe and Rhine
 Version: 0.3.0
 Date: 2021-11-18
@@ -14,12 +14,12 @@ Description: hydflood extends the functionalities of hyd1d, an R package to
     hydflood adopts strategies originally developed for INFORM, an 
     ArcGIS-based hydro-ecological modelling framework, to compute flood extent 
     and duration. It does not provide a full, physical hydraulic modelling 
-    algorythm, but a simplified, near realtime GIS approach for flood 
+    algorithm, but a simplified, near realtime GIS approach for flood 
     extent and duration modelling.
 Depends: R (>= 3.5.0), sf, terra, raster, hyd1d, hoardr
 Imports: stats, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
-    plotrix, shiny, shinyjs, shinycssloaders, leaflet, leaflet.extras, 
+    plotrix, shiny, shinyjs, shiny.i18n, leaflet, leaflet.extras, 
     leaflet.esri, pangaear, rgrass7, tidyverse, stringr
 RdMacros: Rdpack
 License: GPL-2
@@ -45,5 +45,5 @@ Collate:
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: http://gitlab.lan.bafg.de/auenoekologie/hydflood/issues
-URL: http://r.bafg.de/~WeberA/hydflood/index.html, 
+URL: https://hydflood.bafg.de, 
     http://gitlab.lan.bafg.de/auenoekologie/hydflood

@@ -12,7 +12,7 @@
 #'    \describe{
 #'       \item{from}{lower limits of flood duration (included, type \code{numeric}).}
 #'       \item{to}{upper limits of flood duration (not included, type \code{numeric}).}
-#'       \item{id}{numeric replacements used to order classes (type \code{numeric}).}
+#'       \item{id}{numeric replacements used to sort classes (type \code{numeric}).}
 #'       \item{vegtype}{names of the potential natural vegetation classes (type \code{character}).}
 #'       \item{r}{numeric coding for the r (red) of an rgb color code.}
 #'       \item{g}{numeric coding for the g (green) of an rgb color code.}
@@ -27,18 +27,18 @@
 #' @name sf.afe
 #' @rdname sf.afe
 #' 
-#' @title Active floodplain along River Elbe
+#' @title Active floodplain along the River Elbe
 #' 
 #' @description This dataset contains a polygon of the active floodplain along
-#'    the German interior parts of River Elbe from the Czech border to the
+#'    the German interior parts of the River Elbe from the Czech border to the
 #'    weir in Geesthacht in the coordinate reference system 
 #'    \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N}.
 #' 
 #'   Originally, this polygon was produced for the floodplain status report 
 #'   (Auenzustandsbericht; Brunotte et al. (2009), Bundesamt für Naturschutz 
-#'   (2009)) at a scale of 1:25000. For hydflood it was updated with recent 
+#'   (2009)) at a scale of 1:25,000. For hydflood it was updated with recent 
 #'   flood protection measures and manually improved with recent digital 
-#'   elevation models and aerial images at a scale < 1:10000.
+#'   elevation models and aerial images at a scale of < 1:10,000.
 #' 
 #' @format A \code{sf} containing 1 polygon 
 #' 
@@ -83,18 +83,18 @@ sf.af <- function(name = NULL) {
 #' @name sf.afr
 #' @rdname sf.afr
 #' 
-#' @title Active floodplain along River Rhine
+#' @title Active floodplain along the River Rhine
 #' 
 #' @description This dataset contains a polygon of the active floodplain along
-#'   the German, freeflowing parts of River Rhine from the weir Iffezheim and 
+#'   the German, freeflowing parts of the River Rhine from the weir Iffezheim to
 #'   the Dutch border in the coordinate reference system 
 #'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #' 
 #'   Originally, this polygon was produced for the floodplain status report 
 #'   (Auenzustandsbericht; Brunotte et al. (2009), Bundesamt für Naturschutz 
-#'   (2009)) at a scale of 1:25000. For hydflood it was updated with recent 
+#'   (2009)) at a scale of 1:25,000. For hydflood it was updated with recent 
 #'   flood protection measures and manually improved with recent digital 
-#'   elevation models and aerial images at a scale < 1:10000.
+#'   elevation models and aerial images at a scale of < 1:10,000.
 #' 
 #' @format A \code{sf} containing 1 polygon 
 #' 
@@ -110,10 +110,10 @@ sf.af <- function(name = NULL) {
 #' @name sf.tiles_elbe
 #' @rdname sf.tiles_elbe
 #' 
-#' @title Tiling along the active floodplain of River Elbe
+#' @title Tiling along the active floodplain of the River Elbe
 #' 
 #' @description This dataset contains 49 rectangular polygons / tiles along the
-#'    active floodplain along the German interior parts of River Elbe from the
+#'    active floodplain along the German interior parts of the River Elbe from the
 #'    Czech border to the weir in Geesthacht in the coordinate reference system
 #'    \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N}.
 #'   
@@ -145,11 +145,11 @@ sf.af <- function(name = NULL) {
 #' @name sf.tiles_rhein
 #' @rdname sf.tiles_rhein
 #' 
-#' @title Tiling along the active floodplain of River Rhine
+#' @title Tiling along the active floodplain of the River Rhine
 #' 
 #' @description This dataset contains 40 rectangular polygons / tiles along the
-#'    active floodplain along the German, freeflowing parts of River Rhine from
-#'    the weir Iffezheim to the Dutch border near Kleve in the coordinate
+#'    active floodplain along the German, freeflowing parts of the River Rhine
+#'    from the weir Iffezheim to the Dutch border near Kleve in the coordinate
 #'    reference system
 #'    \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   
