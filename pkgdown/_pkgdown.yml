@@ -50,12 +50,10 @@ navbar:
       href: reference/index.html
     - text: "ShinyApps"
       menu:
-      - text: "flood3"
-        href: http://r.bafg.de/shiny/WeberA/07-flood3/
       - text: "flood3WMS"
-        href: http://r.bafg.de/shiny/WeberA/08-flood3wms/
+        href: apps/flood3wms
       - text: "flood3daily"
-        href: http://r.bafg.de/shiny/WeberA/10-flood3daily/
+        href: apps/flood3daily
   right:
     - text: BfG
       href: https://www.bafg.de
