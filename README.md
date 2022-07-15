@@ -3,14 +3,14 @@
 hydflood
 =========
 
-[![pipeline status](https://git.aqualogy.de/arnd/hydflood/badges/master/pipeline.svg)](https://git.aqualogy.de/arnd/hydflood/commits/master)
-
-The R package **hydflood** is designed to compute flood extent and duration along German federal waterways Elbe and Rhine.
+The R package **hydflood** is designed to compute flood extents and durations 
+along the German federal waterways Elbe and Rhine.
 
 Installation
 ------------
 
-**hydflood** is not currently available from CRAN, but you can install the development version from BfG's gitbucket server with:
+**hydflood** is currently not available from CRAN, but you can install the 
+developmental version from BfG's gitlab server with:
 
 ``` r
 install.packages("devtools")
@@ -21,15 +21,15 @@ devtools::install_git("git://gitlab.lan.bafg.de/auenoekologie/hydflood.git")
 Usage
 -----
 
-The package **hydflood** is build around the packages `raster` and `hyd1d`.
+The package **hydflood** is build around the packages `terra` and `hyd1d`.
 
 ``` r
 # load the package
 library(hydflood)
 
 # import the raster data and create a raster stack
-x <- hydRasterStack(filename_dem = "data-raw/raster.dem.tif",
-                    filename_csa = "data-raw/raster.csa.tif")
+x <- hydSpatRaster(filename_dem = "data-raw/raster.dem.tif",
+                   filename_csa = "data-raw/raster.csa.tif")
 
 # create a temporal sequence
 seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
