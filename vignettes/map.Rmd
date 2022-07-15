@@ -42,7 +42,7 @@ sf.gs <- st_as_sf(df.gauging_station_data[
               df.gauging_station_data$data_present),],
     coords = c("longitude", "latitude"), remove = FALSE, crs = st_crs(4326))
 
-id.gs <- which(sf.gs$gauging_station %in% c("LENZEN", "DESSAU"))
+id.gs <- which(sf.gs$gauging_station %in% c("LENZEN", "DESSAU", "EMMERICH", "NEU DARCHAU"))
 sf.gs$size <- 1
 sf.gs$size[id.gs] <- 2
 sf.gs$size <- as.factor(sf.gs$size)
@@ -51,7 +51,7 @@ sf.gs$fill <- "blue"
 sf.gs$fill[id.gs] <- "red"
 sf.gs$fill <- as.factor(sf.gs$fill)
 
-# Retrievethe map data
+# Retrieve the map data
 germany <- map_data("world", region = "Germany")
 n <- max(germany$lat)
 s <- min(germany$lat)
@@ -114,6 +114,18 @@ ggplot() +
     geom_text(data = sf.gs[which(sf.gs$gauging_station == "LENZEN"),],
                   aes(x = longitude - 0.4, y = latitude, label = gauging_station),
               color = "red", vjust = 2, size = 4) +
+    geom_sf(data = sf.gs[which(sf.gs$gauging_station == "EMMERICH"),],
+            fill = "red", color = "red", size = 2.5) +
+    geom_text(data = sf.gs[which(sf.gs$gauging_station == "EMMERICH"),],
+                  aes(x = longitude + 1.05, y = latitude + 0.15,
+                      label = gauging_station),
+              color = "red", vjust = 2, size = 4) +
+    geom_sf(data = sf.gs[which(sf.gs$gauging_station == "NEU DARCHAU"),],
+            fill = "red", color = "red", size = 2.5) +
+    geom_text(data = sf.gs[which(sf.gs$gauging_station == "NEU DARCHAU"),],
+                  aes(x = longitude - 1, y = latitude + 0.05,
+                      label = gauging_station),
+              color = "red", vjust = 2, size = 4) +
     geom_text(data = germany_points, aes(x = X, y = Y, label = name),
               fontface = "bold", size = 8, check_overlap = FALSE) +
     geom_text(data = cent_e, aes(x = X + 0.2, y = Y, label = river),
@@ -124,8 +136,8 @@ ggplot() +
     annotation_north_arrow(location = "tl", which_north = "true",
         style = north_arrow_fancy_orienteering) +
     labs(x = "Longitude", y = "Latitude", colour = "") +
-    scale_color_manual(values = col, labels = c("gauging station", "test area")) + 
-    theme(legend.position = c(0.75, 0.97), legend.direction = "horizontal")
+    scale_color_manual(values = col, labels = c("gauging station", "test areas &\nreference gauges")) + 
+    theme(legend.position = c(0.70, 0.97), legend.direction = "horizontal")
     #theme(legend.position = "bottom")
 ggsave("map.png", width = 6, height = 8, dpi = 600)
 ```
