@@ -6,6 +6,7 @@
 ^build$
 ^\.commit$
 ^data-raw$
+^.*\.dat$
 ^doc$
 ^docs$
 ^\.gitlab-ci\.yml$
