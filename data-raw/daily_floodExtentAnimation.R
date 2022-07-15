@@ -101,14 +101,14 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        flood_extent <- tryCatch({
+        # flood_extent <- tryCatch({
             flood_extent <- flood3(x, as.Date(a_date))
             flood_extent[flood_extent == 0] <- NA
-        },
-        error = function(cond) {NA})
+        # },
+        # error = function(cond) {NA})
         
         # plotting with raster functions
-        if (!is.na(flood_extent)) {
+        if (inherits(flood_extent, "SpatRaster")) {
             png(filename = f_out, width = 960, height = 640, units = "px")
             plot(raster(dem_plot), col = dem_colfunc((62 - 50)*2),
                  xlim = c(305000, 313000), legend.width = 1, horizontal = TRUE,
@@ -182,14 +182,14 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        flood_extent <- tryCatch({
+        # flood_extent <- tryCatch({
             flood_extent <- flood3(x, as.Date(a_date))
             flood_extent[flood_extent == 0] <- NA
-        },
-        error = function(cond) {NA})
+        # },
+        # error = function(cond) {NA})
         
         # plotting with raster functions
-        if (!is.na(flood_extent)) {
+        if (inherits(flood_extent, "SpatRaster")) {
             png(filename = f_out, width = 960, height = 640, units = "px")
             plot(raster(dem_plot), col = dem_colfunc((24 - 9)*2), xlim = c(263500, 268800),
                  legend.width = 1, horizontal = TRUE, bty = "n",
@@ -264,14 +264,14 @@ if (require("ElBiota")) {
                 write("  will be computed", stdout())
                 
                 # compute flood extent
-                flood_extent <- tryCatch({
+                # flood_extent <- tryCatch({
                     flood_extent <- flood3(x, as.Date(a_date))
                     flood_extent[flood_extent == 0] <- NA
-                },
-                error = function(cond) {NA})
+                # },
+                # error = function(cond) {NA})
                 
                 # plotting with raster functions
-                    if (!is.na(flood_extent)) {
+                    if (inherits(flood_extent, "SpatRaster")) {
                     png(filename = f_out, width = 960, height = 640, 
                         units = "px")
                     plot(raster(r), col = dem_colfunc((24 - 9)*2),
