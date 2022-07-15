@@ -509,14 +509,15 @@ function(input, output, session) {
             l <- leafletProxy("map")
             # zoom level denpendent visualisation
             if (input$map_zoom >= 12) {
-                url <- paste0(url_base, input$river, "_",
+                url <- paste0(url_base, tolower(input$river), "_",
                               as.character(floor(year / 10) * 10),
                               "_",
                               as.character(floor(year / 10) * 10 + 9),
                               "/MapServer/WMSServer?")
                 l %>% addWMSTiles(
                     baseUrl = url,
-                    layers = paste0("Flut3_", as.character(year)),
+                    layers = paste0(input$river, "_flood3_",
+                                    as.character(year)),
                     options = WMSTileOptions(format = "image/png",
                                              transparent = TRUE),
                     layerId = "fd")

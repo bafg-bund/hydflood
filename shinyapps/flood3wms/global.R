@@ -142,7 +142,7 @@ load("data/spdf.station.rda")
 
 years <- seq(1990, as.numeric(strftime(Sys.Date(), "%Y")) - 1, 1)
 
-url_base <- "https://geoportal.bafg.de/arcgis3/services/Flut3/"
+url_base <- "https://geoportal.bafg.de/arcgis3/services/flood3/2022_"
 
 # https://geoportal.bafg.de/arcgis3/services/Flut3/2022_Rhein_1990_1999/MapServer/WMSServer?
 
