@@ -192,6 +192,10 @@ from <- list.files(path = build,
                    pattern = "hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
                    full.names = TRUE)
 file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
+file.copy(from = "data-raw/sf.afe_csa.rda", to = downloads, overwrite = FALSE,
+          copy.date = TRUE)
+file.copy(from = "data-raw/sf.afr_csa.rda", to = downloads, overwrite = FALSE,
+          copy.date = TRUE)
 
 #####
 # export the documentation as pdf

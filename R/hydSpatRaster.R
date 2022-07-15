@@ -391,8 +391,8 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
                            tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
-            url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/sf.a", 
-                          "f", tolower(substring(river, 1, 1)), "_csa.rda")
+            url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
+                          tolower(substring(river, 1, 1)), "_csa.rda")
             utils::download.file(url, csa_file, quiet = TRUE)
         }
         load(csa_file)
