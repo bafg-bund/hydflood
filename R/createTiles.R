@@ -18,7 +18,7 @@
 #' @examples
 #'   library(hydflood)
 #'   tiles <- createTiles(x = sf.af(name = "Elbe"), size_x = 10000, size_y = 10000)
-#'   plot(tiles$tile_ID)
+#'   plot(tiles["tile_ID"])
 #' 
 #' @export
 #' 
