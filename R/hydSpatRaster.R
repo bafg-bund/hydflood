@@ -250,7 +250,7 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         errors <- c(errors, paste0("Error ", l(errors), ": The specified files",
                                    " do not exist! If you specifiy the extent ",
                                    "and a valid crs (ETRS 1989 UTM32 N for Riv",
-                                   "er Rhein, ETRS 1989 UTM32 N for River Elbe",
+                                   "er Rhine, ETRS 1989 UTM32 N for River Elbe",
                                    "), they will be downloaded according to yo",
                                    "ur specifications."))
     }
@@ -335,7 +335,7 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
                                    "1989 UTM 33N'."))
     } else {
         if (isUTM32(crs_int)) {
-            river <- "Rhein"
+            river <- "Rhine"
         } else if (isUTM33(crs_int)) {
             river <- "Elbe"
         } else {

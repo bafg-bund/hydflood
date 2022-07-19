@@ -154,7 +154,7 @@ function(input, output, session) {
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe")
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 2,
+                              label = "Rhine", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr")
         } else {
@@ -167,7 +167,7 @@ function(input, output, session) {
             } else {
                 l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
+                                  label = "Rhine", color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afr")
             }
@@ -1180,7 +1180,7 @@ function(input, output, session) {
         } else {
             l %>% removeShape(layerId = c("afe"))
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = "Rhein", color = "blue", weight = 2,
+                              label = "Rhine", color = "blue", weight = 2,
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afr",
                               options = pathOptions(pane = "af"))
@@ -1224,7 +1224,7 @@ function(input, output, session) {
                                   options = pathOptions(pane = "af"))
             } else {
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = "Rhein", color = "blue", weight = 2,
+                                  label = "Rhine", color = "blue", weight = 2,
                                   fill = FALSE, layerId = "afr",
                                   options = pathOptions(pane = "af"))
             }

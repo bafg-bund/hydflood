@@ -190,7 +190,7 @@ flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
                                    "N' or 'ETRS 1989 UTM 33N'."))
     } else {
         if (isUTM32(x)) {
-            river <- "Rhein"
+            river <- "Rhine"
         } else if (isUTM33(x)) {
             river <- "Elbe"
         } else {

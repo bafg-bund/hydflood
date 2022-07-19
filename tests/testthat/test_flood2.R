@@ -83,9 +83,9 @@ test_that("flood2: Elbe", {
 })
 
 
-test_that("flood2: Rhein", {
+test_that("flood2: Rhine", {
     
-    # Rhein
+    # Rhine
     hf <- Sys.getenv("hydflood")
     x <- hydSpatRaster(filename_dem =
                            paste0(hf, "/data-raw/raster.dem_plittersdorf.tif"),

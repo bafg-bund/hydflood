@@ -29,7 +29,7 @@ reference:
       - "`sf.afr`"
       - "`sf.tiles`"
       - "`sf.tiles_elbe`"
-      - "`sf.tiles_rhein`"
+      - "`sf.tiles_rhine`"
   - title: "Utility functions"
     desc: Utility functions to prepare and store data
     contents:

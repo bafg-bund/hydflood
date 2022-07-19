@@ -57,7 +57,7 @@
 #' 
 #' @description Obtain projected versions of sf.afe and sf.afr
 #' 
-#' @param name either 'Elbe' or 'Rhein'.
+#' @param name either 'Elbe' or 'Rhine'.
 #' 
 #' @return \code{sf} with the projected active floodplain 
 #' 
@@ -71,7 +71,7 @@ sf.af <- function(name = NULL) {
         x <- sf.afe
         sf::st_crs(x) <- sf::st_crs(25833)
         return(x)
-    } else if (name == "Rhein") {
+    } else if (name == "Rhine") {
         x <- sf.afr
         sf::st_crs(x) <- sf::st_crs(25832)
         return(x)
@@ -142,8 +142,8 @@ sf.af <- function(name = NULL) {
 #' 
 "sf.tiles_elbe"
 
-#' @name sf.tiles_rhein
-#' @rdname sf.tiles_rhein
+#' @name sf.tiles_rhine
+#' @rdname sf.tiles_rhine
 #' 
 #' @title Tiling along the active floodplain of the River Rhine
 #' 
@@ -176,15 +176,15 @@ sf.af <- function(name = NULL) {
 #'   
 #'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #' 
-"sf.tiles_rhein"
+"sf.tiles_rhine"
 
 #' @name sf.tiles
 #' @rdname sf.tiles
-#' @title Obtain projected versions of sf.tiles_elbe and sf.tiles_rhein
+#' @title Obtain projected versions of sf.tiles_elbe and sf.tiles_rhine
 #' 
-#' @description Obtain projected versions of sf.tiles_elbe and sf.tiles_rhein
+#' @description Obtain projected versions of sf.tiles_elbe and sf.tiles_rhine
 #' 
-#' @param name either 'Elbe' or 'Rhein'.
+#' @param name either 'Elbe' or 'Rhine'.
 #' 
 #' @return \code{sf} with projected tiles
 #' 
@@ -198,8 +198,8 @@ sf.tiles <- function(name = NULL) {
         x <- sf.tiles_elbe
         sf::st_crs(x) <- sf::st_crs(25833)
         return(x)
-    } else if (name == "Rhein") {
-        x <- sf.tiles_rhein
+    } else if (name == "Rhine") {
+        x <- sf.tiles_rhine
         sf::st_crs(x) <- sf::st_crs(25832)
         return(x)
     } else {

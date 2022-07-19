@@ -3,8 +3,8 @@
 if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     
     # load missing dataset
-    if (! exists("sf.tiles_rhein")) {
-        load("data/sf.tiles_rhein.rda")
+    if (! exists("sf.tiles_rhine")) {
+        load("data/sf.tiles_rhine.rda")
     }
     
     # initialize GrassGIS
@@ -13,7 +13,7 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     gg_ma <- "PERMANENT"
     library("rgrass7")
     library("tidyverse")
-    initGRASS(gisBase = "/opt/i4/grassgis-7.8.5/grass78",
+    initGRASS(gisBase = "/opt/i4/grassgis-8.0.2/grass80",
               gisDbase = gg_gd,
               location = gg_ln,
               mapset = gg_ma,
@@ -21,14 +21,14 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
               remove_GISRC = TRUE)
     use_sf()
     execGRASS("g.proj", flags = "c", epsg = 25832)
-    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-7.8.5/grass78/etc/python:",
-                                   "/opt/i4/i4-0.0.7/lib/python3.8/site-packag",
-                                   "es:/opt/i4/python-3.8.5/lib/python3.8/site",
-                                   "-packages"))
+    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-8.0.2/grass80/etc/python:",
+                                   "/opt/i4/i4-0.0.8/lib/python3.10/site-packa",
+                                   "ges:/opt/i4/python-3.10.5/lib/python3.10/s",
+                                   "ite-packages"))
     
     # df.sections
-    df.sections_rhein <- hyd1d::df.sections[
-        which(hyd1d::df.sections$river == "RHEIN"),]
+    df.sections_rhine <- hyd1d::df.sections[
+        which(hyd1d::df.sections$river == "RHINE"),]
     
     # import
     rasters_present <- rgrass7::execGRASS("g.list", mapset = ".", 
@@ -37,37 +37,37 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
                                           type = "vector", intern = TRUE)
     
     # files
-    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhein$name,
+    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhine$name,
                         "_DEM.tif")
-    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhein$name,
+    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhine$name,
                         "_CSA.tif")
     
     # import missing vector data
     if (! "active_floodplain" %in% vectors_present) {
-        execGRASS("v.import", input = "data-raw/active_floodplain_rhein.shp",
+        execGRASS("v.import", input = "data-raw/active_floodplain_rhine.shp",
                   output = "active_floodplain", encoding = "UTF-8")
     }
     if (! "tiles" %in% vectors_present) {
-        execGRASS("v.import", input = "data-raw/tiles_rhein.shp",
+        execGRASS("v.import", input = "data-raw/tiles_rhine.shp",
                   output = "tiles", encoding = "UTF-8")
     }
     if (! "cross_section_traces" %in% vectors_present) {
-        execGRASS("v.import", input = "data-raw/cross_section_traces_rhein.shp",
+        execGRASS("v.import", input = "data-raw/cross_section_traces_rhine.shp",
                   output = "cross_section_traces", encoding = "UTF-8")
         execGRASS("v.db.renamecolumn", map = "cross_section_traces",
                   column = "station_in,station_int")
     }
     
     # import DEM's and compute CSA's
-    for (i in 1:nrow(sf.tiles_rhein)) {
+    for (i in 1:nrow(sf.tiles_rhine)) {
         # create or change into a mapset
         if (! dir.exists(paste(sep = "/", gg_gd, gg_ln,
-                               sf.tiles_rhein$name[i]))) {
+                               sf.tiles_rhine$name[i]))) {
             execGRASS("g.mapset", flags = c("c", "quiet"),
-                      mapset = sf.tiles_rhein$name[i], location = gg_ln)
+                      mapset = sf.tiles_rhine$name[i], location = gg_ln)
         } else {
             execGRASS("g.mapset", flags = c("quiet"),
-                      mapset = sf.tiles_rhein$name[i], location = gg_ln)
+                      mapset = sf.tiles_rhine$name[i], location = gg_ln)
         }
         
         # import the DEM's
@@ -108,31 +108,31 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
                       output = cache_csa[i], createopt = c("TFW=NO",
                                                            "COMPRESS=LZW"))
             execGRASS("g.region", region = paste0("region_",
-                                                  sf.tiles_rhein$name[i],
+                                                  sf.tiles_rhine$name[i],
                                                   "@PERMANENT"))
         }
         
-        if (! paste0(substr(sf.tiles_rhein$name[i], 1, 5),
+        if (! paste0(substr(sf.tiles_rhine$name[i], 1, 5),
                      "cross_section_areas") %in% vectors_present_m) {
             execGRASS("r.to.vect", input = "CROSS_SECTION_AREAS",
-                      output = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_rhine$name[i], 1, 5),
                                       "cross_section_areas"),
                       type = "area", column = "station_int",
                       flags = c("quiet", "overwrite"))
             execGRASS("v.extract",
-                      input = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
+                      input = paste0(substr(sf.tiles_rhine$name[i], 1, 5),
                                      "cross_section_areas"),
-                      output = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
+                      output = paste0(substr(sf.tiles_rhine$name[i], 1, 5),
                                       "cross_section_areas_sel"),
                       where = paste0("station_int >= ",
-                                     df.sections_rhein$from_km[i] * 1000,
+                                     df.sections_rhine$from_km[i] * 1000,
                                      " AND station_int < ",
-                                     df.sections_rhein$to_km[i] * 1000),
+                                     df.sections_rhine$to_km[i] * 1000),
                       flags = c("quiet", "overwrite"))
             execGRASS("g.rename", flags = c("quiet", "overwrite"),
-                      vector = paste0(substr(sf.tiles_rhein$name[i], 1, 5),
+                      vector = paste0(substr(sf.tiles_rhine$name[i], 1, 5),
                                       "cross_section_areas_sel,",
-                                      substr(sf.tiles_rhein$name[i], 1, 5),
+                                      substr(sf.tiles_rhine$name[i], 1, 5),
                                       "cross_section_areas"))
         }
     }
@@ -143,8 +143,8 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     if (! "cross_section_areas" %in% vectors_present) {
         execGRASS("v.patch", flags = c("quiet", "e", "overwrite"),
                   input = paste0(
-                      paste0(substr(sf.tiles_rhein$name, 1, 5),
-                             "cross_section_areas@", sf.tiles_rhein$name),
+                      paste0(substr(sf.tiles_rhine$name, 1, 5),
+                             "cross_section_areas@", sf.tiles_rhine$name),
                       collapse = ","),
                   output = "cross_section_areas")
         execGRASS("v.dissolve", input = "cross_section_areas",
@@ -162,7 +162,7 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     
     # section
     if (!"section" %in% names(sf.afr_csa)) {
-        sf.tiles <- sf.tiles_rhein[, "name"]
+        sf.tiles <- sf.tiles_rhine[, "name"]
         names(sf.tiles)[1] <- "section"
         sf.afr_csa <- st_join(sf.afr_csa, sf.tiles)
         sf.afr_csa <- sf.afr_csa[!grepl(".", row.names(sf.afr_csa),
@@ -177,7 +177,7 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
         
         sf.afr_csa$section_do <- rep(NA_character_, nrow(sf.afr_csa))
         
-        sf.tiles <- sf.tiles_rhein[,c("name")]
+        sf.tiles <- sf.tiles_rhine[,c("name")]
         names(sf.tiles)[1] <- "section"
         
         for (i in 1:(nrow(sf.tiles) - 1)) {
@@ -216,7 +216,7 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     system("cp data-raw/sf.afr_csa.rda ~/.hydflood/")
     
     # clean up
-    rm(sf.afr_csa, cache_csa, cache_dem, df.sections_rhein, sf.tiles_rhein,
+    rm(sf.afr_csa, cache_csa, cache_dem, df.sections_rhine, sf.tiles_rhine,
        rasters_present, rasters_present_m, vectors_present, vectors_present_m,
        gg_gd, gg_ln, gg_ma)
     

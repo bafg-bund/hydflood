@@ -23,7 +23,7 @@ coords_e <- coords_e[coords_e[, "L1"] == 1, ]
 cent_e <- st_centroid(sf.afe_wgs84, of_largest_polygon = TRUE)
 cent_e$X <- st_coordinates(cent_e)[,"X"]
 cent_e$Y <- st_coordinates(cent_e)[,"Y"]
-sf.afr_wgs84 <- st_transform(sf.af("Rhein"), st_crs(4326))
+sf.afr_wgs84 <- st_transform(sf.af("Rhine"), st_crs(4326))
 sf.afr_wgs84 <- st_cast(sf.afr_wgs84, "MULTIPOLYGON")
 sf.afr_wgs84$river <- "Rhine"
 coords_r <- st_coordinates(sf.afr_wgs84)
@@ -37,7 +37,7 @@ cent_r <- st_as_sf(data.frame(X = 8.2, Y = 50.5, river = "Rhine"),
 
 sf.gs <- st_as_sf(df.gauging_station_data[
     which((df.gauging_station_data$river == "ELBE" |
-           (df.gauging_station_data$river == "RHEIN" & 
+           (df.gauging_station_data$river == "RHINE" & 
                 df.gauging_station_data$km > 336)) &
               df.gauging_station_data$data_present),],
     coords = c("longitude", "latitude"), remove = FALSE, crs = st_crs(4326))
