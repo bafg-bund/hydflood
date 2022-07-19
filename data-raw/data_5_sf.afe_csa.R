@@ -21,10 +21,10 @@ if (!(file.exists("data-raw/sf.afe_csa.rda"))) {
               remove_GISRC = TRUE)
     use_sf()
     execGRASS("g.proj", flags = "c", epsg = 25833)
-    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-7.8.5/grass78/etc/python:",
-                                   "/opt/i4/i4-0.0.7/lib/python3.8/site-packag",
-                                   "es:/opt/i4/python-3.8.5/lib/python3.8/site",
-                                   "-packages"))
+    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-8.0.2/grass80/etc/python:",
+                                   "/opt/i4/i4-0.0.8/lib/python3.10/site-packa",
+                                   "ges:/opt/i4/python-3.10.5/lib/python3.10/s",
+                                   "ite-packages"))
     
     # df.sections
     df.sections_elbe <- hyd1d::df.sections[

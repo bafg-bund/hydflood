@@ -125,7 +125,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
         stop(paste0(errors, collapse="\n  "))
     } else {
         if (isUTM32(crs_int)) {
-            river <- "Rhein"
+            river <- "Rhine"
         } else if (isUTM33(crs_int)) {
             river <- "Elbe"
         } else {

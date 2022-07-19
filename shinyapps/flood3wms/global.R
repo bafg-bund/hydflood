@@ -76,12 +76,12 @@ withinDist <- function(x, y, bb) {
 ###
 # define standard projections WGS 1984, ETRS 1989 UTM 33N, ETRS 1989 UTM 32N
 crs <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-df.crs_comp <- data.frame(river = c("Elbe", "Rhein"),
+df.crs_comp <- data.frame(river = c("Elbe", "Rhine"),
                           crs = c("ETRS 1989 UTM 33N", "ETRS 1989 UTM 32N"))
 
 ###
 # rivers
-rivers <- c("Bitte wählen Sie!", "Elbe", "Rhein")
+rivers <- c("Please select!", "Elbe", "Rhine")
 df.from_to <- data.frame(river    = rivers, 
                          from     = c(NA, 0, 336.2),
                          to       = c(NA, 585.7, 865.7),
@@ -94,7 +94,7 @@ df.from_to <- data.frame(river    = rivers,
 # save(df.gauging_station_data, file = "df.gauging_station_data.rda")
 # load("data/df.gauging_station_data.rda")
 # df.gsd <- df.gauging_station_data[df.gauging_station_data$data_present,]
-# df.gsd <- df.gsd[-which(df.gsd$river == "RHEIN" & df.gsd$km_qps < 336.2), ]
+# df.gsd <- df.gsd[-which(df.gsd$river == "RHINE" & df.gsd$km_qps < 336.2), ]
 # df.gsd$gauging_station <- asc2utf8(df.gsd$gauging_station)
 # spdf.gsd <- SpatialPointsDataFrame(coords = df.gsd[,c("longitude", "latitude")], 
 #                                   data = df.gsd, proj4string = crs)
@@ -108,12 +108,12 @@ load("data/spdf.gauging_station_data.rda")
 
 ###
 # SpatialPolygonsDataFrames and data.frames of active floodplain polygons
-# data(list = c("spdf.active_floodplain_rhein", "spdf.active_floodplain_elbe"), 
+# data(list = c("spdf.active_floodplain_rhine", "spdf.active_floodplain_elbe"), 
 #      package = "hydflood")
 # load("data/spdf.active_floodplain_elbe.rda")
-# load("data/spdf.active_floodplain_rhein.rda")
+# load("data/spdf.active_floodplain_rhine.rda")
 # spdf.afe <- spTransform(spdf.active_floodplain_elbe, CRSobj = crs)
-# spdf.afr <- spTransform(spdf.active_floodplain_rhein, CRSobj = crs)
+# spdf.afr <- spTransform(spdf.active_floodplain_rhine, CRSobj = crs)
 # save(list = c("spdf.afe", "spdf.afr"), file = "data/spdf.afX.rda")
 load("data/spdf.afX.rda")
 
@@ -129,10 +129,10 @@ load("data/df.coor.afX.rda")
 # spdf.hectometer_elbe <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_elbe")
 # spdf.he <- spTransform(spdf.hectometer_elbe, CRSobj = crs)
 # spdf.he <- spdf.he[which(spdf.he$M100 <= 585.7),]
-# spdf.hectometer_rhein <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_rhein")
-# spdf.hr <- spTransform(spdf.hectometer_rhein, CRSobj = crs)
+# spdf.hectometer_rhine <- readOGR(dsn = "~/hydflood/data-raw", layer = "hectometer_rhine")
+# spdf.hr <- spTransform(spdf.hectometer_rhine, CRSobj = crs)
 # spdf.he@data$river <- as.factor(rep("Elbe", nrow(spdf.he@data)))
-# spdf.hr@data$river <- as.factor(rep("Rhein", nrow(spdf.hr@data)))
+# spdf.hr@data$river <- as.factor(rep("rhine", nrow(spdf.hr@data)))
 # spdf.station <- rbind(spdf.he, spdf.hr)
 # spdf.station@data <- cbind(spdf.station@data, as.data.frame(coordinates(spdf.station)[,1:2]))
 # names(spdf.station@data) <- c("OBJECTID", "station", "river", "longitude", "latitude")
@@ -144,7 +144,7 @@ years <- seq(1990, as.numeric(strftime(Sys.Date(), "%Y")) - 1, 1)
 
 url_base <- "https://geoportal.bafg.de/arcgis3/services/flood3/2022_"
 
-# https://geoportal.bafg.de/arcgis3/services/Flut3/2022_Rhein_1990_1999/MapServer/WMSServer?
+# https://geoportal.bafg.de/arcgis3/services/Flut3/2022_rhine_1990_1999/MapServer/WMSServer?
 
 ## options(shiny.trace = TRUE)
 

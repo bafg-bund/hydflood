@@ -70,12 +70,12 @@ enableBookmarking(store = "server")
 ###
 # define standard projections WGS 1984, ETRS 1989 UTM 33N, ETRS 1989 UTM 32N
 crs <- st_crs(4326)
-df.crs_comp <- data.frame(river = c("Elbe", "Rhein"),
+df.crs_comp <- data.frame(river = c("Elbe", "Rhine"),
                           crs = c("ETRS 1989 UTM 33N", "ETRS 1989 UTM 32N"))
 
 ###
 # rivers
-rivers <- c("Bitte wählen Sie!", "Elbe", "Rhein")
+rivers <- c("Bitte wählen Sie!", "Elbe", "Rhine")
 df.from_to <- data.frame(river    = rivers, 
                          from     = c(NA, 0, 336.2),
                          to       = c(NA, 585.7, 865.7),
@@ -86,7 +86,7 @@ df.from_to <- data.frame(river    = rivers,
 # sf with all gauging stations
 # data("df.gauging_station_data", package = "hyd1d")
 # df.gsd <- df.gauging_station_data[df.gauging_station_data$data_present,]
-# df.gsd <- df.gsd[-which(df.gsd$river == "RHEIN" & df.gsd$km_qps < 336.2), ]
+# df.gsd <- df.gsd[-which(df.gsd$river == "RHINE" & df.gsd$km_qps < 336.2), ]
 # df.gsd <- df.gsd[-which(df.gsd$river == "WESER"), ]
 # sf.gsd <- st_as_sf(df.gsd, coords = c("longitude", "latitude"), crs = crs,
 #                    remove = FALSE)
@@ -114,7 +114,7 @@ df.gd <- readRDS(file_gd)
 # sf and data.frames of active floodplain polygons
 # data(list = c("sf.afr", "sf.afe"), package = "hydflood")
 # sf.afe <- st_transform(sf.af(name = "Elbe"), crs)
-# sf.afr <- st_transform(sf.af(name = "Rhein"), crs)
+# sf.afr <- st_transform(sf.af(name = "Rhine"), crs)
 # save(list = c("sf.afe", "sf.afr"), file = "data/sf.afX.rda")
 load("data/sf.afX.rda")
 
@@ -133,10 +133,10 @@ load("data/df.coor.afX.rda")
 # sf of stationing
 # sf.hectometer_elbe <- st_read(dsn = "~/hydflood/data-raw", layer = "hectometer_elbe")
 # sf.he <- st_transform(sf.hectometer_elbe, crs)
-# sf.hectometer_rhein <- st_read(dsn = "~/hydflood/data-raw", layer = "hectometer_rhein")
-# sf.hr <- st_transform(sf.hectometer_rhein, crs)
+# sf.hectometer_rhine <- st_read(dsn = "~/hydflood/data-raw", layer = "hectometer_rhine")
+# sf.hr <- st_transform(sf.hectometer_rhine, crs)
 # sf.he$river <- as.factor(rep("Elbe", nrow(sf.he)))
-# sf.hr$river <- as.factor(rep("Rhein", nrow(sf.hr)))
+# sf.hr$river <- as.factor(rep("Rhine", nrow(sf.hr)))
 # sf.station <- rbind(sf.he, sf.hr)
 # names(sf.station)[1:3] <- c("OBJECTID", "station", "river")
 # sf.station$longitude <- as.data.frame(st_coordinates(sf.station)[,1:2])[, 1]

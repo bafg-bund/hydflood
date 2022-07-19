@@ -3,7 +3,7 @@
 if (!(file.exists("data/sf.afr.rda"))) {
     
     # import
-    sf.afr <- st_read("data-raw/active_floodplain_rhein.shp")
+    sf.afr <- st_read("data-raw/active_floodplain_rhine.shp")
     
     # reset crs to overcome R CHECK note of non-ascii characters
     st_crs(sf.afr) <- ""

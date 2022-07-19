@@ -109,7 +109,7 @@ function(input, output, session) {
         } else {
             if (res$river == "Elbe") {
                 return(CRS("+proj=utm +zone=33 +ellps=GRS80 +units=m +no_defs"))
-            } else if (res$river == "Rhein") {
+            } else if (res$river == "Rhine") {
                 return(CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))
             } else {
                 return(NA_character_)
@@ -132,7 +132,7 @@ function(input, output, session) {
         } else {
             if (res$river == "Elbe") {
                 return(spdf.afe)
-            } else if (res$river == "Rhein") {
+            } else if (res$river == "Rhine") {
                 return(spdf.afr)
             } else {
                 return(NULL)
@@ -147,8 +147,8 @@ function(input, output, session) {
         } else {
             if (res$river == "Elbe") {
                 return(spdf.active_floodplain_elbe)
-            } else if (res$river == "Rhein") {
-                return(spdf.active_floodplain_rhein)
+            } else if (res$river == "Rhine") {
+                return(spdf.active_floodplain_rhine)
             } else {
                 return(NULL)
             }
@@ -188,7 +188,7 @@ function(input, output, session) {
                                   label = "Elbe", color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afe")
-            } else if (res$river == "Rhein") {
+            } else if (res$river == "Rhine") {
                 l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
                                   label = i18n()$t("Rhine"), color = "blue", weight = 2,
@@ -543,7 +543,7 @@ function(input, output, session) {
                                       lat = df.coor.afe$lat,
                                       label = "Elbe", color = "blue", 
                                       weight = 2, fill = FALSE, layerId = "afe")
-                } else if (res$river == "Rhein") {
+                } else if (res$river == "Rhine") {
                     l %>% removeShape(layerId = c("afe"))
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
@@ -568,7 +568,7 @@ function(input, output, session) {
                                       weight = 2, fill = TRUE, 
                                       fillColor = "lightblue", 
                                       fillOpacity = 0.6, layerId = "afe")
-                } else if (res$river == "Rhein") {
+                } else if (res$river == "Rhine") {
                     l %>% removeShape(layerId = c("afe"))
                     l %>% addPolygons(lng = df.coor.afr$lon, 
                                       lat = df.coor.afr$lat,
