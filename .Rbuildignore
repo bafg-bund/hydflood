@@ -20,9 +20,21 @@
 ^_pkgdown\.yml$
 ^shinyapps$
 ^slurm$
-^vignettes/flood3-2fps-.*\\.mp4$
-^vignettes/Thumbs\.db$
+^vignettes/220525-UFD-DESSAU-doc_.*\.tif$
+^vignettes/flood3-2fps-.*\.mp4$
+^vignettes/graphical_abstract$
+^vignettes/graphical_abstract\.R$
+^vignettes/latex/Thumbs\.db$
+^vignettes/map\.png$
 ^vignettes/map\.Rmd$
+^vignettes/microbenchmarking\.R$
+^vignettes/microbenchmarking\.Rdata$
 ^vignettes/movie$
+^vignettes/movie_.*\..*$
+^vignettes/pangaea\.R$
+^vignettes/pangae.*\.tab$
+^vignettes/rosm.cache$
+^vignettes/Thumbs\.db$
 ^vignettes/wms-legends$
+^vignettes/.*\.xcf$
 
