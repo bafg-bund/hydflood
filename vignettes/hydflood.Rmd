@@ -92,6 +92,11 @@ library(stringr)
 
 # Determine the output format of the document
 outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+if (outputFormat == "html") {
+    is_html <- TRUE
+} else {
+    is_html <- FALSE
+}
 
 # Figure and Table Caption Numbering, for HTML do it manually
 capTabNo <- 1
@@ -127,6 +132,24 @@ capFig <- function(x){
         y <- gsub(")}", "}", y, fixed = TRUE, useBytes = TRUE)
         y <- gsub("]}", "}", y, fixed = TRUE, useBytes = TRUE)
         x <- gsub("_", "\\_", y, fixed = TRUE, useBytes = TRUE)
+    }
+    return(x)
+}
+
+href <- function(x, y) {
+    if (outputFormat == 'html') {
+        x <- paste0("[", x, "](", y, ")")
+    } else if (outputFormat == 'latex') {
+        x <- paste0("\\href{", y, "}{", x, "}")
+    }
+    return(x)
+}
+
+bf <- function(x) {
+    if (outputFormat == 'html') {
+        x <- paste0("**", x, "**")
+    } else if (outputFormat == 'latex') {
+        x <- paste0("\\textbf{", x, "}")
     }
     return(x)
 }
@@ -177,7 +200,7 @@ between extrapolated water levels and elevation data.
 knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
-**hydflood** provides download facilities for the official digital elevation
+**hydflood** provides download facilities for the digital elevation
 models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
 by users. They just need to overlap with active floodplains of either the Rhine
@@ -231,24 +254,6 @@ time step, so that the resulting raster contains counts of how often each
 individual raster cell was flooded. The possible range of values is between 0
 and the number of time steps given.
 
-## Products
-
-### Flood animations
-
-Dessau
-
-<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
-  <source src="flood3-2fps-dessau.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-Lenzen
-
-<video width="640" height="480" style="display:block; margin: 0 auto;" controls>
-  <source src="flood3-2fps-lenzen.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
 ## Usage
 
 To initialize such a `SpatRaster` several possibilities are implemented in 
@@ -296,6 +301,71 @@ fd <- flood3(x = x, seq = seq)
 # and plot it
 plot(fd)
 ```
+
+<BR>
+
+# Products
+
+## Raster data
+
+Raster data with annual flood durations between 1990 and 2021 for the active 
+floodplains of the River Rhine and the River Elbe have been submitted to
+[pangaea.de](https://www.pangaea.de). As soon as they have been reviewed and
+been published, they will be linked here.
+
+<BR>
+
+## ShinyApps
+
+<BR>
+
+### flood3daily
+
+The [`flood3`](reference/flood3.html) function is the central function of the package
+**hydflood**. With the help of this function daily flood extents are computed
+for a number of areas along the River Elbe. These products are visualized
+through a shiny web application available through:
+
+\begin{center}
+\url{https://shiny.bafg.de/flood3daily/}
+\end{center}
+
+``` {r link_flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3daily/" target="_blank">https://shiny.bafg.de/flood3daily/</a></p>')
+```
+
+```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://shiny.bafg.de/flood3daily/"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+knitr::include_graphics('screenshot_flood3daily.png')
+```
+
+<BR>
+
+## flood3wms
+
+The [`flood3`](reference/flood3.html) function is the central function of the package
+**hydflood**. With the help of this function annual flood durations between 1990
+and 2021 have been computed for the active floodplains of the River Rhine and
+the River Elbe. These large scale raster products have been visualized as web
+map services and are available through a shiny web application:
+
+\begin{center}
+\url{https://shiny.bafg.de/flood3wms/}
+\end{center}
+
+``` {r link_waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3wms/" target="_blank">https://shiny.bafg.de/flood3wms/</a></p>')
+```
+
+```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://shiny.bafg.de/flood3wms/"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+knitr::include_graphics('screenshot_flood3wms.png')
+```
+
+<BR>
+
+---
+nocite: |
+  @weber_hyd1d_2022
+...
 
 # References
 
