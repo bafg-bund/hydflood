@@ -43,7 +43,10 @@ function(request) {
             uiOutput("extent"),
             
             # legend
-            htmlOutput("legend")
+            htmlOutput("legend"),
+            
+            # imprint
+            uiOutput("imprint")
         )
     )
 }

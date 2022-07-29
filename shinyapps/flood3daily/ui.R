@@ -1,5 +1,12 @@
 fluidPage(
     
+    tags$head(
+        tags$style(HTML("#footer {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }"))
+    ),
+    
     column(width = 3,
         
         HTML("<BR>"),
@@ -12,7 +19,10 @@ fluidPage(
         uiOutput("menu_date"),
         
         # plot 
-        plotOutput("plot")
+        plotOutput("plot"),
+        
+        # imprint
+        uiOutput("footer")
         
     ),
     
@@ -31,5 +41,4 @@ fluidPage(
         
         htmlOutput("image")
     )
-    
 )
