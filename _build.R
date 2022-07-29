@@ -97,7 +97,8 @@ devtools::check(".", document = TRUE, manual = TRUE, error_on = "never",
 # build the source package
 write("#####", stdout())
 write(" build", stdout())
-devtools::build(".", path = build)
+devtools::build(".", path = build, vignettes = TRUE, manual = TRUE,
+                args = c("--compact-vignettes=both"))
 
 #####
 # install hyd1d from source
