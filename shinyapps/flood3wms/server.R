@@ -59,11 +59,11 @@ function(input, output, session) {
                     inputId  = "river",
                     label    = i18n()$t("River:"),
                     choices  = rivers,
-                    selected = i18n()$t("Please select!")
+                    selected = "Please select!"
                 )
             )
         } else {
-            if (input$river != i18n()$t("Please select!")) {
+            if (input$river != "Please select!") {
                 res$river <- input$river
                 res$from_to <- c(NA_real_, NA_real_)
                 res$map_from_to <- c(NA_real_, NA_real_)
@@ -535,7 +535,7 @@ function(input, output, session) {
                     i18n()$t(
                         paste0("<p>Legend:</p><p><center>flood duration (d/y)<",
                                "/center></p><center><img width=\"40%\" style=",
-                               "\"\" src=\"legend.png\"></center>")))
+                               "\"\" src=\"legend_en.png\"></center>")))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))
