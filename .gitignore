@@ -10,6 +10,7 @@
 *.log
 *.Rd
 *humbs.db
+*.xcf
 .commit
 
 # ignore directories and files
