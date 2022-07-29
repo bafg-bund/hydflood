@@ -112,7 +112,7 @@ function(input, output, session) {
         req(input$area)
         req(input$date)
         
-        image_path <- paste0("https://hydflood.bafg.de/apps/flood3daily/",
+        image_path <- paste0("https://hydflood.bafg.de/apps/flood3daily/images/",
                              names(gss)[which(gss == input$area)],
                              "/flood3_",
                              strftime(input$date, "%Y%m%d"), ".png")

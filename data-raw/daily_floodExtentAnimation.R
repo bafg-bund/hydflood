@@ -26,7 +26,7 @@ library(raster)
 # setwd
 setwd(Sys.getenv("hydflood")) 
 p <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/Weber_etal_2022_hyd",
-            "1d_hydflood/www/hydflood/apps/flood3daily")
+            "1d_hydflood/www/hydflood/apps/flood3daily/images")
 
 # temporal sequence (last X days) Sys.Date() - 8
 dates <- as.character(seq.Date(as.Date("2015-01-01"), Sys.Date() - 2,
