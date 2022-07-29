@@ -137,4 +137,11 @@ function(input, output, session) {
         # }
     })
     
+    # footer for the imprint
+    output$footer <- renderUI({
+        tagList(a(i18n()$t("Imprint"), 
+                  href = i18n()$t("https://www.bafg.de/EN/Service/Imprint/imprint_node.html")))
+        
+    })
+    
 }
