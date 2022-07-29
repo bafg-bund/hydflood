@@ -44,6 +44,7 @@ shinyapps/flood3daily/rsconnect
 shinyapps/flood3wms/www/Thumbs.db
 shinyapps/flood3wms/rsconnect
 slurm/log
+vignettes/graphical_abstract
 vignettes/movie
 vignettes/rosm.cache
 vignettes/wms-legends
