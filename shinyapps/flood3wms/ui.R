@@ -23,7 +23,7 @@ function(request) {
             draggable = TRUE, left = "auto", right = 20, width = 330, 
             top = 20, bottom = "auto", height = "auto", 
             
-            h2("flood3()-WMS"),
+            h2("flood3wms"),
             
             #####
             # menu item 1: river
