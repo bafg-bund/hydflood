@@ -34,6 +34,7 @@ reference:
     desc: Utility functions to prepare and store data
     contents:
       - "`createTiles`"
+      - "`createEstuaryCSA`"
       - "`getDEM`"
       - "`hydflood_cache`"
       - "`w80ToSFL`"
