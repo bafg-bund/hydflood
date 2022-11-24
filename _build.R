@@ -151,14 +151,14 @@ files <- list.files(path = public, pattern = "*[.]html",
                     ignore.case = FALSE, include.dirs = TRUE, no.. = FALSE)
 for (a_file in files) {
     x <- readLines(paste0(public, a_file))
-    if (grepl("/", a_file, fixed = TRUE)) {
+    if (grepl("/", a_file, fixed = TRUE)){
         write(a_file, stdout())
         y <- gsub('href="https://www.bafg.de">BfG</a>',
                   paste0('href="https://www.bafg.de"><img border="0" src="..',
                          '/bfg_logo.jpg" height="50px" width="114px"></a>'), x)
     } else {
-        y <- gsub('href="http://www.bafg.de">BfG</a>',
-                  paste0('href="http://www.bafg.de"><img border="0" src="bf',
+        y <- gsub('href="https://www.bafg.de">BfG</a>',
+                  paste0('href="https://www.bafg.de"><img border="0" src="bf',
                          'g_logo.jpg" height="50px" width="114px"></a>'), x)
     }
     # edit footer
