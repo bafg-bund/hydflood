@@ -308,10 +308,9 @@ plot(fd)
 
 ## Raster data
 
-Raster data with annual flood durations between 1990 and 2021 for the active 
-floodplains of the River Rhine and the River Elbe have been submitted to
-[pangaea.de](https://www.pangaea.de). As soon as they have been reviewed and
-been published, they will be linked here.
+Raster data with annual flood durations between 1960 and 2021 for the active 
+floodplains of the River Rhine and the River Elbe have been submitted to and
+published on [pangaea.de](https://www.pangaea.de) [@weber_flood3data_2022].
 
 <BR>
 
@@ -327,14 +326,14 @@ for a number of areas along the River Elbe. These products are visualized
 through a shiny web application available through:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3daily/}
+\url{https://hydflood.bafg.de/shinyapps/flood3daily}
 \end{center}
 
 ``` {r link_flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3daily/" target="_blank">https://hydflood.bafg.de/shinyapps/flood3daily/</a></p>')
+cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3daily" target="_blank">https://hydflood.bafg.de/shinyapps/flood3daily</a></p>')
 ```
 
-```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3daily/"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3daily"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3daily.png')
 ```
 
@@ -349,14 +348,14 @@ the River Elbe. These large scale raster products have been visualized as web
 map services and are available through a shiny web application:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3wms/}
+\url{https://hydflood.bafg.de/shinyapps/flood3wms}
 \end{center}
 
 ``` {r link_waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3wms/" target="_blank">https://hydflood.bafg.de/shinyapps/flood3wms/</a></p>')
+cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3wms" target="_blank">https://hydflood.bafg.de/shinyapps/flood3wms</a></p>')
 ```
 
-```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3wms/"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3wms"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3wms.png')
 ```
 
