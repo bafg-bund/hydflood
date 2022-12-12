@@ -3,7 +3,7 @@
 ^\.Rproj\.user$
 ^_build\.log$
 ^_build\.R$
-^build$
+^built$
 ^\.commit$
 ^data-raw$
 ^.*\.dat$
