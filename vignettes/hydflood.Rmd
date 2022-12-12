@@ -3,6 +3,9 @@ title: "hydflood - Vignette"
 author: "Arnd Weber"
 date: "`r Sys.Date()`"
 output:
+  html_vignette:
+    toc: yes
+    toc_depth: 3
   pdf_document:
     latex_engine: pdflatex
     keep_tex: no
@@ -22,9 +25,6 @@ output:
     toc: yes
     toc_depth: '3'
     df_print: paged
-  html_vignette:
-    toc: yes
-    toc_depth: 3
 bibliography: ../inst/REFERENCES.bib
 csl: apa_modified.csl
 link-citations: yes
@@ -83,7 +83,7 @@ $(document).ready(function() {
 
 ```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 # set english locale to produce english plot labels
-Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")
+Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
 library(hyd1d)
