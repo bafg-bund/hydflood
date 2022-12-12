@@ -24,7 +24,7 @@ write(" R variables", stdout())
 R_version <- getRversion()
 
 # assemble and create R version specific output paths
-build <- paste0("build/", R_version)
+build <- paste0("built/", R_version)
 dir.create(build, FALSE, TRUE)
 public <- "docs/"
 dir.create(public, FALSE, TRUE)
