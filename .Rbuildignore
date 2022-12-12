@@ -24,6 +24,7 @@
 ^vignettes/flood3-2fps-.*\.mp4$
 ^vignettes/graphical_abstract$
 ^vignettes/graphical_abstract\.R$
+^vignettes/images$
 ^vignettes/latex/Thumbs\.db$
 ^vignettes/map\.png$
 ^vignettes/map\.Rmd$
