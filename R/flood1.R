@@ -16,9 +16,9 @@
 #'   layers \code{csa} (cross section areas) and \code{dem} (digital 
 #'   elevation model). To compute water levels along the River Elbe, \code{x} 
 #'   has to be in the coordinate reference system 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for the River Rhine in 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
 #'   have a length larger than 0. Values of \code{seq} must be in the 
