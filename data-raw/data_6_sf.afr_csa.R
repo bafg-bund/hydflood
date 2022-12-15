@@ -8,20 +8,20 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     }
     
     # initialize GrassGIS
-    gg_gd <- paste0(Sys.getenv("HOME"), "/GrassGIS")
+    h <- Sys.getenv("HOME")
+    gg_gd <- paste0(h, "/GrassGIS")
     gg_ln <- "RHEIN"
     gg_ma <- "PERMANENT"
-    library("rgrass7")
+    library("rgrass")
     library("tidyverse")
-    initGRASS(gisBase = "/opt/i4/grassgis-8.0.2/grass80",
+    initGRASS(gisBase = "/opt/i4/grassgis-8.2.0/grass82",
               gisDbase = gg_gd,
               location = gg_ln,
               mapset = gg_ma,
               override = TRUE,
               remove_GISRC = TRUE)
-    use_sf()
     execGRASS("g.proj", flags = "c", epsg = 25832)
-    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-8.0.2/grass80/etc/python:",
+    Sys.setenv(PYTHONPATH = paste0("/opt/i4/grassgis-8.2.0/grass82/etc/python:",
                                    "/opt/i4/i4-0.0.8/lib/python3.10/site-packa",
                                    "ges:/opt/i4/python-3.10.5/lib/python3.10/s",
                                    "ite-packages"))
@@ -31,16 +31,14 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
         which(hyd1d::df.sections$river == "RHINE"),]
     
     # import
-    rasters_present <- rgrass7::execGRASS("g.list", mapset = ".", 
-                                          type = "raster", intern = TRUE)
-    vectors_present <- rgrass7::execGRASS("g.list", mapset = ".", 
-                                          type = "vector", intern = TRUE)
+    rasters_present <- execGRASS("g.list", mapset = ".", type = "raster",
+                                 intern = TRUE)
+    vectors_present <- execGRASS("g.list", mapset = ".", type = "vector",
+                                 intern = TRUE)
     
     # files
-    cache_dem <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhine$name,
-                        "_DEM.tif")
-    cache_csa <- paste0(Sys.getenv("HOME"), "/.hydflood/", sf.tiles_rhine$name,
-                        "_CSA.tif")
+    cache_dem <- paste0(h, "/.hydflood/", sf.tiles_rhine$name, "_DEM.tif")
+    cache_csa <- paste0(h, "/.hydflood/", sf.tiles_rhine$name, "_CSA.tif")
     
     # import missing vector data
     if (! "active_floodplain" %in% vectors_present) {
@@ -71,10 +69,10 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
         }
         
         # import the DEM's
-        rasters_present_m <- rgrass7::execGRASS("g.list", mapset = ".", 
-                                                type = "raster", intern = TRUE)
-        vectors_present_m <- rgrass7::execGRASS("g.list", mapset = ".", 
-                                                type = "vector", intern = TRUE)
+        rasters_present_m <- execGRASS("g.list", mapset = ".", type = "raster",
+                                       intern = TRUE)
+        vectors_present_m <- execGRASS("g.list", mapset = ".",type = "vector",
+                                       intern = TRUE)
         if (! "DEM" %in% rasters_present_m) {
             execGRASS("r.in.gdal", flags = c("quiet", "overwrite"),
                       input = cache_dem[i], output = "DEM")
@@ -104,7 +102,8 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
         if (! file.exists(cache_csa[i])) {
             execGRASS("g.region", raster = "DEM")
             execGRASS("r.out.gdal", input = "CROSS_SECTION_AREAS",
-                      type = "Int32", nodata=-999, flags = c("c", "f", "overwrite"),
+                      type = "Int32", nodata=-999,
+                      flags = c("c", "f", "overwrite"),
                       output = cache_csa[i], createopt = c("TFW=NO",
                                                            "COMPRESS=LZW"))
             execGRASS("g.region", region = paste0("region_",
@@ -213,10 +212,10 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
     
     usethis::use_data(sf.afr_csa, overwrite = TRUE, compress = "bzip2")
     system("mv data/sf.afr_csa.rda data-raw/")
-    system("cp data-raw/sf.afr_csa.rda ~/.hydflood/")
+    system(paste0("cp data-raw/sf.afr_csa.rda ", h, "/.hydflood/"))
     
     # clean up
-    rm(sf.afr_csa, cache_csa, cache_dem, df.sections_rhine, sf.tiles_rhine,
+    rm(h, sf.afr_csa, cache_csa, cache_dem, df.sections_rhine, sf.tiles_rhine,
        rasters_present, rasters_present_m, vectors_present, vectors_present_m,
        gg_gd, gg_ln, gg_ma)
     
