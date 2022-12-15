@@ -18,7 +18,7 @@ packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack",
               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders",
               "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-              "usethis", "lattice", "pangaear", "hoardr", "rgrass7", "knitr",
+              "usethis", "lattice", "pangaear", "hoardr", "rgrass", "knitr",
               "shiny.i18n", "prettymapr", "ggplot2", "maps", "rosm",
               "sfheaders", "rnaturalearth", "rnaturalearthdata", "ggspatial",
               "ggmap")
