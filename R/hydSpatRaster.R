@@ -467,7 +467,8 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
             dem <- getDEM(filename = filename_dem, ext = ext_int,
                           crs = sf::st_crs(crs_int), ...)
         } else {
-            dem <- getDEM(ext = ext_int, crs = sf::st_crs(crs_int))
+            dem <- getDEM(filename = tempfile(fileext = ".tif"), ext = ext_int,
+                          crs = sf::st_crs(crs_int))
         }
     }
     

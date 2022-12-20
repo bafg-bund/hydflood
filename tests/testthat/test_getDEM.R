@@ -27,9 +27,7 @@ test_that("General tests", {
     expect_error(getDEM(ext = ext(1,2,3,4), crs = wgs),
                  "'crs' must be either 'ETRS 1989 UTM 32N' or")
     
-    # smaller extent (crop)
-    if (Sys.info()["nodename"] == "r.bafg.de") {
-        
+    if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/RH_3",
                            "36_867_UFD/data/tiff/r002_PLITTERSDORF1_DEM.tif")
@@ -57,29 +55,28 @@ test_that("General tests", {
         expect_equal(st_crs(d) == st_crs(utm32n), TRUE)
         
         unlink(tmp_dem1)
+        
+        # the same extents and crs, but different data sources
+        hf3 <- Sys.getenv("hydflood")
+        filename <- paste0(hf3, "/data-raw/raster.dem.tif")
+        d <- getDEM(filename = filename)
+        
+        expect_equal(dim(d), c(1000, 1000, 1))
+        expect_equal(res(d), c(1, 1))
+        
+        expect_error(getDEM(filename, ext = ext(308000, 310000,
+                                                5749000, 5750000)),
+                     "'ext' must be totally within the raster")
+        
+        expect_message(getDEM(filename, ext = ext(309200, 310000,
+                                                  5749000, 5750000)),
+                       "'ext' will be used to crop the supplied raster file.")
+        expect_error(getDEM(ext = ext(295000, 340000, 5744000, 5753000),
+                            crs = utm33n),
+                     "'ext' is very large and covers more than 5 ")
+        expect_warning(getDEM(ext = ext(300000, 330000, 5744000, 5753000),
+                              crs = utm33n),
+                     "'ext' is large and covers more than 3 ")
     }
-    
-    # the same extents and crs, but different data sources
-    hf3 <- Sys.getenv("hydflood")
-    filename <- paste0(hf3, "/data-raw/raster.dem.tif")
-    d <- getDEM(filename = filename)
-    
-    expect_equal(dim(d), c(1000, 1000, 1))
-    expect_equal(res(d), c(1, 1))
-    
-    expect_error(getDEM(filename, ext = ext(308000, 310000,
-                                            5749000, 5750000)),
-                 "'ext' must be totally within the raster")
-    
-    expect_message(getDEM(filename, ext = ext(309200, 310000,
-                                              5749000, 5750000)),
-                   "'ext' will be used to crop the supplied raster file.")
-    expect_error(getDEM(ext = ext(295000, 340000, 5744000, 5753000),
-                        crs = utm33n),
-                 "'ext' is very large and covers more than 5 ")
-    expect_warning(getDEM(ext = ext(300000, 330000, 5744000, 5753000),
-                          crs = utm33n),
-                 "'ext' is large and covers more than 3 ")
-    
 })
 

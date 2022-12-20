@@ -10,12 +10,12 @@ Installation
 ------------
 
 **hydflood** is currently not available from CRAN, but you can install the 
-developmental version from BfG's gitlab server with:
+developmental version from Github with:
 
 ``` r
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://gitlab.lan.bafg.de/auenoekologie/hydflood.git")
+devtools::install_github("bafg-bund/hydflood")
 ```
 
 Usage
