@@ -3,13 +3,12 @@
 ^\.Rproj\.user$
 ^_build\.log$
 ^_build\.R$
-^build$
+^built$
 ^\.commit$
 ^data-raw$
 ^.*\.dat$
 ^doc$
 ^docs$
-^\.gitlab-ci\.yml$
 ^_install\.R$
 ^makefile$
 ^Meta$
@@ -24,6 +23,7 @@
 ^vignettes/flood3-2fps-.*\.mp4$
 ^vignettes/graphical_abstract$
 ^vignettes/graphical_abstract\.R$
+^vignettes/images$
 ^vignettes/latex/Thumbs\.db$
 ^vignettes/map\.png$
 ^vignettes/map\.Rmd$

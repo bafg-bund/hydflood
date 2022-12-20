@@ -271,21 +271,21 @@ getDEM <- function(filename = '', ext, crs, ...) {
                 }
             }
         } else {
-            if (!in_memory) {
-                tmp_dem <- tempfile(fileext = ".tif")
-                merge_rasters[["filename"]] <- tmp_dem
-            }
+            tmp_dem <- tempfile(fileext = ".tif")
+            merge_rasters[["filename"]] <- tmp_dem
         }
         # merge_rasters[["overlap"]] <- TRUE
         # merge_rasters[["ext"]] <- ext_int
         if (overwrite) {
             merge_rasters[["overwrite"]] <- TRUE
         }
+        merge_rasters[["progress"]] <- 0
         raster.dem <- do.call("merge", merge_rasters)
         
         if (ext_int <= ext(raster.dem)) {
-            raster.dem <- terra::crop(raster.dem, ext_int, filename = filename,
-                                      overwrite = TRUE, ...)
+            raster.dem <- terra::crop(raster.dem, ext_int)
+            terra::writeRaster(raster.dem, filename = filename,
+                               overwrite = TRUE, ...)
         }
     } else {
         if (file_create_dem) {
