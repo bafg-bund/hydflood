@@ -1,20 +1,20 @@
 Package: hydflood
 Type: Package
-Title: Algorithms to compute flood extent and duration along the German federal 
-    waterways Elbe and Rhine
-Version: 0.4.0
-Date: 2022-07-19
+Title: Algorithms to Compute Flood Extent and Duration along the German Federal 
+    Waterways Elbe and Rhine
+Version: 0.4.1
+Date: 2022-12-20
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
             person("Stephan", "Rosenzweig", email = "rosenzweig@bafg.de",
                     role = c("ctb")))
-Description: hydflood extends the functionalities of hyd1d, an R package to 
-    interpolate 1D water level and gauging data, to raster based GIS processing. 
-    hydflood adopts strategies originally developed for INFORM, an 
+Description: The functionalities of hyd1d, an R package to interpolate 1D water
+    level and gauging data, are extended to raster based GIS processing by
+    hydflood. The package adopts strategies originally developed for INFORM, an 
     ArcGIS-based hydro-ecological modelling framework, to compute flood extent 
     and duration. It does not provide a full, physical hydraulic modelling 
-    algorithm, but a simplified, near realtime GIS approach for flood 
+    algorithm, but a simplified, near real time GIS approach for flood 
     extent and duration modelling.
 Depends: R (>= 3.5.0), sf, terra, raster, hyd1d, hoardr
 Imports: stats, Rdpack
@@ -26,7 +26,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Collate:
     'caching.R'
     'classifyToPNV.R'
@@ -44,6 +44,5 @@ Collate:
     'w80ToSpatial.R'
     'zzz.R'
 VignetteBuilder: knitr
-BugReports: http://gitlab.lan.bafg.de/auenoekologie/hydflood/issues
-URL: https://hydflood.bafg.de, 
-    http://gitlab.lan.bafg.de/auenoekologie/hydflood
+BugReports: https://github.com/bafg-bund/hydflood/issues/
+URL: https://hydflood.bafg.de, https://github.com/bafg-bund/hydflood
