@@ -133,7 +133,7 @@ for (a_file in pkg_files) {
 #####
 # document
 write("#####", stdout())
-write(" document gitlab & website", stdout())
+write(" document git & website", stdout())
 
 # render the README.md
 if (!(file.exists("README.md"))) {

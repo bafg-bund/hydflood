@@ -57,13 +57,9 @@ navbar:
   right:
     - text: BfG
       href: https://www.bafg.de
+    - icon: fa-github
+      href: https://github.com/bafg-bund/hydflood
 footer:
   structure: 
     left: built_with
     right: developed_by
-repo:
-  url:
-    home: https://gitlab.lan.bafg.de/auenoekologie/hydflood/
-    source: https://gitlab.lan.bafg.de/auenoekologie/hydflood/-/blob/main/
-    issue: https://gitlab.lan.bafg.de/auenoekologie/hydflood/issues/
-    user: https://gitlab.lan.bafg.de/auenoekologie/

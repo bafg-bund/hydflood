@@ -169,13 +169,12 @@ along the German federal waterways Elbe and Rhine.
 ## Installation
 
 The package **hydflood** is currently not available from CRAN. To install 
-the recent developmental version from the Git server of the Federal 
-Institute of Hydrology (BfG) execute the following commands: 
+the recent developmental version from the Github execute the following commands:
 
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://gitlab.lan.bafg.de/auenoekologie/hydflood.git")
+devtools::install_github("bafg-bund/hydflood")
 ```
 
 Afterwards **hydflood** can be loaded like every other R package with the 
