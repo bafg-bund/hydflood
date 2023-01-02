@@ -79,7 +79,16 @@
 #' @return The function produces an object of class \code{SpatRaster}
 #'   containing digital elevation (\code{dem}) and cross section area
 #'   (\code{csa}) raster layers.
-#'
+#' 
+#' @details Since the underlying tiled digital elevation models (dem) are rather
+#'   large datasets hydflood provides options to permanentely cache these
+#'   datasets. \code{options("hydflood.datadir" = tempdir())} is the default. To
+#'   modify the location of your raster cache to your needs set the respective
+#'   \code{options()} prior to loading the package, e.g.
+#'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
+#'   location can also be determined through the environmental variable
+#'   \env{hydflood_datadir}.
+#' 
 #' @seealso \code{\link[terra]{SpatRaster-class}},
 #'   \code{\link[terra]{rast}}, \code{\link[terra]{writeRaster}},
 #'   \code{\link{flood1}}, \code{\link{flood2}}, \code{\link{flood3}},
@@ -111,6 +120,7 @@
 #'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #' 
 #' @examples \dontrun{
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)
@@ -388,12 +398,17 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     if (!file_exists_csa) {
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
-        csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
+        csa_file <- paste0(options()$hydflood.datadir, "/sf.af",
                            tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
             url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
                           tolower(substring(river, 1, 1)), "_csa.rda")
-            utils::download.file(url, csa_file, quiet = TRUE)
+            tryCatch({
+                utils::download.file(url, csa_file, quiet = TRUE)
+            }, error = function(e){
+                stop(paste0("It was not possible to download:\n", url,
+                            "\nTry again later!"))
+            })
         }
         load(csa_file)
         if (river == "Elbe") {
@@ -474,7 +489,7 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     
     #####
     # assemble and return the product
-    x <- rast(list(dem = dem, csa = csa))
+    x <- terra::rast(list(dem = dem, csa = csa))
     return(x)
 }
 

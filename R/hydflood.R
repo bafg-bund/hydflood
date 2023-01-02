@@ -7,7 +7,6 @@
 #' @description To be extended ...
 #' 
 #' @import hyd1d
-#' @importFrom hoardr hoard
 #' @importFrom Rdpack reprompt
 #' @importFrom stats na.omit
 #' @importFrom raster canProcessInMemory

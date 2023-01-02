@@ -19,6 +19,15 @@
 #' @return SpatRaster object containing elevation data for the selected floodplain
 #'   region.
 #' 
+#' @details Since the underlying tiled digital elevation models (dem) are rather
+#'   large datasets hydflood provides options to permanentely cache these
+#'   datasets. \code{options("hydflood.datadir" = tempdir())} is the default. To
+#'   modify the location of your raster cache to your needs set the respective
+#'   \code{options()} prior to loading the package, e.g.
+#'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
+#'   location can also be determined through the environmental variable
+#'   \env{hydflood_datadir}.
+#' 
 #' @references 
 #'   \insertRef{weber_dgms_2020}{hydflood}
 #'   
@@ -27,6 +36,7 @@
 #'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #' 
 #' @examples \dontrun{
+#' options("hydflood.datadir" = tempdir())
 #' library(hydflood)
 #' dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
 #'               crs = crs("EPSG:25833"))
@@ -241,23 +251,20 @@ getDEM <- function(filename = '', ext, crs, ...) {
                        "t to avoid overly long computation times."))
     }
     
-    if (!dir.exists(hydflood_cache$cache_path_get())) {
-        dir.create(hydflood_cache$cache_path_get(), FALSE, TRUE)
-    }
     merge_files <- list(nrow(sf.tiles))
     for (i in 1:nrow(sf.tiles)) {
-        file <- paste0(hydflood_cache$cache_path_get(), "/", sf.tiles$name[i],
+        file <- paste0(options()$hydflood.datadir, "/", sf.tiles$name[i],
                        "_DEM.tif")
         if (!file.exists(file)) {
-            utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
+            tryCatch({
+                utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
+            }, error = function(e){
+                stop(paste0("It was not possible to download:\n",
+                            sf.tiles$url[i], "\nTry again later!"))
+            })
         }
         merge_files[[i]] <- terra::rast(x = file)
     }
-    
-    # rename objects in merge_rasters
-    # dem_names <-c(letters[24:26], letters[1:23])
-    # names(merge_rasters) <- dem_names[1:length(merge_rasters)]
-    
     
     if (length(merge_files) == 1) {
         merge_rasters <- list("x" = merge_files)

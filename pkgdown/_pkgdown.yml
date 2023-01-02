@@ -35,7 +35,6 @@ reference:
     contents:
       - "`createTiles`"
       - "`getDEM`"
-      - "`hydflood_cache`"
       - "`w80ToSFL`"
       - "`w80ToSFP`"
 navbar:

@@ -37,11 +37,21 @@
 #'   compared to the \code{dem} (digital elevation model) column. Where the
 #'   \code{wl} is higher than the \code{dem} flood duration \code{flood3} is
 #'   increased by 1.
+#'   
+#'   Since the underlying tiled digital elevation models (dem) are rather
+#'   large datasets hydflood provides options to permanentely cache these
+#'   datasets. \code{options("hydflood.datadir" = tempdir())} is the default. To
+#'   modify the location of your raster cache to your needs set the respective
+#'   \code{options()} prior to loading the package, e.g.
+#'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
+#'   location can also be determined through the environmental variable
+#'   \env{hydflood_datadir}.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}},
 #'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
 #' @examples \dontrun{
+#' options("hydflood.datadir" = tempdir())
 #' library(hydflood)
 #' 
 #' # create a random points object
@@ -189,11 +199,15 @@ flood3Points <- function(x, seq) {
         }
         for (i in unique(x$tile_name)) {
             id <- x[which(x$tile_name == i), ]$id_tmp
-            f <- paste0(hydflood_cache$cache_path_get(), "/", i, "_DEM.tif")
+            f <- paste0(options()$hydflood.datadir, "/", i, "_DEM.tif")
             if (!file.exists(f)) {
-                utils::download.file(
-                    sf.tiles$url[which(sf.tiles$tile_name == i)],
-                    f, quiet = TRUE)
+                url <- sf.tiles$url[which(sf.tiles$tile_name == i)]
+                tryCatch({
+                    utils::download.file(url, f, quiet = TRUE)
+                }, error = function(e){
+                    stop(paste0("It was not possible to download:\n",
+                                url, "\nTry again later!"))
+                })
             }
             x$dem[id] <- round(terra::extract(terra::rast(f),
                                               sf::st_coordinates(x[id, ]))[,1],
@@ -202,12 +216,17 @@ flood3Points <- function(x, seq) {
     }
     
     if (! "csa" %in% names(x)) {
-        csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
+        csa_file <- paste0(options()$hydflood.datadir, "/sf.af",
                            tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
-            url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/sf",
-                          ".af", tolower(substring(river, 1, 1)), "_csa.rda")
-            utils::download.file(url, csa_file, quiet = TRUE)
+            url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
+                          tolower(substring(river, 1, 1)), "_csa.rda")
+            tryCatch({
+                utils::download.file(url, csa_file, quiet = TRUE)
+            }, error = function(e){
+                stop(paste0("It was not possible to download:\n", url,
+                            "\nTry again later!"))
+            })
         }
         load(csa_file)
         if (river == "Elbe") {

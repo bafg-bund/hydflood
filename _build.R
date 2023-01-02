@@ -41,7 +41,6 @@ require(knitr)
 require(rmarkdown)
 require(pkgdown)
 require(hyd1d)
-require(hoardr)
 
 # set standard projections
 wgs84 <- st_crs(4326)
