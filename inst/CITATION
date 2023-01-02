@@ -19,11 +19,11 @@ citEntry(entry = "Misc",
   title        = "hydflood - Algorythms to Compute Flood Extent and Duration along the German Federal Waterways Elbe and Rhine",
   author       = personList(as.person("Arnd Weber"),
                             as.person("Stephan Rosenzweig")),
-  year         = "2022",
+  year         = "2023",
   url          = "https://hydflood.bafg.de/index.html",
 
   textVersion  =
-  paste0("Weber, A., & Rosenzweig, S. (2022): hydflood - Algorythms to ",
+  paste0("Weber, A., & Rosenzweig, S. (2023): hydflood - Algorythms to ",
          "Compute Flood Extent and Duration along the German Federal Waterways ",
          "Elbe and Rhine. URL https://hydflood.bafg.de/index.html.")
 )
