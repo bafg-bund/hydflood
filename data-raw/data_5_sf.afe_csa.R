@@ -27,8 +27,7 @@ if (!(file.exists("data-raw/sf.afe_csa.rda"))) {
                                    "ite-packages"))
     
     # df.sections
-    df.sections_elbe <- hyd1d::df.sections[
-        which(hyd1d::df.sections$river == "ELBE"),]
+    df.sections_elbe <- as.data.frame(sf.tiles_elbe)
     
     # import
     rasters_present <- execGRASS("g.list", mapset = ".", type = "raster",
