@@ -35,7 +35,6 @@ reference:
     contents:
       - "`createTiles`"
       - "`getDEM`"
-      - "`hydflood_cache`"
       - "`w80ToSFL`"
       - "`w80ToSFP`"
 navbar:
@@ -51,9 +50,9 @@ navbar:
     - text: "ShinyApps"
       menu:
       - text: "flood3WMS"
-        href: shinyapps/flood3wms
+        href: https://shiny.bafg.de/flood3wms/
       - text: "flood3daily"
-        href: shinyapps/flood3daily
+        href: https://shiny.bafg.de/flood3daily/
   right:
     - text: BfG
       href: https://www.bafg.de

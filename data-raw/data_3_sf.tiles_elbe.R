@@ -6,6 +6,7 @@ if (!(file.exists("data/sf.tiles_elbe.rda"))) {
     
     # import shape
     sf.tiles_elbe <- st_read("data-raw/tiles_elbe.shp")
+    names(sf.tiles_elbe) <- tolower(names(sf.tiles_elbe))
     
     # transformation into WGS 84
     sf.tiles_elbe_wgs84 <- st_transform(sf.tiles_elbe, wgs84)

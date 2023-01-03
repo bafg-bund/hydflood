@@ -6,6 +6,7 @@ if (!(file.exists("data/sf.tiles_rhine.rda"))) {
     
     # import shape
     sf.tiles_rhine <- st_read("data-raw/tiles_rhine.shp")
+    names(sf.tiles_rhine) <- tolower(names(sf.tiles_rhine))
     
     # transformation into WGS 84
     sf.tiles_rhine_wgs84 <- st_transform(sf.tiles_rhine, wgs84)
