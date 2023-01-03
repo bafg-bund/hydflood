@@ -263,9 +263,9 @@ provide `ext` (an object of type `SpatExtent`) and `crs` (an object of class `CR
 Depending on the supplied coordinate reference system (supplied through either
 `filename_dem`, `filename_csa` or `crs`) the respective river is selected: For
 the River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
-[25832](http://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
+[25832](https://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
 the River Elbe 'ETRS 1989 UTM 32N' (EPSG
-[25833](http://spatialreference.org/ref/epsg/25833/)). If you can't provide
+[25833](https://spatialreference.org/ref/epsg/25833/)). If you can't provide
 dem and csa yourself, `hydflood` provides csa data internally and downloads
 the official digital elevation models of the German Waterway and Shipping
 Administration with 1 m spatial resolution. Therefore you definitely need internet
@@ -325,14 +325,14 @@ for a number of areas along the River Elbe. These products are visualized
 through a shiny web application available through:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3daily}
+\url{https://shiny.bafg.de/flood3daily/}
 \end{center}
 
 ``` {r link_flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3daily" target="_blank">https://hydflood.bafg.de/shinyapps/flood3daily</a></p>')
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3daily" target="_blank">https://shiny.bafg.de/flood3daily/</a></p>')
 ```
 
-```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3daily"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://shiny.bafg.de/flood3daily/"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3daily.png')
 ```
 
@@ -347,14 +347,14 @@ the River Elbe. These large scale raster products have been visualized as web
 map services and are available through a shiny web application:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3wms}
+\url{https://shiny.bafg.de/flood3wms/}
 \end{center}
 
 ``` {r link_waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3wms" target="_blank">https://hydflood.bafg.de/shinyapps/flood3wms</a></p>')
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3wms/" target="_blank">https://shiny.bafg.de/flood3wms/</a></p>')
 ```
 
-```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3wms"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://shiny.bafg.de/flood3wms/"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3wms.png')
 ```
 

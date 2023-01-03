@@ -8,8 +8,7 @@
 #' @description Computes flood duration for points located in the active
 #'   floodplains along the German federal waterways Elbe  and Rhine based on 1D
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
-#'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package
-#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d}.
+#'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
 #' @param x has to by type \code{SpatialPoints} or \code{SpatialPointsDataFrame}
 #'   possibly including columns \code{csa} (cross section areas) and \code{dem}
