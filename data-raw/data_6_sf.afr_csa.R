@@ -27,8 +27,7 @@ if (!(file.exists("data-raw/sf.afr_csa.rda"))) {
                                    "ite-packages"))
     
     # df.sections
-    df.sections_rhine <- hyd1d::df.sections[
-        which(hyd1d::df.sections$river == "RHINE"),]
+    df.sections_rhine <- as.data.frame(sf.tiles_rhine)
     
     # import
     rasters_present <- execGRASS("g.list", mapset = ".", type = "raster",
