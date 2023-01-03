@@ -8,9 +8,8 @@
 #' @description Computes flood extent, if \code{length(seq)} equals 1, or flood 
 #'   duration for the active floodplains along the German federal waterways Elbe 
 #'   and Rhine based on 1D water levels computed by 
-#'   \code{\link[hyd1d]{waterLevelFlood2}} provided by package
-#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d} in analogy to
-#'   the INFORM 3 module 'Flut2'.
+#'   \code{\link[hyd1d]{waterLevelFlood2}} provided by package \pkg{hyd1d} in
+#'   analogy to the INFORM 3 module 'Flut2'.
 #' 
 #' @param x has to by type \code{SpatRaster} and has to include both input 
 #'   layers \code{csa} (cross section areas) and \code{dem} (digital 
