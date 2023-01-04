@@ -1,13 +1,13 @@
 #' @name flood3
 #' @rdname flood3
 #' 
-#' @title Function to compute flood extent or flood duration \code{raster} along
-#'   the German federal waterways Elbe and Rhine using the 1D water level
+#' @title Function to compute flood extent or flood duration \code{SpatRaster}
+#'   along the German federal waterways Elbe and Rhine using the 1d water level
 #'   algorithms \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equals 1, or flood 
 #'   duration for the active floodplains along the German federal waterways Elbe 
-#'   and Rhine based on 1D water levels computed by
+#'   and Rhine based on 1d water levels computed by
 #'   \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
@@ -31,11 +31,11 @@
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return SpatRaster object with flood duration in the range of 
+#' @return \code{SpatRaster} object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood3()} computes 
-#'   a 1D water level along the requested river section. This 1D water level is 
+#'   a 1d water level along the requested river section. This 1d water level is 
 #'   transfered to a \code{wl} (water level) raster layer, which is in fact a 
 #'   copy of the \code{csa} (cross section areas) layer, and then 
 #'   compared to the \code{dem} (digital elevation model) layer. Where the 

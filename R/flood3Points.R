@@ -2,11 +2,11 @@
 #' @rdname flood3Points
 #' 
 #' @title Function to compute flood duration for point coordinates along the
-#'   German federal waterways Elbe and Rhine using the 1D water level algorithms
+#'   German federal waterways Elbe and Rhine using the 1d water level algorithms
 #'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood duration for points located in the active
-#'   floodplains along the German federal waterways Elbe  and Rhine based on 1D
+#'   floodplains along the German federal waterways Elbe and Rhine based on 1d
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
@@ -31,7 +31,7 @@
 #'   column \code{dem} and cross section areas stored in column \code{csa}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood3Points()}
-#'   computes a 1D water level along the requested river section. This 1D water
+#'   computes a 1d water level along the requested river section. This 1d water
 #'   level is transfered to a temporary \code{wl} (water level) column and then
 #'   compared to the \code{dem} (digital elevation model) column. Where the
 #'   \code{wl} is higher than the \code{dem} flood duration \code{flood3} is
