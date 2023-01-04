@@ -120,14 +120,21 @@ sf.af <- function(name = NULL) {
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{sf} containing 49 polygons with 11 attributes:
+#' @format A \code{sf} containing 49 polygons with 18 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
-#'   \item{name}{of the tile (type \code{character}).} 
-#'   \item{xmin}{of the tile extent (type \code{numeric}). Minimum of UTM Easting (m).}
-#'   \item{xmax}{of the tile extent (type \code{numeric}). Maximum of UTM Easting (m).}
-#'   \item{ymin}{of the tile extent (type \code{numeric}). Minimum of UTM Northing (m).}
-#'   \item{ymax}{of the tile extent (type \code{numeric}). Maximum of UTM Northing (m).}
+#'   \item{name}{of the tile (type \code{character}).}
+#'   \item{river}{of the tile (type \code{character}) in this case 'ELBE'.}
+#'   \item{name_km}{of the tile (type \code{character}).}
+#'   \item{from_km}{river kilometer of the tiles upper limit (type \code{numeric}).}
+#'   \item{to_km}{river kilometer of the tiles lower limit (type \code{numeric}).}
+#'   \item{gs_upper}{name of the tiles upper gauging station (type \code{character}).}
+#'   \item{gs_lower}{name of the tiles lower gauging station (type \code{character}).}
+#'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
+#'   \item{xmin}{of the tile extent (type \code{integer}). Minimum of UTM Easting (m).}
+#'   \item{xmax}{of the tile extent (type \code{integer}). Maximum of UTM Easting (m).}
+#'   \item{ymin}{of the tile extent (type \code{integer}). Minimum of UTM Northing (m).}
+#'   \item{ymax}{of the tile extent (type \code{integer}). Maximum of UTM Northing (m).}
 #'   \item{lon_min}{of the tile extent (type \code{numeric}). Minimum of Longitude (decimal °).}
 #'   \item{lon_max}{of the tile extent (type \code{numeric}). Maximum of Longitude (decimal °).}
 #'   \item{lat_min}{of the tile extent (type \code{numeric}). Minimum of Latitude (decimal °).}
@@ -156,14 +163,21 @@ sf.af <- function(name = NULL) {
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{sf} containing 40 polygons with 11 attributes:
+#' @format A \code{sf} containing 40 polygons with 18 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
-#'   \item{name}{of the tile (type \code{character}).} 
-#'   \item{xmin}{of the tile extent (type \code{numeric}). Minimum of UTM Easting (m).}
-#'   \item{xmax}{of the tile extent (type \code{numeric}). Maximum of UTM Easting (m).}
-#'   \item{ymin}{of the tile extent (type \code{numeric}). Minimum of UTM Northing (m).}
-#'   \item{ymax}{of the tile extent (type \code{numeric}). Maximum of UTM Northing (m).}
+#'   \item{name}{of the tile (type \code{character}).}
+#'   \item{river}{of the tile (type \code{character}) in this case RHINE'.}
+#'   \item{name_km}{of the tile (type \code{character}).}
+#'   \item{from_km}{river kilometer of the tiles upper limit (type \code{numeric}).}
+#'   \item{to_km}{river kilometer of the tiles lower limit (type \code{numeric}).}
+#'   \item{gs_upper}{name of the tiles upper gauging station (type \code{character}).}
+#'   \item{gs_lower}{name of the tiles lower gauging station (type \code{character}).}
+#'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
+#'   \item{xmin}{of the tile extent (type \code{integer}). Minimum of UTM Easting (m).}
+#'   \item{xmax}{of the tile extent (type \code{integer}). Maximum of UTM Easting (m).}
+#'   \item{ymin}{of the tile extent (type \code{integer}). Minimum of UTM Northing (m).}
+#'   \item{ymax}{of the tile extent (type \code{integer}). Maximum of UTM Northing (m).}
 #'   \item{lon_min}{of the tile extent (type \code{numeric}). Minimum of Longitude (decimal °).}
 #'   \item{lon_max}{of the tile extent (type \code{numeric}). Maximum of Longitude (decimal °).}
 #'   \item{lat_min}{of the tile extent (type \code{numeric}). Minimum of Latitude (decimal °).}
