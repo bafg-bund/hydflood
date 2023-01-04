@@ -5,22 +5,24 @@
 #' 
 #' @description This function is a wrapper to the function
 #'   \code{\link[terra]{classify}} to convert flood durations computed with
-#'   \code{flood3} into potential natural vegetation (PNV) distributions using
-#'   reclassification rules supplied with \code{df.pnv}. Alternative
+#'   \code{\link{flood3}} into potential natural vegetation (PNV) distributions using
+#'   reclassification rules supplied with \code{\link{df.pnv}}. Alternative
 #'   reclassification rules may be applied, but they must match column names and
-#'   types as given by \code{df.pnv}. \code{\link[terra]{classify}} is called
-#'   with \code{include.lowest = TRUE}, \code{right = FALSE} and 
+#'   types as given by \code{\link{df.pnv}}. \code{\link[terra]{classify}} is
+#'   called with \code{include.lowest = TRUE}, \code{right = FALSE} and 
 #'   \code{othersNA = TRUE}.
 #' 
 #' @param x argument of type \code{\link[terra]{SpatRaster}}.
 #' @param rcl optional argument of type \code{data.frame} with columns and
-#'    column types as specified in \code{df.pnv}.
+#'    column types as specified in \code{\link{df.pnv}}.
 #' @param filename supplies an optional output filename of type
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return SpatRaster object containing potential natural vegetation 
-#'   distribution.
+#' @return \code{\link[terra]{SpatRaster}} object containing potential natural
+#'   vegetation distribution.
+#' 
+#' @seealso \code{\link{df.pnv}}
 #' 
 #' @references 
 #'   \insertRef{ochs_potential_2020}{hydflood}

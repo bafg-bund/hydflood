@@ -16,8 +16,8 @@
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return SpatRaster object containing elevation data for the selected floodplain
-#'   region.
+#' @return \code{SpatRaster} object containing elevation data for the selected
+#'   floodplain region.
 #' 
 #' @details Since the underlying tiled digital elevation models (dem) are rather
 #'   large datasets hydflood provides options to permanentely cache these
