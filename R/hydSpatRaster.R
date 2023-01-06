@@ -1,12 +1,12 @@
 #' @name hydSpatRaster
 #' @rdname hydSpatRaster
-#' @title Initialize a SpatRaster for the flood-functions
+#' @title Initialize a \code{SpatRaster} for the flood-functions
 #'
-#' @description To initialize an object of class \code{SpatRaster} with layers
-#'   dem and csa this function should be used. It checks all the required input
-#'   data, downloads missing data automatically, clips and returns the final
-#'   object, prepared for the \code{flood()} functions (\code{\link{flood1}},
-#'   \code{\link{flood2}} and \code{\link{flood3}}).
+#' @description To initialize an object of class \code{\link[terra]{SpatRaster}}
+#'   with layers dem and csa this function should be used. It checks all the
+#'   required input data, downloads missing data automatically, clips and
+#'   returns the final object, prepared for the \code{flood()} functions
+#'   (\code{\link{flood1}}, \code{\link{flood2}} and \code{\link{flood3}}).
 #'
 #' @param filename_dem an optional argument of length 1 with type
 #'   \code{character} specifying a filename of a **d**igital **e**levation

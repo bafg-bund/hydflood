@@ -16,12 +16,13 @@ gss <- c("eb1_Elsnig" = "Elsnig", "eb2_Boesewig" = "Bösewig",
          "LENZEN" = "LENZEN", "eb4_Jasebeck" = "Jasebeck")
 
 # access and query df.gauging_data
-id <- which(.df.gauging_data$gauging_station %in% names(gsi) &
-                .df.gauging_data$date >= as.Date("2015-01-01"))
-df.gd <- .df.gauging_data[id, ]
+df.gd <- hyd1d:::.pkgenv$.df.gauging_data
+id <- which(df.gd$gauging_station %in% names(gsi) &
+                df.gd$date >= as.Date("2015-01-01"))
+df.gd <- df.gd[id, ]
 
 # date_max
-date_max <- max(.df.gauging_data$date)
+date_max <- max(df.gd$date) - 1
 
 # access and query df.gauging_station_data
 id <- which(df.gauging_station_data$gauging_station %in% names(gsi))

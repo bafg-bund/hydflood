@@ -16,19 +16,19 @@ if (!(file.exists("data/sf.tiles_rhine.rda"))) {
     sf.tiles_rhine$xmax <- integer(nrow(sf.tiles_rhine))
     sf.tiles_rhine$ymin <- integer(nrow(sf.tiles_rhine))
     sf.tiles_rhine$ymax <- integer(nrow(sf.tiles_rhine))
-    sf.tiles_rhine$lon_min <- numeric(nrow(sf.tiles_rhine))
-    sf.tiles_rhine$lon_max <- numeric(nrow(sf.tiles_rhine))
-    sf.tiles_rhine$lat_min <- numeric(nrow(sf.tiles_rhine))
-    sf.tiles_rhine$lat_max <- numeric(nrow(sf.tiles_rhine))
+    sf.tiles_rhine$lon_xmin <- numeric(nrow(sf.tiles_rhine))
+    sf.tiles_rhine$lon_xmax <- numeric(nrow(sf.tiles_rhine))
+    sf.tiles_rhine$lat_ymin <- numeric(nrow(sf.tiles_rhine))
+    sf.tiles_rhine$lat_ymax <- numeric(nrow(sf.tiles_rhine))
     for (i in 1:nrow(sf.tiles_rhine)) {
         sf.tiles_rhine$xmin[i] <- as.integer(floor(st_bbox(sf.tiles_rhine[i,])$xmin))
         sf.tiles_rhine$xmax[i] <- as.integer(floor(st_bbox(sf.tiles_rhine[i,])$xmax))
         sf.tiles_rhine$ymin[i] <- as.integer(floor(st_bbox(sf.tiles_rhine[i,])$ymin))
         sf.tiles_rhine$ymax[i] <- as.integer(floor(st_bbox(sf.tiles_rhine[i,])$ymax))
-        sf.tiles_rhine$lon_xmin[i] <- as.integer(floor(st_bbox(sf.tiles_rhine_wgs84[i,])$xmin))
-        sf.tiles_rhine$lon_xmax[i] <- as.integer(floor(st_bbox(sf.tiles_rhine_wgs84[i,])$xmax))
-        sf.tiles_rhine$lat_ymin[i] <- as.integer(floor(st_bbox(sf.tiles_rhine_wgs84[i,])$ymin))
-        sf.tiles_rhine$lat_ymax[i] <- as.integer(floor(st_bbox(sf.tiles_rhine_wgs84[i,])$ymax))
+        sf.tiles_rhine$lon_xmin[i] <- st_bbox(sf.tiles_rhine_wgs84[i,])$xmin
+        sf.tiles_rhine$lon_xmax[i] <- st_bbox(sf.tiles_rhine_wgs84[i,])$xmax
+        sf.tiles_rhine$lat_ymin[i] <- st_bbox(sf.tiles_rhine_wgs84[i,])$ymin
+        sf.tiles_rhine$lat_ymax[i] <- st_bbox(sf.tiles_rhine_wgs84[i,])$ymax
     }
     
     # pangaea
