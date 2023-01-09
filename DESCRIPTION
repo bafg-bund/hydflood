@@ -15,8 +15,8 @@ Description: Raster based flood modelling internally using 'hyd1d', an R package
     'ArcGIS'-based hydro-ecological modelling framework. It does not provide a
     full, physical hydraulic modelling algorithm, but a simplified, near real
     time 'GIS' approach for flood extent and duration modelling. Computationally
-    demanding annual flood durations have been precomputed and data products
-    have been published under <https://doi.org/10.1594/PANGAEA.948042>.
+    demanding annual flood duration have been computed already and data products
+    are published under <doi:10.1594/PANGAEA.948042>.
 Depends: R (>= 4.0.0), sf, terra, raster, hyd1d
 Imports: stats, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 

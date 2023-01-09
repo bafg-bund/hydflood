@@ -203,7 +203,8 @@ knitr::include_graphics('./screenshot_hydflood_dem.png')
 models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
 by users. They just need to overlap with active floodplains of either the Rhine
-([`sf.afr`](reference/sf.afr.html)) or the Elbe ([`sf.afe`](reference/sf.afe.html)).
+([`sf.afr`](https://hydflood.bafg.de/reference/sf.afr.html)) or the Elbe
+([`sf.afe`](https://hydflood.bafg.de/reference/sf.afe.html)).
 
 To create a water surface raster, which can be compared to the `dem`, a simple
 1D to 2D conversion is applied to water level data computed along the river axis
@@ -319,10 +320,10 @@ published on [pangaea.de](https://www.pangaea.de) [@weber_flood3data_2022].
 
 ### flood3daily
 
-The [`flood3`](reference/flood3.html) function is the central function of the package
-**hydflood**. With the help of this function daily flood extents are computed
-for a number of areas along the River Elbe. These products are visualized
-through a shiny web application available through:
+The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
+central function of the package **hydflood**. With the help of this function
+daily flood extents are computed for a number of areas along the River Elbe.
+These products are visualized through a shiny web application available through:
 
 \begin{center}
 \url{https://shiny.bafg.de/flood3daily/}
@@ -340,11 +341,12 @@ knitr::include_graphics('screenshot_flood3daily.png')
 
 ## flood3wms
 
-The [`flood3`](reference/flood3.html) function is the central function of the package
-**hydflood**. With the help of this function annual flood durations between 1990
-and 2021 have been computed for the active floodplains of the River Rhine and
-the River Elbe. These large scale raster products have been visualized as web
-map services and are available through a shiny web application:
+The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
+central function of the package **hydflood**. With the help of this function
+annual flood durations between 1990 and 2021 have been computed for the active
+floodplains of the River Rhine and the River Elbe. These large scale raster
+products have been visualized as web map services and are available through a
+shiny web application:
 
 \begin{center}
 \url{https://shiny.bafg.de/flood3wms/}
