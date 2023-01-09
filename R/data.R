@@ -7,7 +7,7 @@
 #'    potential natural vegetation (PNV). It is an extended and more detailled
 #'    table to reclassify flood duration into PNV based on Ochs et al. (2020).
 #' 
-#' @format A \code{data.frame} containing 4 columns with attributes to
+#' @format A \code{data.frame} containing 7 columns with attributes to
 #'    reclassify flood duration into potential natural vegetation.
 #'    \describe{
 #'       \item{from}{lower limits of flood duration (included, type \code{numeric}).}
@@ -40,7 +40,9 @@
 #'   flood protection measures and manually improved with recent digital 
 #'   elevation models and aerial images at a scale of < 1:10,000.
 #' 
-#' @format A \code{sf} containing 1 polygon 
+#' @format A \code{sf} containing 1 polygon
+#' 
+#' @seealso \code{\link{sf.af}}, \code{\link{sf.afr}}
 #' 
 #' @references 
 #'   \insertRef{brunotte_flussauen_2009}{hydflood}
@@ -53,13 +55,16 @@
 
 #' @name sf.af
 #' @rdname sf.af
-#' @title Obtain projected versions of sf.afe and sf.afr
+#' @title Obtain projected versions of \code{sf.afe} and \code{sf.afr}
 #' 
-#' @description Obtain projected versions of sf.afe and sf.afr
+#' @description Obtain projected versions of \code{\link{sf.afe}} and
+#'   \code{\link{sf.afr}}
 #' 
 #' @param name either 'Elbe' or 'Rhine'.
 #' 
 #' @return \code{sf} with the projected active floodplain 
+#' 
+#' @seealso \code{\link{sf.afe}}, \code{\link{sf.afr}}
 #' 
 #' @examples 
 #'   library(hydflood)
@@ -98,6 +103,8 @@ sf.af <- function(name = NULL) {
 #' 
 #' @format A \code{sf} containing 1 polygon 
 #' 
+#' @seealso \code{\link{sf.af}}, \code{\link{sf.afe}}
+#' 
 #' @references 
 #'   \insertRef{brunotte_flussauen_2009}{hydflood}
 #'   
@@ -120,20 +127,29 @@ sf.af <- function(name = NULL) {
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{sf} containing 49 polygons with 11 attributes:
+#' @format A \code{sf} containing 49 polygons with 18 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
-#'   \item{name}{of the tile (type \code{character}).} 
-#'   \item{xmin}{of the tile extent (type \code{numeric}). Minimum of UTM Easting (m).}
-#'   \item{xmax}{of the tile extent (type \code{numeric}). Maximum of UTM Easting (m).}
-#'   \item{ymin}{of the tile extent (type \code{numeric}). Minimum of UTM Northing (m).}
-#'   \item{ymax}{of the tile extent (type \code{numeric}). Maximum of UTM Northing (m).}
+#'   \item{name}{of the tile (type \code{character}).}
+#'   \item{river}{of the tile (type \code{character}) in this case 'ELBE'.}
+#'   \item{name_km}{of the tile (type \code{character}).}
+#'   \item{from_km}{river kilometer of the tiles upper limit (type \code{numeric}).}
+#'   \item{to_km}{river kilometer of the tiles lower limit (type \code{numeric}).}
+#'   \item{gs_upper}{name of the tiles upper gauging station (type \code{character}).}
+#'   \item{gs_lower}{name of the tiles lower gauging station (type \code{character}).}
+#'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
+#'   \item{xmin}{of the tile extent (type \code{integer}). Minimum of UTM Easting (m).}
+#'   \item{xmax}{of the tile extent (type \code{integer}). Maximum of UTM Easting (m).}
+#'   \item{ymin}{of the tile extent (type \code{integer}). Minimum of UTM Northing (m).}
+#'   \item{ymax}{of the tile extent (type \code{integer}). Maximum of UTM Northing (m).}
 #'   \item{lon_min}{of the tile extent (type \code{numeric}). Minimum of Longitude (decimal °).}
 #'   \item{lon_max}{of the tile extent (type \code{numeric}). Maximum of Longitude (decimal °).}
 #'   \item{lat_min}{of the tile extent (type \code{numeric}). Minimum of Latitude (decimal °).}
 #'   \item{lat_max}{of the tile extent (type \code{numeric}). Maximum of Latitude (decimal °).}
 #'   \item{url}{of the tile (type \code{character}).}
 #' }
+#' 
+#' @seealso \code{\link{sf.tiles}}, \code{\link{sf.tiles_rhine}}
 #' 
 #' @references 
 #'   \insertRef{weber_dgms_2020}{hydflood}
@@ -156,21 +172,30 @@ sf.af <- function(name = NULL) {
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation model (Weber 2020).
 #' 
-#' @format A \code{sf} containing 40 polygons with 11 attributes:
+#' @format A \code{sf} containing 40 polygons with 18 attributes:
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
-#'   \item{name}{of the tile (type \code{character}).} 
-#'   \item{xmin}{of the tile extent (type \code{numeric}). Minimum of UTM Easting (m).}
-#'   \item{xmax}{of the tile extent (type \code{numeric}). Maximum of UTM Easting (m).}
-#'   \item{ymin}{of the tile extent (type \code{numeric}). Minimum of UTM Northing (m).}
-#'   \item{ymax}{of the tile extent (type \code{numeric}). Maximum of UTM Northing (m).}
+#'   \item{name}{of the tile (type \code{character}).}
+#'   \item{river}{of the tile (type \code{character}) in this case RHINE'.}
+#'   \item{name_km}{of the tile (type \code{character}).}
+#'   \item{from_km}{river kilometer of the tiles upper limit (type \code{numeric}).}
+#'   \item{to_km}{river kilometer of the tiles lower limit (type \code{numeric}).}
+#'   \item{gs_upper}{name of the tiles upper gauging station (type \code{character}).}
+#'   \item{gs_lower}{name of the tiles lower gauging station (type \code{character}).}
+#'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
+#'   \item{xmin}{of the tile extent (type \code{integer}). Minimum of UTM Easting (m).}
+#'   \item{xmax}{of the tile extent (type \code{integer}). Maximum of UTM Easting (m).}
+#'   \item{ymin}{of the tile extent (type \code{integer}). Minimum of UTM Northing (m).}
+#'   \item{ymax}{of the tile extent (type \code{integer}). Maximum of UTM Northing (m).}
 #'   \item{lon_min}{of the tile extent (type \code{numeric}). Minimum of Longitude (decimal °).}
 #'   \item{lon_max}{of the tile extent (type \code{numeric}). Maximum of Longitude (decimal °).}
 #'   \item{lat_min}{of the tile extent (type \code{numeric}). Minimum of Latitude (decimal °).}
 #'   \item{lat_max}{of the tile extent (type \code{numeric}). Maximum of Latitude (decimal °).}
 #'   \item{url}{of the tile (type \code{character}).}
 #' }
-#'
+#' 
+#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}}
+#' 
 #' @references
 #'   \insertRef{weber_dgms_2020}{hydflood}
 #'   
@@ -180,13 +205,17 @@ sf.af <- function(name = NULL) {
 
 #' @name sf.tiles
 #' @rdname sf.tiles
-#' @title Obtain projected versions of sf.tiles_elbe and sf.tiles_rhine
+#' @title Obtain projected versions of \code{sf.tiles_elbe} and
+#'    \code{sf.tiles_rhine}
 #' 
-#' @description Obtain projected versions of sf.tiles_elbe and sf.tiles_rhine
+#' @description Obtain projected versions of \code{\link{sf.tiles_elbe}} and
+#'    \code{\link{sf.tiles_rhine}}
 #' 
 #' @param name either 'Elbe' or 'Rhine'.
 #' 
 #' @return \code{sf} with projected tiles
+#' 
+#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}}
 #' 
 #' @examples 
 #'   library(hydflood)

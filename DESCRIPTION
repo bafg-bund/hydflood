@@ -2,23 +2,13 @@ Package: hydflood
 Type: Package
 Title: Algorithms to Compute Flood Extent and Duration along the German Federal 
     Waterways Elbe and Rhine
-Version: 0.5.0
-Date: 2023-01-03
+Version: 0.5.1
+Date: 2023-01-06
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
             person("Stephan", "Rosenzweig", email = "rosenzweig@bafg.de",
                     role = c("ctb")))
-<<<<<<< HEAD
-Description: Extension to 'hyd1d', an R package to interpolate 1d water level
-    and gauging data, for raster based 'GIS' processing. The package computes
-    flood extent and duration through strategies originally developed for
-    'INFORM', an 'ArcGIS'-based hydro-ecological modelling framework. It does
-    not provide a full, physical hydraulic modelling algorithm, but a
-    simplified, near real time 'GIS' approach for flood extent and duration
-    modelling. Computationally demanding annual flood durations have been
-    precomputed and published under <https://doi.org/10.1594/PANGAEA.948042>.
-=======
 Description: Raster based flood modelling internally using 'hyd1d', an R package
     to interpolate 1d water level and gauging data. The package computes flood
     extent and duration through strategies originally developed for 'INFORM', an
@@ -27,7 +17,6 @@ Description: Raster based flood modelling internally using 'hyd1d', an R package
     time 'GIS' approach for flood extent and duration modelling. Computationally
     demanding annual flood duration have been computed already and data products
     are published under <doi:10.1594/PANGAEA.948042>.
->>>>>>> eaf62c1 (fix notes during CRAN incoming pre-test)
 Depends: R (>= 4.0.0), sf, terra, raster, hyd1d
 Imports: stats, Rdpack
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
