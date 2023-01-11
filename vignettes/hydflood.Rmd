@@ -339,7 +339,7 @@ knitr::include_graphics('screenshot_flood3daily.png')
 
 <BR>
 
-## flood3wms
+### flood3wms
 
 The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
 central function of the package **hydflood**. With the help of this function
