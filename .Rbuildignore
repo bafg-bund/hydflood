@@ -12,8 +12,6 @@
 ^_install\.R$
 ^makefile$
 ^Meta$
-^public$
-^README_files$
 ^README\.Rmd$
 ^pkgdown$
 ^_pkgdown\.yml$
@@ -37,4 +35,3 @@
 ^vignettes/Thumbs\.db$
 ^vignettes/wms-legends$
 ^vignettes/.*\.xcf$
-

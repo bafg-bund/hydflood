@@ -30,11 +30,9 @@ data-raw/spdf.*.rda
 doc
 /doc/
 docs
-inst/doc
 man
 /Meta/
 Meta
-README_files/figure-markdown_github/Thumbs.db
 shinyapps/flood3/data/df.gauging_data_latest.RDS
 shinyapps/flood3/in_process
 shinyapps/flood3/processed
