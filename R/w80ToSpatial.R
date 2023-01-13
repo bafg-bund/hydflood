@@ -254,6 +254,7 @@ w80ToSFP <- function(filename, crs) {
     df$tom[which(df$tom == "   ")] <- NA
     df$comment <- substring(lines, 65, 78)
     df$comment[which(df$comment == "              ")] <- NA
+    df$comment <- trimws(df$comment)
     df$status <- substring(lines, 79, 80)
     df$station_int <- as.integer(df$station * 1000)
     df$station_c <- as.character(df$station_int)
@@ -262,8 +263,10 @@ w80ToSFP <- function(filename, crs) {
     sf <- sf::st_as_sf(df, coords = c("x", "y"), crs = crs)
     
     # add columns lat and lon
-    sf$lat <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$Y
-    sf$lon <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$X
+    sf$lat <- sf::st_coordinates(
+        sf::st_transform(sf, sf::st_crs("EPSG:4326")))[, "Y"]
+    sf$lon <- sf::st_coordinates(
+        sf::st_transform(sf, sf::st_crs("EPSG:4326")))[, "X"]
     
     return(sf)
 }
