@@ -20,7 +20,7 @@
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
 #' @return \code{\link[terra]{SpatRaster}} object containing potential natural
-#'   vegetation distribution.
+#'   vegetation distribution as categorical raster.
 #' 
 #' @seealso \code{\link{df.pnv}}
 #' 

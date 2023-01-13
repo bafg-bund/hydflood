@@ -76,9 +76,8 @@
 #' @param \dots additional parameters passed to
 #'   \code{\link[terra]{writeRaster}}.
 #' 
-#' @return The function produces an object of class \code{SpatRaster}
-#'   containing digital elevation (\code{dem}) and cross section area
-#'   (\code{csa}) raster layers.
+#' @return \code{SpatRaster} object containing digital elevation (\code{dem})
+#'   and cross section area (\code{csa}) raster layers.
 #' 
 #' @details Since the underlying tiled digital elevation models (dem) are rather
 #'   large datasets hydflood provides options to permanentely cache these

@@ -10,10 +10,10 @@
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
-#' @param x has to by type \code{SpatialPoints} or \code{SpatialPointsDataFrame}
-#'   possibly including columns \code{csa} (cross section areas) and \code{dem}
-#'   (digital elevation model). To compute water levels along the River Elbe,
-#'   \code{x} has to be in the coordinate reference system 
+#' @param x has to by type \code{sf} possibly including columns \code{csa}
+#'   (cross section areas) and \code{dem} (digital elevation model). To compute
+#'   water levels along the River Elbe, \code{x} has to be in the coordinate
+#'   reference system 
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for the River Rhine in 
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
@@ -26,7 +26,7 @@
 #'   level computations. If \code{seq} is type \code{Date}, values must be in the
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1})
 #' 
-#' @return \code{SpatialPointsDataFrame} with flood duration stored in column
+#' @return \code{sf} object with flood duration stored in column
 #'   `flood3` in the range of \code{[0, length(seq)]}, elevation stored in
 #'   column \code{dem} and cross section areas stored in column \code{csa}.
 #' 

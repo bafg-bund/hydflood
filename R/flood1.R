@@ -113,6 +113,7 @@
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
+#' @return \code{SpatRaster} object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood1()} computes 
