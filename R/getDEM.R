@@ -35,11 +35,11 @@
 #'   
 #'   \insertRef{weber_dgm_rhine_2020}{hydflood}
 #' 
-#' @examples \dontrun{
-#' options("hydflood.datadir" = tempdir())
-#' library(hydflood)
-#' dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
-#'               crs = crs("EPSG:25833"))
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
+#'                 crs = st_crs("EPSG:25833"))
 #' }
 #' 
 #' @export

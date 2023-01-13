@@ -16,8 +16,10 @@
 #' @return \code{sf} object containing tiles covering \code{x}.
 #' 
 #' @examples
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
-#'   tiles <- createTiles(x = sf.af(name = "Elbe"), size_x = 10000, size_y = 10000)
+#'   tiles <- createTiles(x = sf.af(name = "Elbe"),
+#'                        size_x = 10000, size_y = 10000)
 #'   plot(tiles["tile_ID"])
 #' 
 #' @export

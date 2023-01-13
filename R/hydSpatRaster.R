@@ -118,12 +118,12 @@
 #'   
 #'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #' 
-#' @examples \dontrun{
+#' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)
-#'   c <- crs("EPSG:25832")
+#'   c <- st_crs("EPSG:25832")
 #'   
 #'   r <- hydSpatRaster(ext = e, crs = c)
 #'   r

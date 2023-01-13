@@ -47,22 +47,30 @@
 #' 
 #' @return \code{sfc_LINESTRING}.
 #' 
-#' @examples \dontrun{
+#' @examples
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
-#'   c <- crs("EPSG:25833")
-#'   sl <- w80ToSFL("data-raw/test.w80", c, "station_int")
-#' }
+#'   c <- st_crs("EPSG:25833")
+#'   filename <- tempfile(fileext = ".w80")
+#'   
+#'   # write temporary w80 file
+#'   cat("W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01\n",
+#'       file = filename)
+#'   cat("W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01\n",
+#'       file = filename, append = TRUE)
+#'   
+#'   # import temporary w80 file as sf LINESTRING
+#'   sl <- w80ToSFL(filename, c, "station_int")
 #' 
 #' @export
 #' 
-w80ToSFL <- function(filename, crs,
-                                       id = c("sid", "fwid", "wsvpt",
-                                              "station", "bank", "id", "x",
-                                              "y", "date_coor", "acc_coor",
-                                              "z", "date_z", "acc_z", "tom",
-                                              "comment", "status", "lat",
-                                              "lon", "station_int",
-                                              "station_c")) {
+w80ToSFL <- function(filename, crs, id = c("sid", "fwid", "wsvpt",
+                                           "station", "bank", "id", "x",
+                                           "y", "date_coor", "acc_coor",
+                                           "z", "date_z", "acc_z", "tom",
+                                           "comment", "status", "lat",
+                                           "lon", "station_int",
+                                           "station_c")) {
     
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
@@ -190,10 +198,20 @@ w80ToSFL <- function(filename, crs,
 #' 
 #' @return \code{sfc_POINT}.
 #' 
-#' @examples \dontrun{
+#' @examples
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
-#'   sf <- w80ToSFP("data-raw/test.w80", crs("EPSG:25833"))
-#' }
+#'   c <- st_crs("EPSG:25833")
+#'   filename <- tempfile(fileext = ".w80")
+#'   
+#'   # write temporary w80 file
+#'   cat("W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01\n",
+#'       file = filename)
+#'   cat("W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01\n",
+#'       file = filename, append = TRUE)
+#'   
+#'   # import temporary w80 file as sf POINT
+#'   sf <- w80ToSFP(filename, c)
 #' 
 #' @export
 #' 

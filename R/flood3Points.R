@@ -49,23 +49,25 @@
 #' @seealso \code{\link[hyd1d]{waterLevel}},
 #'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
-#' @examples \dontrun{
-#' options("hydflood.datadir" = tempdir())
-#' library(hydflood)
-#' 
-#' # create a random points object
-#' c <- st_crs(25833)
-#' e <- c(xmin = 309000, xmax = 310000, ymin = 5749000, ymax = 5750000)
-#' set.seed(123)
-#' points <- st_sample(hydflood:::extent2polygon(e, c), size = 10, "random")
-#' p <- data.frame(id = 1:10)
-#' st_geometry(p) <- points
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' p <- flood3Points(x = p, seq = seq)
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   
+#'   # create a random points object
+#'   c <- st_crs(25833)
+#'   e <- st_as_sfc(st_bbox(c(xmin = 309000, xmax = 310000,
+#'                            ymin = 5749000, ymax = 5750000)))
+#'   st_crs(e) <- c
+#'   set.seed(123)
+#'   points <- st_sample(e, size = 10, "random")
+#'   p <- data.frame(id = 1:10)
+#'   st_geometry(p) <- points
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   p <- flood3Points(x = p, seq = seq)
 #' }
 #' 
 #' @export
