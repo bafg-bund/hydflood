@@ -24,6 +24,7 @@ The package **hydflood** is build around the packages `terra` and
 
 ``` r
 # load the package
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 
 # import the raster data and create a raster stack

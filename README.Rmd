@@ -46,6 +46,7 @@ Sys.setlocale(category = "LC_MESSAGES", locale = "en_US")
 
 ```{r usage, eval = TRUE, error = FALSE, warning = FALSE, message = FALSE}
 # load the package
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 
 # import the raster data and create a raster stack

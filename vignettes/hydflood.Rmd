@@ -86,7 +86,9 @@ $(document).ready(function() {
 Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
+options("hyd1d.datadir" = tempdir())
 library(hyd1d)
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 library(stringr)
 
@@ -181,6 +183,7 @@ Afterwards **hydflood** can be loaded like every other R package with the
 following command: 
 
 ```{r library_print, eval = FALSE, echo = TRUE}
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 ```
 
