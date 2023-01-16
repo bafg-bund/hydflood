@@ -146,7 +146,7 @@
 #'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
 #'   
 #'   # compute a flood duration
-#'   fd <- flood1(x = x, seq = seq)
+#'   fd <- flood1(x = x, seq = seq, gauging_station = "ROSSLAU")
 #' }
 #' 
 #' @export
