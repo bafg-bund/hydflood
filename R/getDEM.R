@@ -291,8 +291,10 @@ getDEM <- function(filename = '', ext, crs, ...) {
         
         if (ext_int <= ext(raster.dem)) {
             raster.dem <- terra::crop(raster.dem, ext_int)
-            terra::writeRaster(raster.dem, filename = filename,
-                               overwrite = TRUE, ...)
+            if (file_create_dem) {
+                terra::writeRaster(raster.dem, filename = filename,
+                                   overwrite = TRUE, ...)
+            }
         }
     } else {
         if (file_create_dem) {
