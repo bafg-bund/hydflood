@@ -148,13 +148,12 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
     rcl <- rcl[order(rcl$class), ]
     r <- rcl[, c("from", "to", "class")]
     
-    res <- classify(x, r, include.lowest = TRUE, right = FALSE, 
-                    othersNA = TRUE)
+    res <- terra::classify(x, r, include.lowest = TRUE, right = FALSE)
     res <- res - 1
     levels(res) <- rcl$vegtype
     names(res) <- "PNV"
     
-    writeRaster(res, filename = filename, ...)
+    terra::writeRaster(res, filename = filename, ...)
     
     return(res)
 }
