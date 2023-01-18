@@ -9,8 +9,7 @@
 #'   reclassification rules supplied with \code{\link{df.pnv}}. Alternative
 #'   reclassification rules may be applied, but they must match column names and
 #'   types as given by \code{\link{df.pnv}}. \code{\link[terra]{classify}} is
-#'   called with \code{include.lowest = TRUE}, \code{right = FALSE} and 
-#'   \code{othersNA = TRUE}.
+#'   called with \code{include.lowest = TRUE} and \code{right = FALSE}.
 #' 
 #' @param x argument of type \code{\link[terra]{SpatRaster}}.
 #' @param rcl optional argument of type \code{data.frame} with columns and
