@@ -1,10 +1,17 @@
 #' @name hydflood
 #' @docType package
 #' 
-#' @title hydflood: A package to compute flood extent and duration along 
-#'    the German federal waterways Elbe and Rhine
+#' @title hydflood: Flood Extents and Durations along the Rivers Elbe and Rhine
 #' 
-#' @description To be extended ...
+#' @description Raster based flood modelling internally using \pkg{hyd1d}, an
+#'   R package to interpolate 1d water level and gauging data. The package
+#'   computes flood extent and durations through strategies originally developed
+#'   for 'INFORM', an 'ArcGIS'-based hydro-ecological modelling framework. It
+#'   does not provide a full, physical hydraulic modelling algorithm, but a
+#'   simplified, near real time 'GIS' approach for flood extent and duration
+#'   modelling. Computationally demanding annual flood durations have been
+#'   computed already and data products were published by Weber (2022)
+#'   \href{https://doi.org/doi:10.1594/PANGAEA.948042}{<doi:10.1594/PANGAEA.948042>}.
 #' 
 #' @import hyd1d
 #' @importFrom Rdpack reprompt
