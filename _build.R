@@ -179,11 +179,6 @@ if (!(file.exists(paste0(public, "bfg_logo.jpg")))) {
     file.copy("pkgdown/bfg_logo.jpg", public)
 }
 
-# copy README_files into public
-dir.create(paste0(public, "README_files/figure-markdown_github"), FALSE, TRUE)
-file.copy("README_files/figure-markdown_github/usage-1.png", 
-          paste0(public, "README_files/figure-markdown_github"))
-
 #####
 # create docs/downloads directory and copy hydflood_*.tar.gz-files into it
 downloads <- paste0(public, "downloads")
