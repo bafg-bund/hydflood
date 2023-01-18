@@ -113,6 +113,7 @@
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
+#' @return \code{SpatRaster} object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood1()} computes 
@@ -132,19 +133,20 @@
 #' @references 
 #'   \insertRef{rosenzweig_inform_2011}{hydflood}
 #' 
-#' @examples \dontrun{
-#' library(hydflood)
-#' 
-#' # import the raster data and create a raster stack
-#' c <- crs("EPSG:25833")
-#' e <- ext(309000, 310000, 5749000, 5750000)
-#' x <- hydSpatRaster(ext = e, crs = c)
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' fd <- flood1(x = x, seq = seq)
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   
+#'   # import the raster data and create a raster stack
+#'   c <- st_crs("EPSG:25833")
+#'   e <- ext(309000, 310000, 5749000, 5750000)
+#'   x <- hydSpatRaster(ext = e, crs = c)
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   fd <- flood1(x = x, seq = seq, gauging_station = "ROSSLAU")
 #' }
 #' 
 #' @export

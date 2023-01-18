@@ -23,3 +23,7 @@
     line-height: 50px;
     text-align: center;
 }
+
+.text-muted {
+    color: #FFF !important;
+}

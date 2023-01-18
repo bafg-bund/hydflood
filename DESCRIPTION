@@ -1,9 +1,8 @@
 Package: hydflood
 Type: Package
-Title: Algorithms to Compute Flood Extent and Duration along the German Federal 
-    Waterways Elbe and Rhine
-Version: 0.5.1
-Date: 2023-01-06
+Title: Flood Extents and Durations along the Rivers Elbe and Rhine
+Version: 0.5.2
+Date: 2023-01-16
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
@@ -11,14 +10,14 @@ Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("ctb")))
 Description: Raster based flood modelling internally using 'hyd1d', an R package
     to interpolate 1d water level and gauging data. The package computes flood
-    extent and duration through strategies originally developed for 'INFORM', an
-    'ArcGIS'-based hydro-ecological modelling framework. It does not provide a
-    full, physical hydraulic modelling algorithm, but a simplified, near real
+    extent and durations through strategies originally developed for 'INFORM',
+    an 'ArcGIS'-based hydro-ecological modelling framework. It does not provide
+    a full, physical hydraulic modelling algorithm, but a simplified, near real
     time 'GIS' approach for flood extent and duration modelling. Computationally
-    demanding annual flood duration have been computed already and data products
-    are published under <doi:10.1594/PANGAEA.948042>.
+    demanding annual flood durations have been computed already and data
+    products were published by Weber (2022) <doi:10.1594/PANGAEA.948042>.
 Depends: R (>= 4.0.0), sf, terra, raster, hyd1d
-Imports: stats, Rdpack
+Imports: stats, Rdpack, grDevices
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D, 
     plotrix, shiny, shinyjs, shiny.i18n, leaflet, leaflet.extras, 
     leaflet.esri, pangaear, rgrass, tidyverse, stringr

@@ -9,8 +9,7 @@
 #'   reclassification rules supplied with \code{\link{df.pnv}}. Alternative
 #'   reclassification rules may be applied, but they must match column names and
 #'   types as given by \code{\link{df.pnv}}. \code{\link[terra]{classify}} is
-#'   called with \code{include.lowest = TRUE}, \code{right = FALSE} and 
-#'   \code{othersNA = TRUE}.
+#'   called with \code{include.lowest = TRUE} and \code{right = FALSE}.
 #' 
 #' @param x argument of type \code{\link[terra]{SpatRaster}}.
 #' @param rcl optional argument of type \code{data.frame} with columns and
@@ -20,29 +19,36 @@
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
 #' @return \code{\link[terra]{SpatRaster}} object containing potential natural
-#'   vegetation distribution.
+#'   vegetation distribution as categorical raster.
 #' 
 #' @seealso \code{\link{df.pnv}}
 #' 
 #' @references 
 #'   \insertRef{ochs_potential_2020}{hydflood}
 #' 
-#' @examples \dontrun{
-#' library(hydflood)
-#' 
-#' # import the raster data and create a raster stack
-#' c <- crs("EPSG:25833")
-#' e <- ext(309000, 310000, 5749000, 5750000)
-#' x <- hydSpatRaster(ext = e, crs = c)
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' fd <- flood3(x = x, seq = seq)
-#' 
-#' # reclassify to PNV
-#' pnv <- classifyToPNV(fd)
+#' @examples \donttest{
+#'   cache <- tempdir()
+#'   options("hyd1d.datadir" = cache)
+#'   options("hydflood.datadir" = cache)
+#'   options(timeout = 200)
+#'   library(hydflood)
+#'   
+#'   # import the raster data and create a raster stack
+#'   c <- st_crs("EPSG:25833")
+#'   e <- ext(309000, 310000, 5749000, 5750000)
+#'   x <- hydSpatRaster(ext = e, crs = c)
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-01-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   fd <- flood3(x = x, seq = seq)
+#'   
+#'   # reclassify to PNV
+#'   pnv <- classifyToPNV(fd)
+#'   
+#'   # plot pnv map
+#'   plot(pnv)
 #' }
 #' 
 #' @export
@@ -70,7 +76,7 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
         errors <- c(errors, paste0("Error ", l(errors), ": 'minmax(x)[1,]' mu",
                                    "st be 0."))
     }
-    if (minmax(x)[2,] >= 365 & minmax(x)[2,] <= 366) {
+    if (minmax(x)[2,] > 366 & minmax(x)[2,] < 365) {
         warning("'minmax(x)[2,]' should be between 365 or 366 (a full year).")
     }
     if (l(errors) != "1") {stop(paste0(errors, collapse="\n  "))}
@@ -147,13 +153,18 @@ classifyToPNV <- function(x, rcl = NULL, filename = "", ...) {
     rcl <- rcl[order(rcl$class), ]
     r <- rcl[, c("from", "to", "class")]
     
-    res <- classify(x, r, include.lowest = TRUE, right = FALSE, 
-                    othersNA = TRUE)
-    res <- res - 1
-    levels(res) <- rcl$vegtype
+    res <- terra::classify(x, r, include.lowest = TRUE, right = FALSE)
+    terra::set.cats(res, value = rcl[, c("class", "vegtype")])
     names(res) <- "PNV"
     
-    writeRaster(res, filename = filename, ...)
+    # append colortab
+    cols <- grDevices::rgb(df.pnv$r, df.pnv$g, df.pnv$b, 255,
+                           names = df.pnv$vegtype, maxColorValue = 255)
+    terra::coltab(res) <- data.frame(values = 1:8, cols = cols)
+    
+    if (filename != "") {
+        terra::writeRaster(res, filename = filename, ...)
+    }
     
     return(res)
 }

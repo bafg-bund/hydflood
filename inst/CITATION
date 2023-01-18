@@ -11,19 +11,18 @@ citEntry(
   year     = "submitted",
   textVersion = paste0(
     "Weber, A., Hatz, M., Schramm, W., & Rosenzweig, S. (submitted): hyd1d and",
-    " hydflood - Algorythms to compute  water levels and annual flood duration",
+    " hydflood - R packages to compute  water levels and annual flood duration",
     "s along the rivers Rhine and Elbe, Germany. Ecohydrology & Hydrobiology.")
 )
 
 citEntry(entry = "Misc",
-  title        = "hydflood - Algorythms to Compute Flood Extent and Duration along the German Federal Waterways Elbe and Rhine",
+  title        = "hydflood - Flood Extents and Durations along the Rivers Elbe and Rhine",
   author       = personList(as.person("Arnd Weber"),
                             as.person("Stephan Rosenzweig")),
   year         = "2023",
   url          = "https://hydflood.bafg.de/index.html",
-
   textVersion  =
-  paste0("Weber, A., & Rosenzweig, S. (2023): hydflood - Algorythms to ",
-         "Compute Flood Extent and Duration along the German Federal Waterways ",
-         "Elbe and Rhine. URL https://hydflood.bafg.de/index.html.")
+  paste0("Weber, A., & Rosenzweig, S. (2023): hydflood - Flood Extents and Dur",
+         "ations along the Rivers Elbe and Rhine. URL https://hydflood.bafg.de",
+         "/index.html.")
 )

@@ -76,9 +76,8 @@
 #' @param \dots additional parameters passed to
 #'   \code{\link[terra]{writeRaster}}.
 #' 
-#' @return The function produces an object of class \code{SpatRaster}
-#'   containing digital elevation (\code{dem}) and cross section area
-#'   (\code{csa}) raster layers.
+#' @return \code{SpatRaster} object containing digital elevation (\code{dem})
+#'   and cross section area (\code{csa}) raster layers.
 #' 
 #' @details Since the underlying tiled digital elevation models (dem) are rather
 #'   large datasets hydflood provides options to permanentely cache these
@@ -119,12 +118,12 @@
 #'   
 #'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #' 
-#' @examples \dontrun{
+#' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)
-#'   c <- crs("EPSG:25832")
+#'   c <- st_crs("EPSG:25832")
 #'   
 #'   r <- hydSpatRaster(ext = e, crs = c)
 #'   r

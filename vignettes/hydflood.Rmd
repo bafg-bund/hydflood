@@ -86,7 +86,9 @@ $(document).ready(function() {
 Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
+options("hyd1d.datadir" = tempdir())
 library(hyd1d)
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 library(stringr)
 
@@ -168,8 +170,14 @@ along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-The package **hydflood** is currently not available from CRAN. To install 
-the recent developmental version from the Github execute the following commands:
+The package **hydflood** is available from CRAN. To install it run:
+
+```{r install_cran, eval = FALSE}
+install.packages("hydflood")
+```
+
+To install the recent developmental version from Github execute the following
+commands:
 
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
@@ -181,6 +189,7 @@ Afterwards **hydflood** can be loaded like every other R package with the
 following command: 
 
 ```{r library_print, eval = FALSE, echo = TRUE}
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 ```
 

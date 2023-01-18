@@ -3,13 +3,25 @@
 
 # hydflood
 
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/hydflood)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/last-month/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/last-week/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+<!-- badges: end -->
+
 The R package **hydflood** is designed to compute flood extents and
 durations along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-**hydflood** is currently not available from CRAN, but you can install
-the developmental version from Github with:
+**hydflood** is available from CRAN. To install it run:
+
+``` r
+install.packages("hyd1d")
+```
+
+To install the latest development version from Github run:
 
 ``` r
 install.packages("devtools")
@@ -24,6 +36,7 @@ The package **hydflood** is build around the packages `terra` and
 
 ``` r
 # load the package
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 
 # import the raster data and create a raster stack

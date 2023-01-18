@@ -10,10 +10,10 @@
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
 #'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
-#' @param x has to by type \code{SpatialPoints} or \code{SpatialPointsDataFrame}
-#'   possibly including columns \code{csa} (cross section areas) and \code{dem}
-#'   (digital elevation model). To compute water levels along the River Elbe,
-#'   \code{x} has to be in the coordinate reference system 
+#' @param x has to by type \code{sf} possibly including columns \code{csa}
+#'   (cross section areas) and \code{dem} (digital elevation model). To compute
+#'   water levels along the River Elbe, \code{x} has to be in the coordinate
+#'   reference system 
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for the River Rhine in 
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
@@ -26,7 +26,7 @@
 #'   level computations. If \code{seq} is type \code{Date}, values must be in the
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1})
 #' 
-#' @return \code{SpatialPointsDataFrame} with flood duration stored in column
+#' @return \code{sf} object with flood duration stored in column
 #'   `flood3` in the range of \code{[0, length(seq)]}, elevation stored in
 #'   column \code{dem} and cross section areas stored in column \code{csa}.
 #' 
@@ -49,23 +49,25 @@
 #' @seealso \code{\link[hyd1d]{waterLevel}},
 #'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
-#' @examples \dontrun{
-#' options("hydflood.datadir" = tempdir())
-#' library(hydflood)
-#' 
-#' # create a random points object
-#' c <- st_crs(25833)
-#' e <- c(xmin = 309000, xmax = 310000, ymin = 5749000, ymax = 5750000)
-#' set.seed(123)
-#' points <- st_sample(hydflood:::extent2polygon(e, c), size = 10, "random")
-#' p <- data.frame(id = 1:10)
-#' st_geometry(p) <- points
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' p <- flood3Points(x = p, seq = seq)
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   
+#'   # create a random points object
+#'   c <- st_crs(25833)
+#'   e <- st_as_sfc(st_bbox(c(xmin = 309000, xmax = 310000,
+#'                            ymin = 5749000, ymax = 5750000)))
+#'   st_crs(e) <- c
+#'   set.seed(123)
+#'   points <- st_sample(e, size = 10, "random")
+#'   p <- data.frame(id = 1:10)
+#'   st_geometry(p) <- points
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   p <- flood3Points(x = p, seq = seq)
 #' }
 #' 
 #' @export
