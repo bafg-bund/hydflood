@@ -34,4 +34,5 @@
 ^vignettes/rosm.cache$
 ^vignettes/Thumbs\.db$
 ^vignettes/wms-legends$
+^vignettes/.*\.pdf$
 ^vignettes/.*\.xcf$
