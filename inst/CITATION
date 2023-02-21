@@ -2,23 +2,23 @@ citHeader("To cite hydflood in publications, please use:")
 
 citEntry(
   entry    = "Article",
-  title    = "hyd1d and hydflood - R packages to compute water levels and annual flood durations along the rivers Rhine and Elbe, Germany",
-  author   = personList(as.person("Arnd Weber"),
-                        as.person("Marcus Hatz"),
-                        as.person("Wiebke Schramm"),
-                        as.person("Stephan Rosenzweig")),
+  title    = "hyd1d and hydflood - R packages to compute water levels and flood durations along the rivers Rhine and Elbe, Germany",
+  author   = c(person("Arnd", "Weber"),
+               person("Marcus", "Hatz"),
+               person("Wiebke", "Schramm"),
+               person("Stephan", "Rosenzweig")),
   journal  = "Ecohydrology & Hydrobiology",
   year     = "submitted",
   textVersion = paste0(
     "Weber, A., Hatz, M., Schramm, W., & Rosenzweig, S. (submitted): hyd1d and",
-    " hydflood - R packages to compute  water levels and annual flood duration",
-    "s along the rivers Rhine and Elbe, Germany. Ecohydrology & Hydrobiology.")
+    " hydflood - R packages to compute  water levels and flood durations along",
+    " the rivers Rhine and Elbe, Germany. Ecohydrology & Hydrobiology.")
 )
 
 citEntry(entry = "Misc",
   title        = "hydflood - Flood Extents and Durations along the Rivers Elbe and Rhine",
-  author       = personList(as.person("Arnd Weber"),
-                            as.person("Stephan Rosenzweig")),
+  author       = c(person("Arnd", "Weber"),
+                   person("Stephan", "Rosenzweig")),
   year         = "2023",
   url          = "https://hydflood.bafg.de/index.html",
   textVersion  =
