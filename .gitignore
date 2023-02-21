@@ -51,6 +51,7 @@ vignettes/rosm.cache
 vignettes/wms-legends
 vignettes/*.mp4
 vignettes/*.png
+vignettes/*.pdf
 vignettes/*.Rdata
 vignettes/*.tab
 vignettes/*.tif
