@@ -11,7 +11,7 @@
 #'   simplified, near real time 'GIS' approach for flood extent and duration
 #'   modelling. Computationally demanding annual flood durations have been
 #'   computed already and data products were published by Weber (2022)
-#'   \href{https://doi.org/doi:10.1594/PANGAEA.948042}{<doi:10.1594/PANGAEA.948042>}.
+#'   <doi:10.1594/PANGAEA.948042>.
 #' 
 #' @import hyd1d
 #' @importFrom Rdpack reprompt
