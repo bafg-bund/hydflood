@@ -31,7 +31,7 @@ along the German federal waterways Elbe and Rhine.
 hyd1d is available from CRAN. To install it run:
 
 ```{r install_cran, eval = FALSE}
-install.packages("hyd1d")
+install.packages("hydflood")
 ```
 
 To install the latest development version from Github run:
