@@ -20,13 +20,13 @@ cd $WORKDIR
 #---------------------------------------------------------------
 # set module environment on the compute nodes
 #---------------------------------------------------------------
-module add i4/R/4.2.0
+module add i4/R/4.2.3
 module list
 
 #---------------------------------------------------------------
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
-MODELEXE=/opt/i4/R-4.2.0/bin/Rscript
+MODELEXE=/opt/i4/R-4.2.3/bin/Rscript
 MODELSCRIPT=flood3_elbe.R
 
 #----------------------------------------------------------------
