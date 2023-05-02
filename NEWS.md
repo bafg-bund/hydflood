@@ -1,6 +1,7 @@
 # hydflood
 
 * Fix bug in `getDEM()`
+* capture `timeout` warning and recommend increased `options("timeout")`
 
 # hydflood 0.5.3
 

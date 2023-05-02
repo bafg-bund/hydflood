@@ -87,6 +87,9 @@
 #'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
 #'   location can also be determined through the environmental variable
 #'   \env{hydflood_datadir}.
+#'   
+#'   Since downloads of large individual datasets might cause timeouts, it is
+#'   recommended to increase \code{options("timeout")}.
 #' 
 #' @seealso \code{\link[terra]{SpatRaster-class}},
 #'   \code{\link[terra]{rast}}, \code{\link[terra]{writeRaster}},
@@ -120,6 +123,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 120)
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)

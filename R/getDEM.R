@@ -27,6 +27,9 @@
 #'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
 #'   location can also be determined through the environmental variable
 #'   \env{hydflood_datadir}.
+#'   
+#'   Since downloads of large individual datasets might cause timeouts, it is
+#'   recommended to increase \code{options("timeout")}.
 #' 
 #' @references 
 #'   \insertRef{weber_dgms_2020}{hydflood}
@@ -37,6 +40,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 120)
 #'   library(hydflood)
 #'   dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
 #'                 crs = st_crs("EPSG:25833"))
@@ -45,8 +49,6 @@
 #' @export
 #' 
 getDEM <- function(filename = '', ext, crs, ...) {
-    
-    options("rgdal_show_exportToProj4_warnings" =  "none")
     
     #####
     # validate the input data
@@ -259,8 +261,18 @@ getDEM <- function(filename = '', ext, crs, ...) {
             tryCatch({
                 utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
             }, error = function(e){
-                stop(paste0("It was not possible to download:\n",
-                            sf.tiles$url[i], "\nTry again later!"))
+                mess <- paste0("It was not possible to download:\n",
+                               sf.tiles$url[i], "\nPlease try again!")
+                w <- warnings()
+                w_mess <- names(w)
+                w_mess <- w_mess[startsWith(w_mess, "URL")]
+                if (grepl("Timeout", w_mess) & grepl("was reached", w_mess)) {
+                    mess <- paste0(mess, "\nSince a timeout was reached, it is",
+                                   " recommended to increase the value of \n",
+                                   "options('timeout') presently set to ",
+                                   options('timeout')$timeout, " seconds.")
+                }
+                stop(mess)
             })
         }
         merge_files[[i]] <- terra::rast(x = file)
