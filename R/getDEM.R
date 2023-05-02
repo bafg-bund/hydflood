@@ -267,7 +267,22 @@ getDEM <- function(filename = '', ext, crs, ...) {
     }
     
     if (length(merge_files) == 1) {
-        merge_rasters <- list("x" = merge_files)
+        if (file_create_dem) {
+            raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                      extend = TRUE)
+            if (!file.exists(filename) | overwrite) {
+                terra::writeRaster(raster.dem, filename = filename, ...)
+            }
+        } else {
+            if (!in_memory) {
+                tmp_dem <- tempfile(fileext = ".tif")
+                raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                          filename = tmp_dem, extend = TRUE)
+            } else {
+                raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                          extend = TRUE)
+            }
+        }
     } else if (length(merge_files) > 1) {
         merge_rasters <- list("x" = terra::sprc(merge_files))
         if (file_create_dem) {
@@ -290,7 +305,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
         raster.dem <- do.call("merge", merge_rasters)
         
         if (ext_int <= ext(raster.dem)) {
-            raster.dem <- terra::crop(raster.dem, ext_int)
+            raster.dem <- terra::crop(raster.dem, ext_int, extend = TRUE)
             if (file_create_dem) {
                 terra::writeRaster(raster.dem, filename = filename,
                                    overwrite = TRUE, ...)
@@ -298,7 +313,8 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     } else {
         if (file_create_dem) {
-            raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
+            raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
+                                      extend = TRUE)
             if (!file.exists(filename) | overwrite) {
                 terra::writeRaster(raster.dem, filename = filename, ...)
             }
@@ -306,9 +322,10 @@ getDEM <- function(filename = '', ext, crs, ...) {
             if (!in_memory) {
                 tmp_dem <- tempfile(fileext = ".tif")
                 raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
-                                          filename = tmp_dem)
+                                          filename = tmp_dem, extend = TRUE)
             } else {
-                raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
+                raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
+                                          extend = TRUE)
             }
         }
     }

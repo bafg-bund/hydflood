@@ -1,3 +1,7 @@
+# hydflood
+
+* Fix bug in `getDEM()`
+
 # hydflood 0.5.3
 
 * Added a `NEWS.md` file to track changes to the package.
