@@ -11,7 +11,7 @@
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
 #' @param ext argument of type \code{\link[terra]{SpatExtent}}.
-#' @param crs argument of type \code{\link[sf]{crs}} or 
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or 
 #'   \code{\link[terra]{crs}}. It is
 #'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})

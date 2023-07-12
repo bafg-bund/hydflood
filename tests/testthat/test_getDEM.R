@@ -15,7 +15,7 @@ test_that("General tests", {
                         " you have to specify 'ext' and 'crs'."))
     expect_error(getDEM(c(1,2,3)), "'filename' must be type 'character'")
     expect_error(getDEM(c(1,2,3)), "'filename' must have length 1")
-    expect_error(getDEM(ext = c(1,2,3)), "ovide a CRS, you must specify 'crs'.")
+    expect_error(getDEM(ext = c(1,2,3)), "ovide a crs, you must specify 'crs'.")
     expect_error(getDEM(ext = c(1,2,3), crs = utm32n),
                  "'ext' must be type 'SpatExtent'")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = utm32n),
@@ -23,7 +23,7 @@ test_that("General tests", {
     expect_error(getDEM(ext = ext(1,2,3,4), crs = utm33n),
                  "'ext' does NOT overlap with the active floodplain of River E")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = "c"),
-                 "'crs' must be type 'CRS'.")
+                 "'crs' must be type 'crs'.")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = wgs),
                  "'crs' must be either 'ETRS 1989 UTM 32N' or")
     

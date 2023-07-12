@@ -64,7 +64,7 @@
 #'   specified, \code{ext} must be within the extent of provided raster layers.
 #'   Then it is used to \code{\link[terra]{crop}} the supplied data.
 #' 
-#' @param crs optional argument of type \code{\link[sf]{crs}} or 
+#' @param crs optional argument of type \code{\link[sf:st_crs]{crs}} or 
 #'   \code{\link[terra]{crs}}. If
 #'   neither \code{filename_dem} nor \code{filename_csa} are specified,
 #'   \code{crs} is used to select the respective river (Elbe:

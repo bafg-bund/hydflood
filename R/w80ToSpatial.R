@@ -42,7 +42,7 @@
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sf]{crs}} or \code{\link[terra]{crs}}.
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or \code{\link[terra]{crs}}.
 #' @param id argument of type \code{character} specifying a grouping column.
 #' 
 #' @return \code{sfc_LINESTRING}.
@@ -194,7 +194,7 @@ w80ToSFL <- function(filename, crs, id = c("sid", "fwid", "wsvpt",
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sf]{crs}} or \code{\link[terra]{crs}}.
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or \code{\link[terra]{crs}}.
 #' 
 #' @return \code{sfc_POINT}.
 #' 
