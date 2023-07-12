@@ -11,7 +11,8 @@
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
 #' @param ext argument of type \code{\link[terra]{SpatExtent}}.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. It is
+#' @param crs argument of type \code{\link[sf]{crs}} or 
+#'   \code{\link[terra]{crs}}. It is
 #'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
@@ -104,15 +105,15 @@ getDEM <- function(filename = '', ext, crs, ...) {
             crs_int <- crs_dem
         } else {
             errors <- c(errors, paste0("Error ", l(errors), ": If 'filename' d",
-                                       "oes not provide a CRS, you must specif",
+                                       "oes not provide a crs, you must specif",
                                        "y 'crs'."))
             stop(paste0(errors, collapse="\n  "))
         }
     }
     if (!missing(crs)) {
-        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
+        if (!inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must be t",
-                                       "ype 'CRS' or 'crs'."))
+                                       "ype 'crs'."))
             stop(paste0(errors, collapse="\n  "))
         }
         if (crs_int_dem) {

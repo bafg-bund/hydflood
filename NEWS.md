@@ -1,7 +1,8 @@
 # hydflood
 
+* Get rid of the last 'sp' remains
 * Fix bug in `getDEM()`
-* capture `timeout` warning and recommend increased `options("timeout")`
+* Capture `timeout` warning and recommend increased `options("timeout")`
 
 # hydflood 0.5.3
 
@@ -10,4 +11,3 @@
 * Improve Figure 1 of the accompanying manuscript.
 * Adapt the authors formating in `inst/CITATION` to present requirements.
 * Remove `tidyverse` from `Suggests`
-
