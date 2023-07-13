@@ -30,8 +30,15 @@ for (a_package in packages) {
 }
 
 # install the local package
-require(devtools)
+library(devtools)
 devtools::install(".", quick = TRUE)  #, dependencies = TRUE)
+
+# rnaturalearthhires
+if (!require("rnaturalearthhires")) {
+    install.packages("rnaturalearthhires",
+                     repos = "https://ropensci.r-universe.dev",
+                     type = "source")
+}
 
 # exit
 q("no")
