@@ -1,4 +1,4 @@
-# hydflood
+# hydflood 0.5.4
 
 * Get rid of the last 'sp' remains
 * Fix bug in `getDEM()`
