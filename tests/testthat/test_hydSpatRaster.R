@@ -98,7 +98,7 @@ test_that("General tests", {
         expect_error(hydSpatRaster(ext = ext(d)),
                      "The 'crs' argument has to be supplied.")
         expect_error(hydSpatRaster(ext = ext(d), crs = 1),
-                     "'crs' must be type 'CRS'")
+                     "'crs' must be type 'crs'")
         expect_error(hydSpatRaster(filename_dem = tmp_dem1,
                                     filename_csa = tmp_csa1,
                                     crs = wgs),

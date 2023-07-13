@@ -64,7 +64,8 @@
 #'   specified, \code{ext} must be within the extent of provided raster layers.
 #'   Then it is used to \code{\link[terra]{crop}} the supplied data.
 #' 
-#' @param crs optional argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. If
+#' @param crs optional argument of type \code{\link[sf:st_crs]{crs}} or 
+#'   \code{\link[terra]{crs}}. If
 #'   neither \code{filename_dem} nor \code{filename_csa} are specified,
 #'   \code{crs} is used to select the respective river (Elbe:
 #'   'ETRS 1989 UTM 33N' (epsg: 25833); Rhine: 'ETRS 1989 UTM 32N' (epsg:
@@ -87,6 +88,9 @@
 #'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
 #'   location can also be determined through the environmental variable
 #'   \env{hydflood_datadir}.
+#'   
+#'   Since downloads of large individual datasets might cause timeouts, it is
+#'   recommended to increase \code{options("timeout")}.
 #' 
 #' @seealso \code{\link[terra]{SpatRaster-class}},
 #'   \code{\link[terra]{rast}}, \code{\link[terra]{writeRaster}},
@@ -120,6 +124,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 120)
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)
@@ -311,9 +316,9 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         crs_int <- crs_int_ras
     }
     if (!missing(crs) & is.logical(crs_int_ras)) {
-        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
+        if (!inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must ",
-                                       "be type 'CRS' or 'crs'."))
+                                       "be type 'crs'."))
         } else {
             crs_int <- crs
         }
@@ -451,8 +456,6 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
                            resolution = 1, vals = NA)
         if (inherits(crs_int, "crs")) {
             terra::crs(csa) <- crs_int$wkt
-        } else if (inherits(crs_int, "CRS")) {
-            terra::crs(csa) <- crs_int@projargs
         } else if (inherits(crs_int, "character")) {
             terra::crs(csa) <- sf::st_crs(crs_int)$wkt
         } else {

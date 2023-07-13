@@ -45,6 +45,8 @@ navbar:
         href: articles/hydflood.html
       - text: "Präsentation (DE)"
         href: articles/presentation_DE.html
+      - text: "Präsentation AÖW 2023-03-30 (DE)"
+        href: articles/presentation_aow.html
     - text: Reference
       href: reference/index.html
     - text: "ShinyApps"

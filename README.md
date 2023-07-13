@@ -18,7 +18,7 @@ durations along the German federal waterways Elbe and Rhine.
 **hydflood** is available from CRAN. To install it run:
 
 ``` r
-install.packages("hyd1d")
+install.packages("hydflood")
 ```
 
 To install the latest development version from Github run:

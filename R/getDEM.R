@@ -11,7 +11,8 @@
 #' @param filename supplies an optional in- and output filename and has to be
 #'   type \code{character}.
 #' @param ext argument of type \code{\link[terra]{SpatExtent}}.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. It is
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or 
+#'   \code{\link[terra]{crs}}. It is
 #'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
 #'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
@@ -27,6 +28,9 @@
 #'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
 #'   location can also be determined through the environmental variable
 #'   \env{hydflood_datadir}.
+#'   
+#'   Since downloads of large individual datasets might cause timeouts, it is
+#'   recommended to increase \code{options("timeout")}.
 #' 
 #' @references 
 #'   \insertRef{weber_dgms_2020}{hydflood}
@@ -37,6 +41,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 120)
 #'   library(hydflood)
 #'   dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
 #'                 crs = st_crs("EPSG:25833"))
@@ -45,8 +50,6 @@
 #' @export
 #' 
 getDEM <- function(filename = '', ext, crs, ...) {
-    
-    options("rgdal_show_exportToProj4_warnings" =  "none")
     
     #####
     # validate the input data
@@ -102,15 +105,15 @@ getDEM <- function(filename = '', ext, crs, ...) {
             crs_int <- crs_dem
         } else {
             errors <- c(errors, paste0("Error ", l(errors), ": If 'filename' d",
-                                       "oes not provide a CRS, you must specif",
+                                       "oes not provide a crs, you must specif",
                                        "y 'crs'."))
             stop(paste0(errors, collapse="\n  "))
         }
     }
     if (!missing(crs)) {
-        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
+        if (!inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must be t",
-                                       "ype 'CRS' or 'crs'."))
+                                       "ype 'crs'."))
             stop(paste0(errors, collapse="\n  "))
         }
         if (crs_int_dem) {
@@ -259,15 +262,40 @@ getDEM <- function(filename = '', ext, crs, ...) {
             tryCatch({
                 utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
             }, error = function(e){
-                stop(paste0("It was not possible to download:\n",
-                            sf.tiles$url[i], "\nTry again later!"))
+                mess <- paste0("It was not possible to download:\n",
+                               sf.tiles$url[i], "\nPlease try again!")
+                w <- warnings()
+                w_mess <- names(w)
+                w_mess <- w_mess[startsWith(w_mess, "URL")]
+                if (grepl("Timeout", w_mess) & grepl("was reached", w_mess)) {
+                    mess <- paste0(mess, "\nSince a timeout was reached, it is",
+                                   " recommended to increase the value of \n",
+                                   "options('timeout') presently set to ",
+                                   options('timeout')$timeout, " seconds.")
+                }
+                stop(mess)
             })
         }
         merge_files[[i]] <- terra::rast(x = file)
     }
     
     if (length(merge_files) == 1) {
-        merge_rasters <- list("x" = merge_files)
+        if (file_create_dem) {
+            raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                      extend = TRUE)
+            if (!file.exists(filename) | overwrite) {
+                terra::writeRaster(raster.dem, filename = filename, ...)
+            }
+        } else {
+            if (!in_memory) {
+                tmp_dem <- tempfile(fileext = ".tif")
+                raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                          filename = tmp_dem, extend = TRUE)
+            } else {
+                raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
+                                          extend = TRUE)
+            }
+        }
     } else if (length(merge_files) > 1) {
         merge_rasters <- list("x" = terra::sprc(merge_files))
         if (file_create_dem) {
@@ -290,7 +318,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
         raster.dem <- do.call("merge", merge_rasters)
         
         if (ext_int <= ext(raster.dem)) {
-            raster.dem <- terra::crop(raster.dem, ext_int)
+            raster.dem <- terra::crop(raster.dem, ext_int, extend = TRUE)
             if (file_create_dem) {
                 terra::writeRaster(raster.dem, filename = filename,
                                    overwrite = TRUE, ...)
@@ -298,7 +326,8 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     } else {
         if (file_create_dem) {
-            raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
+            raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
+                                      extend = TRUE)
             if (!file.exists(filename) | overwrite) {
                 terra::writeRaster(raster.dem, filename = filename, ...)
             }
@@ -306,9 +335,10 @@ getDEM <- function(filename = '', ext, crs, ...) {
             if (!in_memory) {
                 tmp_dem <- tempfile(fileext = ".tif")
                 raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
-                                          filename = tmp_dem)
+                                          filename = tmp_dem, extend = TRUE)
             } else {
-                raster.dem <- terra::crop(merge_rasters$x, y = ext_int)
+                raster.dem <- terra::crop(merge_rasters$x, y = ext_int,
+                                          extend = TRUE)
             }
         }
     }
