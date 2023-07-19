@@ -17,6 +17,7 @@
 #'       \item{r}{numeric coding for the r (red) of an rgb color code.}
 #'       \item{g}{numeric coding for the g (green) of an rgb color code.}
 #'       \item{b}{numeric coding for the b (blue) of an rgb color code.}
+#'       \item{html}{html color coding (type \code{character}).}
 #'    }
 #' 
 #' @references 
