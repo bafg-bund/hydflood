@@ -172,14 +172,14 @@ along the German federal waterways Elbe and Rhine.
 
 The package **hydflood** is available from CRAN. To install it run:
 
-```{r install_cran, eval = FALSE}
+```{r install-cran, eval = FALSE}
 install.packages("hydflood")
 ```
 
 To install the recent developmental version from Github execute the following
 commands:
 
-```{r install_git, eval = FALSE}
+```{r install-git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
 devtools::install_github("bafg-bund/hydflood")
@@ -188,7 +188,7 @@ devtools::install_github("bafg-bund/hydflood")
 Afterwards **hydflood** can be loaded like every other R package with the 
 following command: 
 
-```{r library_print, eval = FALSE, echo = TRUE}
+```{r library-print, eval = FALSE, echo = TRUE}
 options("hydflood.datadir" = tempdir())
 library(hydflood)
 ```
@@ -204,7 +204,7 @@ levels. The package [`terra`](https://cran.r-project.org/package=terra)
 provides the S4 class `SpatRaster` and thereby enables the GIS based comparison
 between extrapolated water levels and elevation data.
 
-```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation model of the waterway (DEM-W, in German: Digitales Geländemodell des Wasserlaufs, DGM-W) with 1 m spatial resolution at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-dem, fig.show = 'asis', fig.cap = capFig("Digital elevation model of the waterway (DEM-W, in German: Digitales Geländemodell des Wasserlaufs, DGM-W) with 1 m spatial resolution at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
@@ -222,15 +222,15 @@ so called cross section areas (`csa`) are needed. They originate from cross
 sections used for the SOBEK models run for and incorporated into
 [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
 
-```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssections.png')
 ```
 
-```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas.png')
 ```
 
-```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustrated in Fig. 3 overlaid by the corresponding cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustrated in Fig. 3 overlaid by the corresponding cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas_cs.png')
 ```
 
@@ -338,7 +338,7 @@ These products are visualized through a shiny web application available through:
 \url{https://shiny.bafg.de/flood3daily/}
 \end{center}
 
-``` {r link_flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
+``` {r link-flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
 cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3daily/" target="_blank">https://shiny.bafg.de/flood3daily/</a></p>')
 ```
 
@@ -361,7 +361,7 @@ shiny web application:
 \url{https://shiny.bafg.de/flood3wms/}
 \end{center}
 
-``` {r link_waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
+``` {r link-waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
 cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3wms/" target="_blank">https://shiny.bafg.de/flood3wms/</a></p>')
 ```
 

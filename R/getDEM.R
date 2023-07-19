@@ -255,6 +255,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
     }
     
     merge_files <- list(nrow(sf.tiles))
+    missing_files <- NA_character_
     for (i in 1:nrow(sf.tiles)) {
         file <- paste0(options()$hydflood.datadir, "/", sf.tiles$name[i],
                        "_DEM.tif")
@@ -273,13 +274,24 @@ getDEM <- function(filename = '', ext, crs, ...) {
                                    "options('timeout') presently set to ",
                                    options('timeout')$timeout, " seconds.")
                 }
-                stop(mess)
+                message(mess)
             })
         }
-        merge_files[[i]] <- terra::rast(x = file)
+        
+        if (file.exists(file)) {
+            merge_files[[i]] <- terra::rast(x = file)
+        } else {
+            if (is.na(missing_files)) {
+                missing_files <- sf.tiles$url[i]
+            } else {
+                missing_files <- append(missing_files, sf.tiles$url[i])
+            }
+        }
     }
     
-    if (length(merge_files) == 1) {
+    if (length(merge_files) == 0) {
+        return(NULL)
+    } else if (length(merge_files) == 1) {
         if (file_create_dem) {
             raster.dem <- terra::crop(merge_files[[1]], y = ext_int,
                                       extend = TRUE)
@@ -341,6 +353,13 @@ getDEM <- function(filename = '', ext, crs, ...) {
                                           extend = TRUE)
             }
         }
+    }
+    
+    if (!is.na(missing_files)) {
+        message(paste0("\nIt was not possible to download:\n ",
+                       paste0(missing_files, collapse = "\n "),
+                       "\nMissing parts have been replaced by NAs.\n",
+                       "Please try again later to obtain a full DEM!"))
     }
     
     return(raster.dem)

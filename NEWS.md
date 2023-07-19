@@ -3,6 +3,7 @@
 * Get rid of the last 'sp' remains
 * Fix bug in `getDEM()`
 * Capture `timeout` warning and recommend increased `options("timeout")`
+* Improve cleanliness of `download.file` errors
 
 # hydflood 0.5.3
 

@@ -225,8 +225,9 @@ flood3Points <- function(x, seq) {
             tryCatch({
                 utils::download.file(url, csa_file, quiet = TRUE)
             }, error = function(e){
-                stop(paste0("It was not possible to download:\n", url,
-                            "\nTry again later!"))
+                message(paste0("It was not possible to download:\n", url,
+                               "\nTry again later!"))
+                return(NULL)
             })
         }
         load(csa_file)

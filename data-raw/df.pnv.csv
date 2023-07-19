@@ -1,9 +1,9 @@
-from;to;class;vegtype;r;g;b
-0;5;1;hardwood forest, dry;168;56;0
-5;50;2;hardwood forest, medium;168;112;0
-50;80;3;hardwood forest, wet;205;170;102
-80;140;4;willow forest;170;255;0
-140;160;5;willow shrubbery;85;255;0
-160;220;6;reed;190;232;255
-220;300;7;periodically flooded;115;223;255
-300;366;8;water;0;169;230
+from;to;class;vegtype;r;g;b;html
+0;5;1;hardwood forest, dry;168;56;0;"#a83700"
+5;50;2;hardwood forest, medium;168;112;0;"#a87000"
+50;80;3;hardwood forest, wet;205;170;102;"#cdaa66"
+80;140;4;willow forest;170;255;0;"#aaff00"
+140;160;5;willow shrubbery;85;255;0;"#55ff00"
+160;220;6;reed;190;232;255;"#bee8ff"
+220;300;7;periodically flooded;115;223;255;"#73dfff"
+300;366;8;water;0;169;230;"#00a9e6"

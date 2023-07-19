@@ -2,7 +2,7 @@ Package: hydflood
 Type: Package
 Title: Flood Extents and Durations along the Rivers Elbe and Rhine
 Version: 0.5.4
-Date: 2023-07-12
+Date: 2023-07-18
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
