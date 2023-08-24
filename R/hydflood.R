@@ -1,5 +1,6 @@
 #' @name hydflood
 #' @docType package
+#' @aliases hydflood-package
 #' 
 #' @title hydflood: Flood Extents and Durations along the Rivers Elbe and Rhine
 #' 

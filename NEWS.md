@@ -1,3 +1,8 @@
+# hydflood 0.5.5
+
+* change to documentation to avoid a problem on CRAN (Issue #13)
+* final citation of the associated manuscript article
+
 # hydflood 0.5.4
 
 * Get rid of the last 'sp' remains
