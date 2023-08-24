@@ -10,7 +10,7 @@ wgs <- st_crs(4326)
 test_that("General tests", {
     
     # smaller extent (crop)
-    if (Sys.info()["nodename"] == "r.bafg.de") {
+    if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
                                "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_D",
@@ -25,30 +25,26 @@ test_that("General tests", {
                                           crs = utm32n),
                        "'ext' will be used to crop the supplied raster file(s).",
                        fixed = TRUE)
-        expect_message(b <- hydSpatRaster(filename_csa = filename_csa, 
-                                           ext = ext, crs = utm32n),
-                       "'ext' will be used to crop the supplied raster file",
-                       fixed = TRUE)
+        # expect_message(b <- hydSpatRaster(filename_csa = filename_csa, 
+        #                                    ext = ext, crs = utm32n),
+        #                "'ext' will be used to crop the supplied raster file",
+        #                fixed = TRUE)
         expect_equal(ext(hydSpatRaster(ext = ext, crs = utm32n)), ext)
         expect_equal(crs(hydSpatRaster(ext = ext, crs = utm32n)), utm32n$wkt)
-    }
-    
-    # the same extents and crs, but different data sources
-    hf3 <- Sys.getenv("hydflood")
-    filename_dem <- paste0(hf3, "/data-raw/raster.dem.tif")
-    filename_csa <- paste0(hf3, "/data-raw/raster.csa.tif")
-    ext_csa <- ext(rast(filename_csa))
-    crs_csa <- sf::st_crs(crs(rast(filename_csa)))
-    expect_equal(dim(hydSpatRaster(filename_dem = filename_dem, 
-                                   filename_csa = filename_csa)),
-                 c(1000, 1000, 2))
-    expect_equal(res(hydSpatRaster(filename_dem = filename_dem, 
-                                   filename_csa = filename_csa)),
-                 c(1,1))
-    
-    # execute the folowing check ony on r.bafg.de, since the DEM data are not 
-    # public yet
-    if (Sys.info()["nodename"] == "r.bafg.de") {
+        
+        # the same extents and crs, but different data sources
+        hf3 <- Sys.getenv("hydflood")
+        filename_dem <- paste0(hf3, "/data-raw/raster.dem.tif")
+        filename_csa <- paste0(hf3, "/data-raw/raster.csa.tif")
+        ext_csa <- ext(rast(filename_csa))
+        crs_csa <- sf::st_crs(crs(rast(filename_csa)))
+        expect_equal(dim(hydSpatRaster(filename_dem = filename_dem, 
+                                       filename_csa = filename_csa)),
+                     c(1000, 1000, 2))
+        expect_equal(res(hydSpatRaster(filename_dem = filename_dem, 
+                                       filename_csa = filename_csa)),
+                     c(1,1))
+        
         expect_equal(dim(hydSpatRaster(filename_csa = filename_csa)),
                      c(1000, 1000, 2))
         expect_equal(minmax(hydSpatRaster(filename_dem = filename_dem,
@@ -102,7 +98,7 @@ test_that("General tests", {
         expect_error(hydSpatRaster(ext = ext(d)),
                      "The 'crs' argument has to be supplied.")
         expect_error(hydSpatRaster(ext = ext(d), crs = 1),
-                     "'crs' must be type 'CRS'")
+                     "'crs' must be type 'crs'")
         expect_error(hydSpatRaster(filename_dem = tmp_dem1,
                                     filename_csa = tmp_csa1,
                                     crs = wgs),

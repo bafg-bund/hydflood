@@ -9,19 +9,18 @@ dir.create(o, FALSE, FALSE)
 
 #####
 # load R packages
-library(raster)
-rasterOptions(tmpdir = "/scratch/webera/raster//")
-rasterOptions(chunksize = 1e8)
-rasterOptions(maxmemory = 5e9)
-rasterOptions()
-options("rgdal_show_exportToProj4_warnings" = "none")
-library(rgdal)
+options("hyd1d.datadir" = "~/.hyd1d")
 library(hyd1d, lib.loc = paste0("~/R/", getRversion()))
+options("hydflood.datadir" = "~/.hydflood")
 library(hydflood, lib.loc = paste0("~/R/", getRversion()))
+terraOptions(tempdir = "/scratch/webera/terra//")
+terraOptions(memmax = 15)
+terraOptions(memfrac = 0.25)
+terraOptions()
 
 # subset spdf.tiles_elbe
 sf.tile <- sf.tiles("Elbe")[i, ]
-hfc <- hydflood_cache$cache_path_get()
+hfc <- options()$hydflood.datadir
 n <- sf.tile$name
 # if (!n %in% c(#"e036_SANDAU2", "e038_WITTENBERGE", "e039_MUEGGENDORF",
 #              #"e040_SCHNACKENBURG", "e041_LENZEN", "e042_GORLEBEN",
@@ -66,28 +65,28 @@ for (a_year in 1960:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
 #####
 # aggregate selected years by mean() and sd()
 # annual prolongation of temporal series from 1990 until last year
-f_mean <- paste0(o, "/", n, "_flood3_mean_1990_",
-                 as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
-
-if (file.exists(f_mean)) {
-  print(paste0(f_mean, " exists already"))
-} else {
-  print(paste0(f_mean, " will be computed"))
-  raster::calc(raster::stack(products), fun = mean, na.rm = TRUE,
-               filename = f_mean, format = "GTiff",
-               options = c("COMPRESS=LZW", "TFW=NO"))
-}
-
-f_sd <- paste0(o, "/", n, "_flood3_sd_1990_",
-               as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
-
-if (file.exists(f_sd)) {
-  print(paste0(f_sd, " exists already"))
-} else {
-  print(paste0(f_sd, " will be computed"))
-  raster::calc(raster::stack(products), fun = sd, na.rm = TRUE, filename = f_sd,
-               format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
-}
+# f_mean <- paste0(o, "/", n, "_flood3_mean_1990_",
+#                  as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
+# 
+# if (file.exists(f_mean)) {
+#   print(paste0(f_mean, " exists already"))
+# } else {
+#   print(paste0(f_mean, " will be computed"))
+#   raster::calc(raster::stack(products), fun = mean, na.rm = TRUE,
+#                filename = f_mean, format = "GTiff",
+#                options = c("COMPRESS=LZW", "TFW=NO"))
+# }
+# 
+# f_sd <- paste0(o, "/", n, "_flood3_sd_1990_",
+#                as.numeric(strftime(Sys.Date(), "%Y")) - 1, ".tif")
+# 
+# if (file.exists(f_sd)) {
+#   print(paste0(f_sd, " exists already"))
+# } else {
+#   print(paste0(f_sd, " will be computed"))
+#   raster::calc(raster::stack(products), fun = sd, na.rm = TRUE, filename = f_sd,
+#                format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+# }
 
 # reference period 1960 - 1989
 f_mean <- paste0(o, "/", n, "_flood3_mean_1960_1989.tif")

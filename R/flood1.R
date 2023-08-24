@@ -2,23 +2,22 @@
 #' @rdname flood1
 #' 
 #' @title Function to compute flood extent or flood duration \code{SpatRaster} 
-#'   along the German federal waterways Elbe and Rhine using the 1D water level 
+#'   along the German federal waterways Elbe and Rhine using the 1d water level 
 #'   algorithm \code{hyd1d::waterLevelFlood1()}
 #' 
 #' @description Computes flood extent, if \code{length(seq)} equals 1, or flood 
 #'   duration for the active floodplains along the German federal waterways Elbe 
-#'   and Rhine based on 1D water levels computed by
-#'   \code{\link[hyd1d]{waterLevelFlood1}} provided by package 
-#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d} in analogy to
-#'   the INFORM 3 module 'Flut1'.
+#'   and Rhine based on 1d water levels computed by
+#'   \code{\link[hyd1d]{waterLevelFlood1}} provided by package \pkg{hyd1d} in
+#'   analogy to the INFORM 3 module 'Flut1'.
 #' 
 #' @param x has to be type \code{SpatRaster} and has to include both input 
 #'   layers \code{csa} (cross section areas) and \code{dem} (digital 
 #'   elevation model). To compute water levels along the River Elbe, \code{x} 
 #'   has to be in the coordinate reference system 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for the River Rhine in 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and 
 #'   have a length larger than 0. Values of \code{seq} must be in the 
@@ -114,12 +113,12 @@
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
-#' @return SpatRaster object with flood duration in the range of 
+#' @return \code{SpatRaster} object with flood duration in the range of 
 #'   \code{[0, length(seq)]}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood1()} computes 
-#'   a 1D water level using \code{\link[hyd1d]{waterLevelFlood1}} along the 
-#'   requested river section. This 1D water level is transfered to a \code{wl} 
+#'   a 1d water level using \code{\link[hyd1d]{waterLevelFlood1}} along the 
+#'   requested river section. This 1d water level is transfered to a \code{wl} 
 #'   (water level) raster layer, which is in fact a copy of the \code{csa} 
 #'   (cross section areas) layer, and then compared to the \code{dem} 
 #'   (digital elevation model) layer. Where the \code{wl} layer is
@@ -134,19 +133,20 @@
 #' @references 
 #'   \insertRef{rosenzweig_inform_2011}{hydflood}
 #' 
-#' @examples \dontrun{
-#' library(hydflood)
-#' 
-#' # import the raster data and create a raster stack
-#' c <- crs("EPSG:25833")
-#' e <- ext(309000, 310000, 5749000, 5750000)
-#' x <- hydSpatRaster(ext = e, crs = c)
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' fd <- flood1(x = x, seq = seq)
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   
+#'   # import the raster data and create a raster stack
+#'   c <- st_crs("EPSG:25833")
+#'   e <- ext(309000, 310000, 5749000, 5750000)
+#'   x <- hydSpatRaster(ext = e, crs = c)
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   fd <- flood1(x = x, seq = seq, gauging_station = "ROSSLAU")
 #' }
 #' 
 #' @export

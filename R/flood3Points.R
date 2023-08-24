@@ -2,22 +2,21 @@
 #' @rdname flood3Points
 #' 
 #' @title Function to compute flood duration for point coordinates along the
-#'   German federal waterways Elbe and Rhine using the 1D water level algorithms
+#'   German federal waterways Elbe and Rhine using the 1d water level algorithms
 #'   \code{hyd1d::waterLevel()} and \code{hyd1d::waterLevelPegelonline()}
 #' 
 #' @description Computes flood duration for points located in the active
-#'   floodplains along the German federal waterways Elbe  and Rhine based on 1D
+#'   floodplains along the German federal waterways Elbe and Rhine based on 1d
 #'   water levels computed by \code{\link[hyd1d]{waterLevel}} or
-#'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package
-#'   \href{https://cran.r-project.org/package=hyd1d}{hyd1d}.
+#'   \code{\link[hyd1d]{waterLevelPegelonline}} provided by package \pkg{hyd1d}.
 #' 
-#' @param x has to by type \code{SpatialPoints} or \code{SpatialPointsDataFrame}
-#'   possibly including columns \code{csa} (cross section areas) and \code{dem}
-#'   (digital elevation model). To compute water levels along the River Elbe,
-#'   \code{x} has to be in the coordinate reference system 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
+#' @param x has to by type \code{sf} possibly including columns \code{csa}
+#'   (cross section areas) and \code{dem} (digital elevation model). To compute
+#'   water levels along the River Elbe, \code{x} has to be in the coordinate
+#'   reference system 
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{ETRS 1989 UTM 33N},
 #'   for the River Rhine in 
-#'   \href{http://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
+#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   Other coordinate reference systems are not permitted.
 #' @param seq has to be type \code{c("POSIXct", "POSIXt")} or \code{Date} and
 #'   have a length larger than 0. If \code{seq} is type \code{c("POSIXct", "POSIXt")},
@@ -27,36 +26,48 @@
 #'   level computations. If \code{seq} is type \code{Date}, values must be in the
 #'   temporal range between 1960-01-01 and yesterday (\code{Sys.Date() - 1})
 #' 
-#' @return \code{SpatialPointsDataFrame} with flood duration stored in column
+#' @return \code{sf} object with flood duration stored in column
 #'   `flood3` in the range of \code{[0, length(seq)]}, elevation stored in
 #'   column \code{dem} and cross section areas stored in column \code{csa}.
 #' 
 #' @details For every time step provided in \code{seq}, \code{flood3Points()}
-#'   computes a 1D water level along the requested river section. This 1D water
+#'   computes a 1d water level along the requested river section. This 1d water
 #'   level is transfered to a temporary \code{wl} (water level) column and then
 #'   compared to the \code{dem} (digital elevation model) column. Where the
 #'   \code{wl} is higher than the \code{dem} flood duration \code{flood3} is
 #'   increased by 1.
+#'   
+#'   Since the underlying tiled digital elevation models (dem) are rather
+#'   large datasets hydflood provides options to permanentely cache these
+#'   datasets. \code{options("hydflood.datadir" = tempdir())} is the default. To
+#'   modify the location of your raster cache to your needs set the respective
+#'   \code{options()} prior to loading the package, e.g.
+#'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
+#'   location can also be determined through the environmental variable
+#'   \env{hydflood_datadir}.
 #' 
 #' @seealso \code{\link[hyd1d]{waterLevel}},
 #'   \code{\link[hyd1d]{waterLevelPegelonline}}
 #' 
-#' @examples \dontrun{
-#' library(hydflood)
-#' 
-#' # create a random points object
-#' c <- st_crs(25833)
-#' e <- c(xmin = 309000, xmax = 310000, ymin = 5749000, ymax = 5750000)
-#' set.seed(123)
-#' points <- st_sample(hydflood:::extent2polygon(e, c), size = 10, "random")
-#' p <- data.frame(id = 1:10)
-#' st_geometry(p) <- points
-#' 
-#' # create a temporal sequence
-#' seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
-#' 
-#' # compute a flood duration
-#' p <- flood3Points(x = p, seq = seq)
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   library(hydflood)
+#'   
+#'   # create a random points object
+#'   c <- st_crs(25833)
+#'   e <- st_as_sfc(st_bbox(c(xmin = 309000, xmax = 310000,
+#'                            ymin = 5749000, ymax = 5750000)))
+#'   st_crs(e) <- c
+#'   set.seed(123)
+#'   points <- st_sample(e, size = 10, "random")
+#'   p <- data.frame(id = 1:10)
+#'   st_geometry(p) <- points
+#'   
+#'   # create a temporal sequence
+#'   seq <- seq(as.Date("2016-12-01"), as.Date("2016-12-31"), by = "day")
+#'   
+#'   # compute a flood duration
+#'   p <- flood3Points(x = p, seq = seq)
 #' }
 #' 
 #' @export
@@ -189,11 +200,15 @@ flood3Points <- function(x, seq) {
         }
         for (i in unique(x$tile_name)) {
             id <- x[which(x$tile_name == i), ]$id_tmp
-            f <- paste0(hydflood_cache$cache_path_get(), "/", i, "_DEM.tif")
+            f <- paste0(options()$hydflood.datadir, "/", i, "_DEM.tif")
             if (!file.exists(f)) {
-                utils::download.file(
-                    sf.tiles$url[which(sf.tiles$tile_name == i)],
-                    f, quiet = TRUE)
+                url <- sf.tiles$url[which(sf.tiles$tile_name == i)]
+                tryCatch({
+                    utils::download.file(url, f, quiet = TRUE)
+                }, error = function(e){
+                    stop(paste0("It was not possible to download:\n",
+                                url, "\nTry again later!"))
+                })
             }
             x$dem[id] <- round(terra::extract(terra::rast(f),
                                               sf::st_coordinates(x[id, ]))[,1],
@@ -202,12 +217,18 @@ flood3Points <- function(x, seq) {
     }
     
     if (! "csa" %in% names(x)) {
-        csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
+        csa_file <- paste0(options()$hydflood.datadir, "/sf.af",
                            tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
-            url <- paste0("https://www.aqualogy.de/wp-content/uploads/bfg/sf",
-                          ".af", tolower(substring(river, 1, 1)), "_csa.rda")
-            utils::download.file(url, csa_file, quiet = TRUE)
+            url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
+                          tolower(substring(river, 1, 1)), "_csa.rda")
+            tryCatch({
+                utils::download.file(url, csa_file, quiet = TRUE)
+            }, error = function(e){
+                message(paste0("It was not possible to download:\n", url,
+                               "\nTry again later!"))
+                return(NULL)
+            })
         }
         load(csa_file)
         if (river == "Elbe") {

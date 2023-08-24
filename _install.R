@@ -18,8 +18,10 @@ packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack",
               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders",
               "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-              "usethis", "lattice", "pangaear", "hoardr", "rgrass7", "knitr",
-              "shiny.i18n")
+              "usethis", "lattice", "pangaear", "rgrass", "knitr",
+              "shiny.i18n", "prettymapr", "ggplot2", "maps", "rosm",
+              "sfheaders", "rnaturalearth", "rnaturalearthdata", "ggspatial",
+              "ggmap")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages()[, "Package"])) {
@@ -28,8 +30,15 @@ for (a_package in packages) {
 }
 
 # install the local package
-require(devtools)
+library(devtools)
 devtools::install(".", quick = TRUE)  #, dependencies = TRUE)
+
+# rnaturalearthhires
+if (!require("rnaturalearthhires")) {
+    install.packages("rnaturalearthhires",
+                     repos = "https://ropensci.r-universe.dev",
+                     type = "source")
+}
 
 # exit
 q("no")

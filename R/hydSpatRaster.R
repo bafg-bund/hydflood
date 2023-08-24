@@ -1,12 +1,12 @@
 #' @name hydSpatRaster
 #' @rdname hydSpatRaster
-#' @title Initialize a SpatRaster for the flood-functions
+#' @title Initialize a \code{SpatRaster} for the flood-functions
 #'
-#' @description To initialize an object of class \code{SpatRaster} with layers
-#'   dem and csa this function should be used. It checks all the required input
-#'   data, downloads missing data automatically, clips and returns the final
-#'   object, prepared for the \code{flood()} functions (\code{\link{flood1}},
-#'   \code{\link{flood2}} and \code{\link{flood3}}).
+#' @description To initialize an object of class \code{\link[terra]{SpatRaster}}
+#'   with layers dem and csa this function should be used. It checks all the
+#'   required input data, downloads missing data automatically, clips and
+#'   returns the final object, prepared for the \code{flood()} functions
+#'   (\code{\link{flood1}}, \code{\link{flood2}} and \code{\link{flood3}}).
 #'
 #' @param filename_dem an optional argument of length 1 with type
 #'   \code{character} specifying a filename of a **d**igital **e**levation
@@ -64,7 +64,8 @@
 #'   specified, \code{ext} must be within the extent of provided raster layers.
 #'   Then it is used to \code{\link[terra]{crop}} the supplied data.
 #' 
-#' @param crs optional argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}. If
+#' @param crs optional argument of type \code{\link[sf:st_crs]{crs}} or 
+#'   \code{\link[terra]{crs}}. If
 #'   neither \code{filename_dem} nor \code{filename_csa} are specified,
 #'   \code{crs} is used to select the respective river (Elbe:
 #'   'ETRS 1989 UTM 33N' (epsg: 25833); Rhine: 'ETRS 1989 UTM 32N' (epsg:
@@ -76,10 +77,21 @@
 #' @param \dots additional parameters passed to
 #'   \code{\link[terra]{writeRaster}}.
 #' 
-#' @return The function produces an object of class \code{SpatRaster}
-#'   containing digital elevation (\code{dem}) and cross section area
-#'   (\code{csa}) raster layers.
-#'
+#' @return \code{SpatRaster} object containing digital elevation (\code{dem})
+#'   and cross section area (\code{csa}) raster layers.
+#' 
+#' @details Since the underlying tiled digital elevation models (dem) are rather
+#'   large datasets hydflood provides options to permanentely cache these
+#'   datasets. \code{options("hydflood.datadir" = tempdir())} is the default. To
+#'   modify the location of your raster cache to your needs set the respective
+#'   \code{options()} prior to loading the package, e.g.
+#'   \code{options("hydflood.datadir" = "~/.hydflood");library(hydflood)}. The
+#'   location can also be determined through the environmental variable
+#'   \env{hydflood_datadir}.
+#'   
+#'   Since downloads of large individual datasets might cause timeouts, it is
+#'   recommended to increase \code{options("timeout")}.
+#' 
 #' @seealso \code{\link[terra]{SpatRaster-class}},
 #'   \code{\link[terra]{rast}}, \code{\link[terra]{writeRaster}},
 #'   \code{\link{flood1}}, \code{\link{flood2}}, \code{\link{flood3}},
@@ -110,11 +122,13 @@
 #'   
 #'   \insertRef{brunotte_flussauen_data_2009}{hydflood}
 #' 
-#' @examples \dontrun{
+#' @examples \donttest{
+#'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 120)
 #'   library(hydflood)
 #'   
 #'   e <- ext(436500, 438000, 5415000, 5416500)
-#'   c <- crs("EPSG:25832")
+#'   c <- st_crs("EPSG:25832")
 #'   
 #'   r <- hydSpatRaster(ext = e, crs = c)
 #'   r
@@ -302,9 +316,9 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         crs_int <- crs_int_ras
     }
     if (!missing(crs) & is.logical(crs_int_ras)) {
-        if (!inherits(crs, "CRS") & !inherits(crs, "crs")) {
+        if (!inherits(crs, "crs")) {
             errors <- c(errors, paste0("Error ", l(errors), ": 'crs' must ",
-                                       "be type 'CRS' or 'crs'."))
+                                       "be type 'crs'."))
         } else {
             crs_int <- crs
         }
@@ -388,12 +402,18 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     if (!file_exists_csa) {
         # download the packages csa_file, if it has not yet been stored locally,
         # and load it
-        csa_file <- paste0(hydflood_cache$cache_path_get(), "/sf.af",
+        csa_file <- paste0(options()$hydflood.datadir, "/sf.af",
                            tolower(substring(river, 1, 1)), "_csa.rda")
         if (!file.exists(csa_file)) {
             url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
                           tolower(substring(river, 1, 1)), "_csa.rda")
-            utils::download.file(url, csa_file, quiet = TRUE)
+            tryCatch({
+                utils::download.file(url, csa_file, quiet = TRUE)
+            }, error = function(e){
+                message(paste0("It was not possible to download:\n", url,
+                               "\nTry again later!"))
+                return(NULL)
+            })
         }
         load(csa_file)
         if (river == "Elbe") {
@@ -437,8 +457,6 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
                            resolution = 1, vals = NA)
         if (inherits(crs_int, "crs")) {
             terra::crs(csa) <- crs_int$wkt
-        } else if (inherits(crs_int, "CRS")) {
-            terra::crs(csa) <- crs_int@projargs
         } else if (inherits(crs_int, "character")) {
             terra::crs(csa) <- sf::st_crs(crs_int)$wkt
         } else {
@@ -467,13 +485,14 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
             dem <- getDEM(filename = filename_dem, ext = ext_int,
                           crs = sf::st_crs(crs_int), ...)
         } else {
-            dem <- getDEM(ext = ext_int, crs = sf::st_crs(crs_int))
+            dem <- getDEM(filename = tempfile(fileext = ".tif"), ext = ext_int,
+                          crs = sf::st_crs(crs_int))
         }
     }
     
     #####
     # assemble and return the product
-    x <- rast(list(dem = dem, csa = csa))
+    x <- terra::rast(list(dem = dem, csa = csa))
     return(x)
 }
 

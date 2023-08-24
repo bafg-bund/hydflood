@@ -533,9 +533,9 @@ function(input, output, session) {
                 #     layerId = as.character(year - (floor(year / 10) * 10)))
                 output$legend <- renderText(
                     i18n()$t(
-                        paste0("<p>Legend:</p><p><center>flood duration (d/y)<",
-                               "/center></p><center><img width=\"40%\" style=",
-                               "\"\" src=\"legend_en.png\"></center>")))
+                        paste0("<p>Legend:</p><p><center>flood duration</cente",
+                               "r></p><center><img width=\"40%\" style=\"\" sr",
+                               "c=\"legend_en.png\"></center>")))
                 
                 if (res$river == "Elbe") {
                     l %>% removeShape(layerId = c("afr"))

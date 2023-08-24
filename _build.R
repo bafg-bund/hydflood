@@ -24,7 +24,7 @@ write(" R variables", stdout())
 R_version <- getRversion()
 
 # assemble and create R version specific output paths
-build <- paste0("build/", R_version)
+build <- paste0("built/", R_version)
 dir.create(build, FALSE, TRUE)
 public <- "docs/"
 dir.create(public, FALSE, TRUE)
@@ -41,7 +41,6 @@ require(knitr)
 require(rmarkdown)
 require(pkgdown)
 require(hyd1d)
-require(hoardr)
 
 # set standard projections
 wgs84 <- st_crs(4326)
@@ -133,7 +132,7 @@ for (a_file in pkg_files) {
 #####
 # document
 write("#####", stdout())
-write(" document gitlab & website", stdout())
+write(" document git & website", stdout())
 
 # render the README.md
 if (!(file.exists("README.md"))) {
@@ -151,14 +150,14 @@ files <- list.files(path = public, pattern = "*[.]html",
                     ignore.case = FALSE, include.dirs = TRUE, no.. = FALSE)
 for (a_file in files) {
     x <- readLines(paste0(public, a_file))
-    if (grepl("/", a_file, fixed = TRUE)) {
+    if (grepl("/", a_file, fixed = TRUE)){
         write(a_file, stdout())
         y <- gsub('href="https://www.bafg.de">BfG</a>',
                   paste0('href="https://www.bafg.de"><img border="0" src="..',
                          '/bfg_logo.jpg" height="50px" width="114px"></a>'), x)
     } else {
-        y <- gsub('href="http://www.bafg.de">BfG</a>',
-                  paste0('href="http://www.bafg.de"><img border="0" src="bf',
+        y <- gsub('href="https://www.bafg.de">BfG</a>',
+                  paste0('href="https://www.bafg.de"><img border="0" src="bf',
                          'g_logo.jpg" height="50px" width="114px"></a>'), x)
     }
     # edit footer
@@ -179,11 +178,6 @@ rm(a_file, files, x, y, z)
 if (!(file.exists(paste0(public, "bfg_logo.jpg")))) {
     file.copy("pkgdown/bfg_logo.jpg", public)
 }
-
-# copy README_files into public
-dir.create(paste0(public, "README_files/figure-markdown_github"), FALSE, TRUE)
-file.copy("README_files/figure-markdown_github/usage-1.png", 
-          paste0(public, "README_files/figure-markdown_github"))
 
 #####
 # create docs/downloads directory and copy hydflood_*.tar.gz-files into it
@@ -215,7 +209,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "r.bafg.de" & user == "WeberA" & R_version == "4.2.1") {
+if (host == "pvil-r" & user == "WeberA" & R_version == "4.3.1") {
     # copy html output to ~/public_html
     system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
                   "l/hydflood/"))

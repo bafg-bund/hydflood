@@ -3,6 +3,9 @@ title: "hydflood - Vignette"
 author: "Arnd Weber"
 date: "`r Sys.Date()`"
 output:
+  html_vignette:
+    toc: yes
+    toc_depth: 3
   pdf_document:
     latex_engine: pdflatex
     keep_tex: no
@@ -22,9 +25,6 @@ output:
     toc: yes
     toc_depth: '3'
     df_print: paged
-  html_vignette:
-    toc: yes
-    toc_depth: 3
 bibliography: ../inst/REFERENCES.bib
 csl: apa_modified.csl
 link-citations: yes
@@ -83,10 +83,12 @@ $(document).ready(function() {
 
 ```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
 # set english locale to produce english plot labels
-Sys.setlocale(category = "LC_MESSAGES", locale = "en_US.utf8")
+Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
+options("hyd1d.datadir" = tempdir())
 library(hyd1d)
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 library(stringr)
 
@@ -168,20 +170,26 @@ along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-The package **hydflood** is currently not available from CRAN. To install 
-the recent developmental version from the Git server of the Federal 
-Institute of Hydrology (BfG) execute the following commands: 
+The package **hydflood** is available from CRAN. To install it run:
 
-```{r install_git, eval = FALSE}
+```{r install-cran, eval = FALSE}
+install.packages("hydflood")
+```
+
+To install the recent developmental version from Github execute the following
+commands:
+
+```{r install-git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://gitlab.lan.bafg.de/auenoekologie/hydflood.git")
+devtools::install_github("bafg-bund/hydflood")
 ```
 
 Afterwards **hydflood** can be loaded like every other R package with the 
 following command: 
 
-```{r library_print, eval = FALSE, echo = TRUE}
+```{r library-print, eval = FALSE, echo = TRUE}
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 ```
 
@@ -196,7 +204,7 @@ levels. The package [`terra`](https://cran.r-project.org/package=terra)
 provides the S4 class `SpatRaster` and thereby enables the GIS based comparison
 between extrapolated water levels and elevation data.
 
-```{r figure_dem, fig.show = 'asis', fig.cap = capFig("Digital elevation model of the waterway (DEM-W, in German: Digitales Geländemodell des Wasserlaufs, DGM-W) with 1 m spatial resolution at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-dem, fig.show = 'asis', fig.cap = capFig("Digital elevation model of the waterway (DEM-W, in German: Digitales Geländemodell des Wasserlaufs, DGM-W) with 1 m spatial resolution at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_dem.png')
 ```
 
@@ -204,7 +212,8 @@ knitr::include_graphics('./screenshot_hydflood_dem.png')
 models of the waterways Rhine and Elbe (DEM, @weber_dgms_2020) with 1 m spatial
 resolution for chosen extents. If necessary, alternative `dem`'s can be supplied
 by users. They just need to overlap with active floodplains of either the Rhine
-([`sf.afr`](reference/sf.afr.html)) or the Elbe ([`sf.afe`](reference/sf.afe.html)).
+([`sf.afr`](https://hydflood.bafg.de/reference/sf.afr.html)) or the Elbe
+([`sf.afe`](https://hydflood.bafg.de/reference/sf.afe.html)).
 
 To create a water surface raster, which can be compared to the `dem`, a simple
 1D to 2D conversion is applied to water level data computed along the river axis
@@ -213,15 +222,15 @@ so called cross section areas (`csa`) are needed. They originate from cross
 sections used for the SOBEK models run for and incorporated into
 [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
 
-```{r figure_cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssections.png')
 ```
 
-```{r figure_csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-csa, fig.show = 'asis', fig.cap = capFig("Cross section areas derived from the cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas.png')
 ```
 
-```{r figure_csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustrated in Fig. 3 overlaid by the corresponding cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-csacs, fig.show = 'asis', fig.cap = capFig("Cross section areas illustrated in Fig. 3 overlaid by the corresponding cross sections illustrated in Fig. 2 at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssectionareas_cs.png')
 ```
 
@@ -264,9 +273,9 @@ provide `ext` (an object of type `SpatExtent`) and `crs` (an object of class `CR
 Depending on the supplied coordinate reference system (supplied through either
 `filename_dem`, `filename_csa` or `crs`) the respective river is selected: For
 the River Rhine data with 'ETRS 1989 UTM 32N' (EPSG
-[25832](http://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
+[25832](https://spatialreference.org/ref/epsg/25832/)) have to be supplied, for
 the River Elbe 'ETRS 1989 UTM 32N' (EPSG
-[25833](http://spatialreference.org/ref/epsg/25833/)). If you can't provide
+[25833](https://spatialreference.org/ref/epsg/25833/)). If you can't provide
 dem and csa yourself, `hydflood` provides csa data internally and downloads
 the official digital elevation models of the German Waterway and Shipping
 Administration with 1 m spatial resolution. Therefore you definitely need internet
@@ -308,10 +317,10 @@ plot(fd)
 
 ## Raster data
 
-Raster data with annual flood durations between 1990 and 2021 for the active 
-floodplains of the River Rhine and the River Elbe have been submitted to
-[pangaea.de](https://www.pangaea.de). As soon as they have been reviewed and
-been published, they will be linked here.
+Raster data with annual flood durations between 1960 and 2021 for the active 
+floodplains of the River Rhine and the River Elbe have been submitted to and
+published on [pangaea.de](https://www.pangaea.de)
+[@weber_flood3data_2022; @weber_flood3data_2023].
 
 <BR>
 
@@ -321,42 +330,43 @@ been published, they will be linked here.
 
 ### flood3daily
 
-The [`flood3`](reference/flood3.html) function is the central function of the package
-**hydflood**. With the help of this function daily flood extents are computed
-for a number of areas along the River Elbe. These products are visualized
-through a shiny web application available through:
+The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
+central function of the package **hydflood**. With the help of this function
+daily flood extents are computed for a number of areas along the River Elbe.
+These products are visualized through a shiny web application available through:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3daily/}
+\url{https://shiny.bafg.de/flood3daily/}
 \end{center}
 
-``` {r link_flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3daily/" target="_blank">https://hydflood.bafg.de/shinyapps/flood3daily/</a></p>')
+``` {r link-flood3daily, eval = is_html, echo = FALSE, results = 'asis'}
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3daily/" target="_blank">https://shiny.bafg.de/flood3daily/</a></p>')
 ```
 
-```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3daily/"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure1, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3daily-ShinyApp", "https://shiny.bafg.de/flood3daily/"), " with the modelled flood extent computed for 2016-12-21 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3daily.png')
 ```
 
 <BR>
 
-## flood3wms
+### flood3wms
 
-The [`flood3`](reference/flood3.html) function is the central function of the package
-**hydflood**. With the help of this function annual flood durations between 1990
-and 2021 have been computed for the active floodplains of the River Rhine and
-the River Elbe. These large scale raster products have been visualized as web
-map services and are available through a shiny web application:
+The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
+central function of the package **hydflood**. With the help of this function
+annual flood durations between 1990 and 2022 have been computed for the active
+floodplains of the River Rhine and the River Elbe. These large scale raster
+products have been visualized as web map services and are available through a
+shiny web application:
 
 \begin{center}
-\url{https://hydflood.bafg.de/shinyapps/flood3wms/}
+\url{https://shiny.bafg.de/flood3wms/}
 \end{center}
 
-``` {r link_waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
-cat('<p style="text-align: center;"><a href="https://hydflood.bafg.de/shinyapps/flood3wms/" target="_blank">https://hydflood.bafg.de/shinyapps/flood3wms/</a></p>')
+``` {r link-waterlevelpegelonline, eval = is_html, echo = FALSE, results = 'asis'}
+cat('<p style="text-align: center;"><a href="https://shiny.bafg.de/flood3wms/" target="_blank">https://shiny.bafg.de/flood3wms/</a></p>')
 ```
 
-```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://hydflood.bafg.de/shinyapps/flood3wms/"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
+```{r figure2, echo = FALSE, fig.cap = capFig(paste0("Screenshot of the ", href("flood3wms-ShinyApp", "https://shiny.bafg.de/flood3wms/"), " with the annual flood duration of 2016 at the River Elbe between Rosslau and Dessau, Germany.")), fig.show = 'asis', out.width = "100%"}
 knitr::include_graphics('screenshot_flood3wms.png')
 ```
 

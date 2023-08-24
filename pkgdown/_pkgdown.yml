@@ -36,7 +36,6 @@ reference:
       - "`createTiles`"
       - "`createEstuaryCSA`"
       - "`getDEM`"
-      - "`hydflood_cache`"
       - "`w80ToSFL`"
       - "`w80ToSFP`"
 navbar:
@@ -47,24 +46,22 @@ navbar:
         href: articles/hydflood.html
       - text: "Präsentation (DE)"
         href: articles/presentation_DE.html
+      - text: "Präsentation AÖW 2023-03-30 (DE)"
+        href: articles/presentation_aow.html
     - text: Reference
       href: reference/index.html
     - text: "ShinyApps"
       menu:
       - text: "flood3WMS"
-        href: shinyapps/flood3wms
+        href: https://shiny.bafg.de/flood3wms/
       - text: "flood3daily"
-        href: shinyapps/flood3daily
+        href: https://shiny.bafg.de/flood3daily/
   right:
     - text: BfG
       href: https://www.bafg.de
+    - icon: fa-github
+      href: https://github.com/bafg-bund/hydflood
 footer:
   structure: 
     left: built_with
     right: developed_by
-repo:
-  url:
-    home: https://gitlab.lan.bafg.de/auenoekologie/hydflood/
-    source: https://gitlab.lan.bafg.de/auenoekologie/hydflood/-/blob/main/
-    issue: https://gitlab.lan.bafg.de/auenoekologie/hydflood/issues/
-    user: https://gitlab.lan.bafg.de/auenoekologie/

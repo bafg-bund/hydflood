@@ -9,9 +9,9 @@
 #'   
 #'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
 #'   
-#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01} \cr
+#'   \code{W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01} \cr
 #'   
-#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01} \cr
+#'   \code{W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01} \cr
 #'   
 #'   Within each row very specific sections code for specific attributes:
 #'   
@@ -42,32 +42,40 @@
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}.
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or \code{\link[terra]{crs}}.
 #' @param id argument of type \code{character} specifying a grouping column.
 #' 
 #' @return \code{sfc_LINESTRING}.
 #' 
-#' @examples \dontrun{
+#' @examples
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
-#'   c <- crs("EPSG:25833")
-#'   sl <- w80ToSFL("data-raw/test.w80", c, "station_int")
-#' }
+#'   c <- st_crs("EPSG:25833")
+#'   filename <- tempfile(fileext = ".w80")
+#'   
+#'   # write temporary w80 file
+#'   cat("W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01\n",
+#'       file = filename)
+#'   cat("W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01\n",
+#'       file = filename, append = TRUE)
+#'   
+#'   # import temporary w80 file as sf LINESTRING
+#'   sl <- w80ToSFL(filename, c, "station_int")
 #' 
 #' @export
 #' 
-w80ToSFL <- function(filename, crs,
-                                       id = c("sid", "fwid", "wsvpt",
-                                              "station", "bank", "id", "x",
-                                              "y", "date_coor", "acc_coor",
-                                              "z", "date_z", "acc_z", "tom",
-                                              "comment", "status", "lat",
-                                              "lon", "station_int",
-                                              "station_c")) {
+w80ToSFL <- function(filename, crs, id = c("sid", "fwid", "wsvpt",
+                                           "station", "bank", "id", "x",
+                                           "y", "date_coor", "acc_coor",
+                                           "z", "date_z", "acc_z", "tom",
+                                           "comment", "status", "lat",
+                                           "lon", "station_int",
+                                           "station_c")) {
     
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(inherits(crs, "CRS") | inherits(crs, "crs"))
+    stopifnot(inherits(crs, "crs"))
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)
@@ -156,9 +164,9 @@ w80ToSFL <- function(filename, crs,
 #'   
 #'   \code{|_1_|2_|_3______|4|____________5______________|_______6_______|_____7___|_8_|} \cr
 #'   
-#'   \code{W0701 55 2279152 01453491549357491793252804043 6424102804045  935  Bu.21 01} \cr
+#'   \code{W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01} \cr
 #'   
-#'   \code{W0701495 2279152 02453491287057491789982804043 6391902804045  935  Bu.21 01} \cr
+#'   \code{W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01} \cr
 #'   
 #'   Within each row very specific sections code for specific attributes:
 #'   
@@ -186,14 +194,24 @@ w80ToSFL <- function(filename, crs,
 #' 
 #' @param filename argument of length 1 and type \code{character} specifying
 #'   an existing w80-file.
-#' @param crs argument of type \code{\link[sp]{CRS}} or \code{\link[terra]{crs}}.
+#' @param crs argument of type \code{\link[sf:st_crs]{crs}} or \code{\link[terra]{crs}}.
 #' 
 #' @return \code{sfc_POINT}.
 #' 
-#' @examples \dontrun{
+#' @examples
+#'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)
-#'   sf <- w80ToSFP("data-raw/test.w80", crs("EPSG:25833"))
-#' }
+#'   c <- st_crs("EPSG:25833")
+#'   filename <- tempfile(fileext = ".w80")
+#'   
+#'   # write temporary w80 file
+#'   cat("W0701 55 2594611   1330938065557502425901108035 5795591108035         Bu.15   01\n",
+#'       file = filename)
+#'   cat("W0701 57 2594611   7330932961457502484041108035 5538181108035         Bu.15   01\n",
+#'       file = filename, append = TRUE)
+#'   
+#'   # import temporary w80 file as sf POINT
+#'   sf <- w80ToSFP(filename, c)
 #' 
 #' @export
 #' 
@@ -202,7 +220,7 @@ w80ToSFP <- function(filename, crs) {
     # check input
     stopifnot(is.character(filename),length(filename) == 1,
               file.exists(filename))
-    stopifnot(inherits(crs, "CRS") | inherits(crs, "crs"))
+    stopifnot(inherits(crs, "crs"))
     
     # read all lines
     lines <- readLines(con <- file(filename, encoding="UTF-8"), warn = FALSE)
@@ -254,6 +272,7 @@ w80ToSFP <- function(filename, crs) {
     df$tom[which(df$tom == "   ")] <- NA
     df$comment <- substring(lines, 65, 78)
     df$comment[which(df$comment == "              ")] <- NA
+    df$comment <- trimws(df$comment)
     df$status <- substring(lines, 79, 80)
     df$station_int <- as.integer(df$station * 1000)
     df$station_c <- as.character(df$station_int)
@@ -262,8 +281,10 @@ w80ToSFP <- function(filename, crs) {
     sf <- sf::st_as_sf(df, coords = c("x", "y"), crs = crs)
     
     # add columns lat and lon
-    sf$lat <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$Y
-    sf$lon <- sf::st_coordinates(sf::st_transform(sf, sf::st_crs("EPSG:4326")))$X
+    sf$lat <- sf::st_coordinates(
+        sf::st_transform(sf, sf::st_crs("EPSG:4326")))[, "Y"]
+    sf$lon <- sf::st_coordinates(
+        sf::st_transform(sf, sf::st_crs("EPSG:4326")))[, "X"]
     
     return(sf)
 }

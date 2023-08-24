@@ -3,18 +3,15 @@
 ^\.Rproj\.user$
 ^_build\.log$
 ^_build\.R$
-^build$
+^built$
 ^\.commit$
 ^data-raw$
 ^.*\.dat$
 ^doc$
 ^docs$
-^\.gitlab-ci\.yml$
 ^_install\.R$
 ^makefile$
 ^Meta$
-^public$
-^README_files$
 ^README\.Rmd$
 ^pkgdown$
 ^_pkgdown\.yml$
@@ -24,6 +21,7 @@
 ^vignettes/flood3-2fps-.*\.mp4$
 ^vignettes/graphical_abstract$
 ^vignettes/graphical_abstract\.R$
+^vignettes/images$
 ^vignettes/latex/Thumbs\.db$
 ^vignettes/map\.png$
 ^vignettes/map\.Rmd$
@@ -36,5 +34,5 @@
 ^vignettes/rosm.cache$
 ^vignettes/Thumbs\.db$
 ^vignettes/wms-legends$
+^vignettes/.*\.pdf$
 ^vignettes/.*\.xcf$
-

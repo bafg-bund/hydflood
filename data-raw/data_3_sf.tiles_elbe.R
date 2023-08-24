@@ -6,6 +6,7 @@ if (!(file.exists("data/sf.tiles_elbe.rda"))) {
     
     # import shape
     sf.tiles_elbe <- st_read("data-raw/tiles_elbe.shp")
+    names(sf.tiles_elbe) <- tolower(names(sf.tiles_elbe))
     
     # transformation into WGS 84
     sf.tiles_elbe_wgs84 <- st_transform(sf.tiles_elbe, wgs84)
@@ -15,19 +16,19 @@ if (!(file.exists("data/sf.tiles_elbe.rda"))) {
     sf.tiles_elbe$xmax <- integer(nrow(sf.tiles_elbe))
     sf.tiles_elbe$ymin <- integer(nrow(sf.tiles_elbe))
     sf.tiles_elbe$ymax <- integer(nrow(sf.tiles_elbe))
-    sf.tiles_elbe$lon_min <- numeric(nrow(sf.tiles_elbe))
-    sf.tiles_elbe$lon_max <- numeric(nrow(sf.tiles_elbe))
-    sf.tiles_elbe$lat_min <- numeric(nrow(sf.tiles_elbe))
-    sf.tiles_elbe$lat_max <- numeric(nrow(sf.tiles_elbe))
+    sf.tiles_elbe$lon_xmin <- numeric(nrow(sf.tiles_elbe))
+    sf.tiles_elbe$lon_xmax <- numeric(nrow(sf.tiles_elbe))
+    sf.tiles_elbe$lat_ymin <- numeric(nrow(sf.tiles_elbe))
+    sf.tiles_elbe$lat_ymax <- numeric(nrow(sf.tiles_elbe))
     for (i in 1:nrow(sf.tiles_elbe)) {
         sf.tiles_elbe$xmin[i] <- as.integer(floor(st_bbox(sf.tiles_elbe[i,])$xmin))
         sf.tiles_elbe$xmax[i] <- as.integer(floor(st_bbox(sf.tiles_elbe[i,])$xmax))
         sf.tiles_elbe$ymin[i] <- as.integer(floor(st_bbox(sf.tiles_elbe[i,])$ymin))
         sf.tiles_elbe$ymax[i] <- as.integer(floor(st_bbox(sf.tiles_elbe[i,])$ymax))
-        sf.tiles_elbe$lon_xmin[i] <- as.integer(floor(st_bbox(sf.tiles_elbe_wgs84[i,])$xmin))
-        sf.tiles_elbe$lon_xmax[i] <- as.integer(floor(st_bbox(sf.tiles_elbe_wgs84[i,])$xmax))
-        sf.tiles_elbe$lat_ymin[i] <- as.integer(floor(st_bbox(sf.tiles_elbe_wgs84[i,])$ymin))
-        sf.tiles_elbe$lat_ymax[i] <- as.integer(floor(st_bbox(sf.tiles_elbe_wgs84[i,])$ymax))
+        sf.tiles_elbe$lon_xmin[i] <- st_bbox(sf.tiles_elbe_wgs84[i,])$xmin
+        sf.tiles_elbe$lon_xmax[i] <- st_bbox(sf.tiles_elbe_wgs84[i,])$xmax
+        sf.tiles_elbe$lat_ymin[i] <- st_bbox(sf.tiles_elbe_wgs84[i,])$ymin
+        sf.tiles_elbe$lat_ymax[i] <- st_bbox(sf.tiles_elbe_wgs84[i,])$ymax
     }
     
     # pangaea

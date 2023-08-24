@@ -6,6 +6,7 @@ output:
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
     echo = TRUE,
+    fig.path = "man/figures/README-",
     fig.align="center",
     fig.width = 6,
     fig.height = 4)
@@ -15,18 +16,30 @@ knitr::opts_chunk$set(
 
 # hydflood
 
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/hydflood)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/last-month/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![](https://cranlogs.r-pkg.org/badges/last-week/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+<!-- badges: end -->
+
 The R package **hydflood** is designed to compute flood extents and durations 
 along the German federal waterways Elbe and Rhine.
 
 ## Installation
 
-**hydflood** is currently not available from CRAN, but you can install the 
-developmental version from BfG's gitlab server with:
+hyd1d is available from CRAN. To install it run:
+
+```{r install_cran, eval = FALSE}
+install.packages("hydflood")
+```
+
+To install the latest development version from Github run:
 
 ```{r install_git, eval = FALSE}
 install.packages("devtools")
 library(devtools)
-devtools::install_git("git://gitlab.lan.bafg.de/auenoekologie/hydflood.git")
+devtools::install_github("bafg-bund/hydflood")
 ```
 
 ## Usage
@@ -45,6 +58,7 @@ Sys.setlocale(category = "LC_MESSAGES", locale = "en_US")
 
 ```{r usage, eval = TRUE, error = FALSE, warning = FALSE, message = FALSE}
 # load the package
+options("hydflood.datadir" = tempdir())
 library(hydflood)
 
 # import the raster data and create a raster stack
