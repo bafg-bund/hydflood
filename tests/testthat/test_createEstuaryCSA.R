@@ -11,8 +11,6 @@ test_that("createEstuaryCSA: checks", {
         density <- 1/1000
         gs <- st_read("~/hydflood/data-raw", "estuary_gs")
         
-        y <- createEstuaryCSA(x, axis, left, right, density, gs)
-        
         # check x
         expect_error(createEstuaryCSA(x = 1, axis, left, right, density, gs),
                      'inherits(x, "sf") | inherits(x, "sfc")', fixed = TRUE)
@@ -139,6 +137,23 @@ test_that("createEstuaryCSA: checks", {
         expect_error(createEstuaryCSA(x, axis, left, right, density, gs_shift),
                      'any(sf::st_intersects(x, gs, sparse = FALSE))',
                      fixed = TRUE)
+        
+        # mode
+        expect_error(createEstuaryCSA(x, axis, left, right, density, gs,
+                                      mode = 1),
+                     'inherits(mode, "character")', fixed = TRUE)
+        expect_error(createEstuaryCSA(x, axis, left, right, density, gs,
+                                      mode = c("default", "lines")),
+                     'length(mode) == 1', fixed = TRUE)
+        expect_error(createEstuaryCSA(x, axis, left, right, density, gs,
+                                      mode = "test"),
+                     'mode == "default" | mode == "lines"', fixed = TRUE)
+        
+        # no error
+        expect_no_error(
+            createEstuaryCSA(x, axis, left, right, density, gs, "default"))
+        expect_no_error(
+            createEstuaryCSA(x, axis, left, right, density, gs, "lines"))
     }
 })
 
