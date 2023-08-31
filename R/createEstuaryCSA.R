@@ -351,12 +351,13 @@ createEstuaryCSA <- function(x, axis, left, right, density, gs,
         stations_left$station_int <- stations$station_int[stations_left$id]
         stations_right$station <- stations$station[stations_right$id]
         stations_right$station_int <- stations$station_int[stations_right$id]
+        row.names(stations_left) <- 1:nrow(stations_left)
+        row.names(stations_right) <- 1:nrow(stations_right)
         
         # loop over (almost) all stations to construct the CSA
         for (i in 2:(nrow(stations_left) - 1)) {
             
             # id
-            id <- stations_left$id[i]
             id_s <- which(stations$id == stations_left$id[i])
             
             # axis
@@ -380,32 +381,32 @@ createEstuaryCSA <- function(x, axis, left, right, density, gs,
                 l1 <- l2
             } else {
                 l1 <- data.frame(
-                    x = (st_coordinates(stations_left$geometry[id - 1])[, "X"] +
-                             st_coordinates(stations_left$geometry[id])[, "X"]) / 2,
-                    y = (st_coordinates(stations_left$geometry[id - 1])[, "Y"] +
-                             st_coordinates(stations_left$geometry[id])[, "Y"]) / 2)
+                    x = (st_coordinates(stations_left$geometry[i - 1])[, "X"] +
+                             st_coordinates(stations_left$geometry[i])[, "X"]) / 2,
+                    y = (st_coordinates(stations_left$geometry[i - 1])[, "Y"] +
+                             st_coordinates(stations_left$geometry[i])[, "Y"]) / 2)
             }
             l2 <- data.frame(
-                x = (st_coordinates(stations_left$geometry[id])[, "X"] +
-                         st_coordinates(stations_left$geometry[id + 1])[, "X"]) / 2,
-                y = (st_coordinates(stations_left$geometry[id])[, "Y"] +
-                         st_coordinates(stations_left$geometry[id + 1])[, "Y"]) / 2)
+                x = (st_coordinates(stations_left$geometry[i])[, "X"] +
+                         st_coordinates(stations_left$geometry[i + 1])[, "X"]) / 2,
+                y = (st_coordinates(stations_left$geometry[i])[, "Y"] +
+                         st_coordinates(stations_left$geometry[i + 1])[, "Y"]) / 2)
             
             # right
             if (exists("r2")) {
                 r1 <- r2
             } else {
                 r1 <- data.frame(
-                    x = (st_coordinates(stations_right$geometry[id - 1])[, "X"] +
-                             st_coordinates(stations_right$geometry[id])[, "X"]) / 2,
-                    y = (st_coordinates(stations_right$geometry[id - 1])[, "Y"] +
-                             st_coordinates(stations_right$geometry[id])[, "Y"]) / 2)
+                    x = (st_coordinates(stations_right$geometry[i - 1])[, "X"] +
+                             st_coordinates(stations_right$geometry[i])[, "X"]) / 2,
+                    y = (st_coordinates(stations_right$geometry[i - 1])[, "Y"] +
+                             st_coordinates(stations_right$geometry[i])[, "Y"]) / 2)
             }
             r2 <- data.frame(
-                x = (st_coordinates(stations_right$geometry[id])[, "X"] +
-                         st_coordinates(stations_right$geometry[id + 1])[, "X"]) / 2,
-                y = (st_coordinates(stations_right$geometry[id])[, "Y"] +
-                         st_coordinates(stations_right$geometry[id + 1])[, "Y"]) / 2)
+                x = (st_coordinates(stations_right$geometry[i])[, "X"] +
+                         st_coordinates(stations_right$geometry[i + 1])[, "X"]) / 2,
+                y = (st_coordinates(stations_right$geometry[i])[, "Y"] +
+                         st_coordinates(stations_right$geometry[i + 1])[, "Y"]) / 2)
             
             pol <- as.matrix(rbind(a1, l1, l2, a2, r2, r1, a1))
             colnames(pol) <- c("X", "Y")
@@ -413,10 +414,10 @@ createEstuaryCSA <- function(x, axis, left, right, density, gs,
             
             sf.pol <- st_as_sf(
                 data.frame(geometry = st_sfc(st_polygon(list(pol))),
-                           id = id,
+                           id = i,
                            station = stations$station[id_s],
                            station_int = stations$station_int[id_s],
-                           section = stations_left$section[id]),
+                           section = stations_left$section[i]),
                 crs = st_crs(x))
             
             if (nrow(sf.pol) > 1) {browser()}
@@ -436,15 +437,17 @@ createEstuaryCSA <- function(x, axis, left, right, density, gs,
         # add missing start
         sf.start <- sf.res_remain[stations[1,],]
         if ("FID" %in% names(sf.start)) {sf.start$FID <- NULL}
-        sf.start$id <- stations$id[1]
-        sf.start$station <- stations$station[1]
-        sf.start$station_int <- stations$station_int[1]
+        sf.start$id <- 1
+        sf.start$station <- stations$station[which(stations$id == 
+                                                       stations_left$id[1])]
+        sf.start$station_int <- stations$station_int[
+            which(stations$id == stations_left$id[1])]
         sf.start$section <- 1
         
         # add missing end
         sf.end <- sf.res_remain[stations[id_s + 1,],]
         if ("FID" %in% names(sf.end)) {sf.end$FID <- NULL}
-        sf.end$id <- stations$id[id_s + 1]
+        sf.end$id <- nrow(sf.res) + 2
         sf.end$station <- stations$station[id_s + 1]
         sf.end$station_int <- stations$station_int[id_s + 1]
         sf.end$section <- nrow(gs) - 1
