@@ -228,9 +228,10 @@ getDEM <- function(filename = '', ext, crs, ...) {
             return(raster.dem)
         }
     }
-    
-    nrows <- as.integer((ext_int@ptr$vector[4] - ext_int@ptr$vector[3]))
-    ncols <- as.integer((ext_int@ptr$vector[2] - ext_int@ptr$vector[1]))
+	
+    vext <- as.vector(ext_int)
+    nrows <- as.integer((vext[4] - vext[3]))
+    ncols <- as.integer((vext[2] - vext[1]))
     
     in_memory <- raster::canProcessInMemory(raster::raster(nrows = nrows,
                                                            ncols = ncols,
