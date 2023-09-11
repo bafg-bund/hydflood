@@ -47,6 +47,11 @@
 #'   \code{\link[terra]{writeRaster}}, 
 #'   \code{\link[terra]{terraOptions}}
 #' 
+#' @references 
+#'   \insertRef{weber_flood3data_2022}{hydflood}
+#'   
+#'   \insertRef{weber_flood3data_2023}{hydflood}
+#' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
 #'   library(hydflood)

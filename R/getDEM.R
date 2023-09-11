@@ -218,7 +218,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
     #####
     # processing
     if (crop) {
-        return(terra::crop(raster.dem, sf.ext))
+        return(terra::crop(raster.dem, vect(sf.ext)))
     }
     if (file.exists(filename) & missing(ext) & missing(crs)) {
         return(raster.dem)
@@ -229,8 +229,8 @@ getDEM <- function(filename = '', ext, crs, ...) {
         }
     }
     
-    nrows <- as.integer((ext_int@ptr$vector[4] - ext_int@ptr$vector[3]))
-    ncols <- as.integer((ext_int@ptr$vector[2] - ext_int@ptr$vector[1]))
+    nrows <- as.integer(ymax(ext_int) - ymin(ext_int))
+    ncols <- as.integer(xmax(ext_int) - xmin(ext_int))
     
     in_memory <- raster::canProcessInMemory(raster::raster(nrows = nrows,
                                                            ncols = ncols,
