@@ -1,5 +1,6 @@
 # hydflood
 
+* use the stable user interface of class `SpatExtent` in terra (Issue #16)
 * add reference to the flood3 data computed for 2022 and published on pangaea.de
 
 # hydflood 0.5.5
