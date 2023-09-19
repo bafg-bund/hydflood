@@ -20,7 +20,7 @@ dev:
 	module purge; \
 	module load i4/R/devel; \
 	module list; \
-	Rscript -e 'devtools::check(".", document = TRUE, manual = TRUE, error_on = "never", build_args = c("--compact-vignettes=both"))'
+	Rscript -e 'devtools::check(".", document = TRUE, run_dont_test = TRUE, manual = TRUE, error_on = "never", build_args = c("--compact-vignettes=both"))'
 
 syncel2scr:
 	rsync -av --include='*.tif' --exclude='*' /home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tiff/flood3/ /scratch/webera/flood3/
