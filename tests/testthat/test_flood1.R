@@ -107,8 +107,8 @@ test_that("flood1: Elbe", {
         fd <- flood1(x = x, seq = seq, gauging_station = "DESSAU")
         
         expect_equal(class(fd)[1], "SpatRaster")
-        expect_equal(fd@ptr$range_max, length(seq))
-        expect_equal(fd@ptr$range_min, 0)
+        expect_equal(minmax(fd)["max",], length(seq))
+        expect_equal(minmax(fd)["min",], 0)
     }
 })
 
@@ -128,8 +128,8 @@ test_that("flood1: Rhine", {
         fd <- flood1(x = x, seq = seq, gauging_station = "PLITTERSDORF")
         
         expect_equal(class(fd)[1], "SpatRaster")
-        expect_equal(fd@ptr$range_max, length(seq))
-        expect_equal(fd@ptr$range_min, 0)
+        expect_equal(minmax(fd)["max",], length(seq))
+        expect_equal(minmax(fd)["min",], 0)
     }
 })
 

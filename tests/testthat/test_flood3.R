@@ -18,8 +18,8 @@ test_that("Elbe", {
         fd <- flood3(x = x, seq = seq)
         
         expect_equal(class(fd)[1], "SpatRaster")
-        expect_equal(fd@ptr$range_max, length(seq))
-        expect_equal(fd@ptr$range_min, 0)
+        expect_equal(minmax(fd)["max",], length(seq))
+        expect_equal(minmax(fd)["min",], 0)
         
         # errors
         # x missing
@@ -88,8 +88,8 @@ test_that("Rhine", {
         fd <- flood3(x = x, seq = seq)
         
         expect_equal(class(fd)[1], "SpatRaster")
-        expect_equal(fd@ptr$range_max, length(seq))
-        expect_equal(fd@ptr$range_min, 0)
+        expect_equal(minmax(fd)["max",], length(seq))
+        expect_equal(minmax(fd)["min",], 0)
         
         # errors
         # x missing
