@@ -1,5 +1,6 @@
 # hydflood 0.5.6
 
+* set download.file mode = "wb" on windows
 * check package on r-hub.io
 * reduce spatial extent of the example of classifyToPNV, thereby computational efforts, to reduce check duration
 * use the stable user interface of class `SpatExtent` in terra (Issue #16)
