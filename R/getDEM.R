@@ -256,12 +256,15 @@ getDEM <- function(filename = '', ext, crs, ...) {
     
     merge_files <- list(nrow(sf.tiles))
     missing_files <- NA_character_
+    mode <- ifelse(.Platform$OS.type == "windows", "wb", "w")
     for (i in 1:nrow(sf.tiles)) {
         file <- paste0(options()$hydflood.datadir, "/", sf.tiles$name[i],
                        "_DEM.tif")
         if (!file.exists(file)) {
+            
             tryCatch({
-                utils::download.file(sf.tiles$url[i], file, quiet = TRUE)
+                utils::download.file(sf.tiles$url[i], file, quiet = TRUE,
+                                     mode = mode)
             }, error = function(e){
                 mess <- paste0("It was not possible to download:\n",
                                sf.tiles$url[i], "\nPlease try again!")

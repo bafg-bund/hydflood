@@ -407,8 +407,9 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
         if (!file.exists(csa_file)) {
             url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
                           tolower(substring(river, 1, 1)), "_csa.rda")
+            mode <- ifelse(.Platform$OS.type == "windows", "wb", "w")
             tryCatch({
-                utils::download.file(url, csa_file, quiet = TRUE)
+                utils::download.file(url, csa_file, quiet = TRUE, mode = mode)
             }, error = function(e){
                 message(paste0("It was not possible to download:\n", url,
                                "\nTry again later!"))

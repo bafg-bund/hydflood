@@ -189,6 +189,7 @@ flood3Points <- function(x, seq) {
     }
     
     tile_name <- FALSE
+    mode <- ifelse(.Platform$OS.type == "windows", "wb", "w")
     if (!"dem" %in% names(x)) {
         x$dem <- numeric(nrow(x))
         if (!"tile_name" %in% names(x)) {
@@ -204,7 +205,7 @@ flood3Points <- function(x, seq) {
             if (!file.exists(f)) {
                 url <- sf.tiles$url[which(sf.tiles$tile_name == i)]
                 tryCatch({
-                    utils::download.file(url, f, quiet = TRUE)
+                    utils::download.file(url, f, quiet = TRUE, mode = mode)
                 }, error = function(e){
                     stop(paste0("It was not possible to download:\n",
                                 url, "\nTry again later!"))
@@ -223,7 +224,7 @@ flood3Points <- function(x, seq) {
             url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
                           tolower(substring(river, 1, 1)), "_csa.rda")
             tryCatch({
-                utils::download.file(url, csa_file, quiet = TRUE)
+                utils::download.file(url, csa_file, quiet = TRUE, mode = mode)
             }, error = function(e){
                 message(paste0("It was not possible to download:\n", url,
                                "\nTry again later!"))
