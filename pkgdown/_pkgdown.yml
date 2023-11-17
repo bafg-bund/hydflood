@@ -55,6 +55,8 @@ navbar:
         href: https://shiny.bafg.de/flood3wms/
       - text: "flood3daily"
         href: https://shiny.bafg.de/flood3daily/
+    - text: Changelog
+      href: news/index.html
   right:
     - text: BfG
       href: https://www.bafg.de
