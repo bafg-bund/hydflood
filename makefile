@@ -28,6 +28,7 @@ rhub:
 	module load i4/R/devel; \
 	module list; \
 	Rscript -e 'rhub::check(".", platforms = "debian-gcc-devel", check_args = "--run-donttest")'
+	Rscript -e 'rhub::check(".", platforms = "windows-x86_64-devel", check_args = "--run-donttest")'
 
 syncel2scr:
 	rsync -av --include='*.tif' --exclude='*' /home/WeberA/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tiff/flood3/ /scratch/webera/flood3/

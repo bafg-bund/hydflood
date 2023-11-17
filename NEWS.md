@@ -1,3 +1,8 @@
+# hydflood 0.5.7
+
+* adapt BfG's new corporate design
+* link the changelog in the pkgdown navbar
+
 # hydflood 0.5.6
 
 * set download.file mode = "wb" on windows

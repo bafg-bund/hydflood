@@ -27,3 +27,12 @@
 .text-muted {
     color: #FFF !important;
 }
+
+.bfglogo {
+     opacity: 0.7;
+}
+
+.bfglogo:hover {
+     opacity: 1;
+}
+
