@@ -1,5 +1,6 @@
 # hydflood
 
+* adapt BfG's new corporate design
 * link the changelog in the pkgdown navbar
 
 # hydflood 0.5.6

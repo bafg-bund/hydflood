@@ -7,6 +7,8 @@ Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
             person("Stephan", "Rosenzweig", email = "rosenzweig@bafg.de",
+                    role = c("ctb")),
+             person("Benjamin", "Eberhardt", email="eberhardt@bafg.de",
                     role = c("ctb")))
 Description: Raster based flood modelling internally using 'hyd1d', an R package
     to interpolate 1d water level and gauging data. The package computes flood
