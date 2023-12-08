@@ -13,8 +13,6 @@ library(leaflet.extras)
 library(leaflet.esri)
 library(sp)
 library(raster)
-library(rgdal)
-library(rgeos)
 library(hyd1d)
 library(hydflood)
 
@@ -142,7 +140,7 @@ load("data/spdf.station.rda")
 
 years <- seq(1990, as.numeric(strftime(Sys.Date(), "%Y")) - 1, 1)
 
-url_base <- "https://geoportal.bafg.de/arcgis3/services/flood3/2022_"
+url_base <- "https://geoportal.bafg.de/arcgis/services/flood3/2022_"
 
 # https://geoportal.bafg.de/arcgis3/services/Flut3/2022_rhine_1990_1999/MapServer/WMSServer?
 
