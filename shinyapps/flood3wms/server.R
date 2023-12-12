@@ -28,7 +28,19 @@ function(input, output, session) {
     
     # basemap
     output$map <- renderLeaflet({
-        leaflet() %>% addTiles() %>% 
+        leaflet() %>% 
+            addWMSTiles(
+                baseUrl = "https://sgx.geodatenzentrum.de/wms_topplus_open?",
+                layers = "web", group = "TopPlusOpen",
+                options = WMSTileOptions(format = "image/png",
+                                         crs = st_crs("epsg:4326"),
+                                         transparent = TRUE),
+                attribution = paste0("BKG (", strftime(Sys.Date(), "%Y"),
+                                     "), <a href=\"https://sgx.geodatenzentrum",
+                                     ".de/web_public/gdz/datenquellen/Datenque",
+                                     "llen_TopPlusOpen.html\">",
+                                     i18n()$t("data source"), "</a>")
+                ) %>% 
             setMaxBounds(lng1 = min(c(df.coor.afe$lon, df.coor.afr$lon)) - 2, 
                          lat1 = min(c(df.coor.afe$lat, df.coor.afr$lat)) - 2, 
                          lng2 = max(c(df.coor.afe$lon, df.coor.afr$lon)) + 2, 

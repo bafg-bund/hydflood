@@ -31,8 +31,10 @@ doc
 /doc/
 docs
 man
+!man/figures
 /Meta/
 Meta
+pkgdown/favicon/*
 shinyapps/flood3/data/df.gauging_data_latest.RDS
 shinyapps/flood3/in_process
 shinyapps/flood3/processed
