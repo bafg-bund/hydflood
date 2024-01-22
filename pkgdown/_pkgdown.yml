@@ -28,20 +28,24 @@ reference:
       - "`flood2`"
       - "`flood3`"
       - "`flood3Points`"
+      - "`floodCharacteristicWaterlevel`"
       - "`hydSpatRaster`"
   - title: Postprocessing
-    desc: Functions to postprocess flood durations
+    desc: Functions to postprocess flood durations and extents
     contents:
       - "`df.pnv`"
       - "`classifyToPNV`"
+      - "`floodExtentToLine`"
   - title: Datasets
     desc: Spatial datasets included in hydflood
     contents:
       - "`sf.af`"
       - "`sf.afe`"
       - "`sf.afr`"
+      - "`sf.estuaries`"
       - "`sf.tiles`"
       - "`sf.tiles_elbe`"
+      - "`sf.tiles_estuaries`"
       - "`sf.tiles_rhine`"
   - title: "Utility functions"
     desc: Utility functions to prepare and store data
@@ -61,6 +65,8 @@ navbar:
         href: articles/presentation_DE.html
       - text: "Präsentation AÖW 2023-03-30 (DE)"
         href: articles/presentation_aow.html
+      - text: "Estuaries"
+        href: articles/estuaries.html
     - text: Reference
       href: reference/index.html
     - text: "ShinyApps"

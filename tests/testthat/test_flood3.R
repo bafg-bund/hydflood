@@ -29,6 +29,18 @@ test_that("Elbe", {
         expect_error(flood3(x = 1, seq = seq), 
                      "'x' must be type 'SpatRaster'")
         
+        # names(x)
+        y <- rast(c(x = rast(crs = crs("EPSG:25833")),
+                    y = rast(crs = crs("EPSG:25833"))))
+        expect_error(flood3(x = y, seq = seq),
+                     "'names(x)' must be 'dem' and 'csa'.", fixed = TRUE)
+        
+        # crs(x)
+        y <- rast(c(dem = rast(crs = crs("EPSG:25831")),
+                    csa = rast(crs = crs("EPSG:25831"))))
+        expect_error(flood3(x = y, seq = seq),
+                     "The projection of x must be either", fixed = TRUE)
+        
         # seq missing
         expect_error(flood3(x), "The 'seq' argument has to be supplied.")
         

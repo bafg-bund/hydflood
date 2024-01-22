@@ -131,19 +131,9 @@ getDEM <- function(filename = '', ext, crs, ...) {
     }
     
     # check standard projections
-    if (!isUTM32(crs_int) & !isUTM33(crs_int)) {
-        errors <- c(errors, paste0("Error ", l(errors), ": The supplied 'crs' ",
-                                   "must be either 'ETRS 1989 UTM 32N' or 'ETR",
-                                   "S 1989 UTM 33N'."))
-        stop(paste0(errors, collapse="\n  "))
-    } else {
-        if (isUTM32(crs_int)) {
-            river <- "Rhine"
-        } else if (isUTM33(crs_int)) {
-            river <- "Elbe"
-        } else {
-            stop(errors)
-        }
+    if ( !isUTM32(crs_int) & !isUTM33(crs_int)) {
+        stop(paste0("Error ", l(errors), ": The supplied 'crs' must be either ",
+                    "'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N'."))
     }
     
     ##
@@ -188,20 +178,53 @@ getDEM <- function(filename = '', ext, crs, ...) {
     # in area
     # check position
     sf.ext <- extent2polygon(ext_int, crs_int)
-    if (exists("river")) {
+    if (isUTM33(crs_int)) {
+        river <- "Elbe"
         af <- sf.af(name = river)
-        if (! (nrow(af[sf.ext,]) > 0)) {
+        if (!(nrow(af[sf.ext,]) > 0)) {
             errors <- c(errors, paste0("Error ", l(errors), ": The selected 'e",
                                        "xt' does NOT overlap with the active f",
-                                       "loodplain of River ", river, "."))
+                                       "loodplain of River Elbe."))
+            stop(errors)
+        }
+        tidal <- FALSE
+    } else {
+        if (nrow(sf.af(name = "Rhine")[sf.ext,]) > 0) {
+            river <- "Rhine"
+            tidal <- FALSE
+        } else {
+            sf.estuaries_x <- sf.af(name = "estuaries")[sf.ext,]
+            if (!(nrow(sf.estuaries_x) > 0)) {
+                errors <- c(errors, paste0("Error ", l(errors), ": The selecte",
+                                           "d 'ext' does NOT overlap with the ",
+                                           "active floodplains of River Rhine ",
+                                           "or the estuaries."))
+                stop(errors)
+            } else {
+                tidal <- TRUE
+            }
         }
     }
     
-    # error messages
-    if (l(errors) != "1") {
-        stop(paste0(errors, collapse="\n  "))
-    } else {
-        rm(l, errors)
+    if (tidal) {
+        if (nrow(sf.estuaries_x) == 1) {
+            river <- sf.estuaries_x$name[1]
+        } else {
+            sf.estuaries_x <- suppressWarnings(
+                sf::st_intersection(sf.estuaries_x, sf.ext))
+            sf.estuaries_x <- sf.estuaries_x[
+                order(sf::st_area(sf.estuaries_x), decreasing = TRUE), ]
+            river <- sf.estuaries_x$name[1]
+            remo <- sf.estuaries_x$name[2:nrow(sf.estuaries_x)]
+            verb <- ifelse(length(remo) > 1, "are", "is")
+            message(
+                paste0("The selected 'ext' overlaps with ", 
+                       nrow(sf.estuaries_x),
+                       " estuaries.\n   Based on the largest covered area '",
+                       river, "' is choosen.\n   '",
+                       paste0(remo, collapse = "', '"), "' ", verb, " omited.")
+            )
+        }
     }
     
     #####
@@ -241,6 +264,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
                                                            resolution = 1
                                                            ), n = 2)
     
+    river <- ifelse(grepl("tidal", river), "estuaries", river)
     sf.tiles <- sf.tiles(name = river)[sf.ext,]
     
     if (nrow(sf.tiles) > 5) {
@@ -277,7 +301,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
                                    "options('timeout') presently set to ",
                                    options('timeout')$timeout, " seconds.")
                 }
-                message(mess)
+                stop(mess)
             })
         }
         
@@ -359,7 +383,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
     }
     
     if (!is.na(missing_files)) {
-        message(paste0("\nIt was not possible to download:\n ",
+        warning(paste0("\nIt was not possible to download:\n ",
                        paste0(missing_files, collapse = "\n "),
                        "\nMissing parts have been replaced by NAs.\n",
                        "Please try again later to obtain a full DEM!"))

@@ -8,8 +8,6 @@ utm33n <- st_crs(25833)
 wgs <- st_crs(4326)
 
 test_that("General tests", {
-    
-    # smaller extent (crop)
     if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
@@ -23,7 +21,7 @@ test_that("General tests", {
         # tests
         expect_message(a <- hydSpatRaster(filename_dem, filename_csa, ext,
                                           crs = utm32n),
-                       "'ext' will be used to crop the supplied raster file(s).",
+                       "'ext' will be used to crop the supplied raster file(s)",
                        fixed = TRUE)
         # expect_message(b <- hydSpatRaster(filename_csa = filename_csa, 
         #                                    ext = ext, crs = utm32n),
@@ -110,7 +108,7 @@ test_that("General tests", {
                      "does NOT overlap with the active floodplain of River Elbe")
         expect_error(hydSpatRaster(ext = ext(200000, 201000, 5749000, 5749500),
                                    crs = utm32n),
-                     "does NOT overlap with the active floodplain of River Rhine")
+                     "does NOT overlap with the active floodplains of River Rhine")
         
         unlink(tmp_dem1)
         unlink(tmp_dem2)
@@ -131,3 +129,11 @@ test_that("General tests", {
     
 })
 
+test_that("hydSpatRaster: estuary", {
+    if (Sys.info()["nodename"] == "pvil-r") {
+        p <- options()$hydflood.datadir
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/elbet07_BROKDORF_DEM.tif"),
+            filename_csa = paste0(p, "/elbet07_BROKDORF_CSA.tif"))
+    }
+})

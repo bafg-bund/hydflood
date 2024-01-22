@@ -3,8 +3,9 @@
 .onLoad <- function(libname, pkgname) {
     
     # load package data
-    utils::data("df.pnv", "sf.afe", "sf.afr", "sf.tiles_elbe", "sf.tiles_rhine",
-                package = pkgname, envir = parent.env(environment()))
+    utils::data("df.pnv", "sf.afe", "sf.afr", "sf.estuaries", "sf.tiles_elbe",
+                "sf.tiles_estuaries", "sf.tiles_rhine", package = pkgname,
+                envir = parent.env(environment()))
     
     # add a default hydflood.datadir to options
     if (!("hydflood.datadir" %in% names(options()))) {
@@ -42,5 +43,6 @@
 }
 
 if(getRversion() >= "2.15.1") {
-    utils::globalVariables(c("sf.afe_csa", "sf.afr_csa"))
+    utils::globalVariables(c("sf.afe_csa", "sf.afr_csa", "sf.estuary_elbe_csa",
+                             "sf.estuary_ems_csa", "sf.estuary_stoer_csa"))
 }

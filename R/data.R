@@ -56,16 +56,18 @@
 
 #' @name sf.af
 #' @rdname sf.af
-#' @title Obtain projected versions of \code{sf.afe} and \code{sf.afr}
+#' @title Obtain projected versions of \code{sf.afe}, \code{sf.afr} or
+#'   \code{sf.estuaries}
 #' 
-#' @description Obtain projected versions of \code{\link{sf.afe}} and
-#'   \code{\link{sf.afr}}
+#' @description Obtain projected versions of \code{\link{sf.afe}},
+#'   \code{\link{sf.afr}} or \code{\link{sf.estuaries}}
 #' 
-#' @param name either 'Elbe' or 'Rhine'.
+#' @param name either 'Elbe', 'Rhine' or 'estuaries'.
 #' 
 #' @return \code{sf} with the projected active floodplain 
 #' 
-#' @seealso \code{\link{sf.afe}}, \code{\link{sf.afr}}
+#' @seealso \code{\link{sf.afe}}, \code{\link{sf.afr}},
+#'   \code{\link{sf.estuaries}}
 #' 
 #' @examples 
 #'   library(hydflood)
@@ -73,12 +75,17 @@
 #' 
 #' @export
 sf.af <- function(name = NULL) {
+    stopifnot(name %in% c("Elbe", "Rhine", "estuaries"))
     if (name == "Elbe") {
         x <- sf.afe
         sf::st_crs(x) <- sf::st_crs(25833)
         return(x)
     } else if (name == "Rhine") {
         x <- sf.afr
+        sf::st_crs(x) <- sf::st_crs(25832)
+        return(x)
+    } else if (name == "estuaries") {
+        x <- sf.estuaries
         sf::st_crs(x) <- sf::st_crs(25832)
         return(x)
     } else {
@@ -115,6 +122,34 @@ sf.af <- function(name = NULL) {
 #' 
 "sf.afr"
 
+#' @name sf.estuaries
+#' @rdname sf.estuaries
+#' 
+#' @title Active marshland along the German estuaries
+#' 
+#' @description This dataset contains three polygons of the active marshes of
+#'    the German Federal Waterways River Ems, River Stoer and River Elbe in the
+#'    coordinate reference system
+#'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-332n/}{ETRS 1989 UTM 32N}.
+#'    
+#'    These polygons were derived from .... For hydflood it was updated with
+#'    recent flood protection measures and manually improved with recent digital
+#'    elevation models and aerial images at a scale of < 1:10,000.
+#' 
+#' @format A \code{sf} containing 3 polygons with 3 attributes:
+#' \describe{
+#'   \item{id}{of the estuary (type \code{integer}).} 
+#'   \item{name}{of the estuary (type \code{character}).}
+#'   \item{geometry}{of the estuary (type \code{geometry}).}
+#' }
+#' 
+#' @seealso \code{\link{sf.af}}
+#' 
+#' @references 
+#'   \insertRef{weber_flood_estuary_2024}{hydflood}
+#' 
+"sf.estuaries"
+
 #' @name sf.tiles_elbe
 #' @rdname sf.tiles_elbe
 #' 
@@ -150,7 +185,8 @@ sf.af <- function(name = NULL) {
 #'   \item{url}{of the tile (type \code{character}).}
 #' }
 #' 
-#' @seealso \code{\link{sf.tiles}}, \code{\link{sf.tiles_rhine}}
+#' @seealso \code{\link{sf.tiles}}, \code{\link{sf.tiles_rhine}},
+#'    \code{\link{sf.tiles_estuaries}}
 #' 
 #' @references 
 #'   \insertRef{weber_dgms_2020}{hydflood}
@@ -158,6 +194,48 @@ sf.af <- function(name = NULL) {
 #'   \insertRef{weber_dgm_elbe_2020}{hydflood}
 #' 
 "sf.tiles_elbe"
+
+#' @name sf.tiles_estuaries
+#' @rdname sf.tiles_estuaries
+#' 
+#' @title Tiling of digital elevation models across German estuaries
+#' 
+#' @description This dataset contains 34 rectangular polygons covering the
+#'    German estuaries of the rivers Elbe, Ems and Stoer in the coordinate
+#'    reference system
+#'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
+#'   
+#'   The tiles represent the original tiling of the internally used digital
+#'   elevation models (Weber & Heuner 2024).
+#' 
+#' @format A \code{sf} containing 34 polygons with 13 attributes:
+#' \describe{
+#'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
+#'   \item{id}{of the tile (type \code{integer}).} 
+#'   \item{name}{of the tile (type \code{character}).}
+#'   \item{river}{of the tile (type \code{character}).}
+#'   \item{xmin}{of the tile extent (type \code{integer}). Minimum of UTM Easting (m).}
+#'   \item{xmax}{of the tile extent (type \code{integer}). Maximum of UTM Easting (m).}
+#'   \item{ymin}{of the tile extent (type \code{integer}). Minimum of UTM Northing (m).}
+#'   \item{ymax}{of the tile extent (type \code{integer}). Maximum of UTM Northing (m).}
+#'   \item{lon_min}{of the tile extent (type \code{numeric}). Minimum of Longitude (decimal °).}
+#'   \item{lon_max}{of the tile extent (type \code{numeric}). Maximum of Longitude (decimal °).}
+#'   \item{lat_min}{of the tile extent (type \code{numeric}). Minimum of Latitude (decimal °).}
+#'   \item{lat_max}{of the tile extent (type \code{numeric}). Maximum of Latitude (decimal °).}
+#'   \item{url}{of the tile (type \code{character}).}
+#' }
+#' 
+#' @seealso \code{\link{sf.tiles}}, \code{\link{sf.tiles_elbe}},
+#'    \code{\link{sf.tiles_rhine}}
+#' 
+#' @references 
+#'   \insertRef{weber_dgms_2024}{hydflood}
+#'   
+#'   \insertRef{weber_dgm_elbe_2024}{hydflood}
+#'   
+#'   \insertRef{weber_dgm_ems_2024}{hydflood}
+#' 
+"sf.tiles_estuaries"
 
 #' @name sf.tiles_rhine
 #' @rdname sf.tiles_rhine
@@ -177,7 +255,7 @@ sf.af <- function(name = NULL) {
 #' \describe{
 #'   \item{id}{of the tile (type \code{integer}).} 
 #'   \item{name}{of the tile (type \code{character}).}
-#'   \item{river}{of the tile (type \code{character}) in this case RHINE'.}
+#'   \item{river}{of the tile (type \code{character}) in this case 'RHINE'.}
 #'   \item{name_km}{of the tile (type \code{character}).}
 #'   \item{from_km}{river kilometer of the tiles upper limit (type \code{numeric}).}
 #'   \item{to_km}{river kilometer of the tiles lower limit (type \code{numeric}).}
@@ -195,7 +273,8 @@ sf.af <- function(name = NULL) {
 #'   \item{url}{of the tile (type \code{character}).}
 #' }
 #' 
-#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}}
+#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}},
+#'    \code{\link{sf.tiles_estuaries}}
 #' 
 #' @references
 #'   \insertRef{weber_dgms_2020}{hydflood}
@@ -206,17 +285,18 @@ sf.af <- function(name = NULL) {
 
 #' @name sf.tiles
 #' @rdname sf.tiles
-#' @title Obtain projected versions of \code{sf.tiles_elbe} and
-#'    \code{sf.tiles_rhine}
+#' @title Obtain projected versions of \code{sf.tiles_elbe},
+#'    \code{sf.tiles_rhine} or \code{sf.tiles_estuaries}
 #' 
-#' @description Obtain projected versions of \code{\link{sf.tiles_elbe}} and
-#'    \code{\link{sf.tiles_rhine}}
+#' @description Obtain projected versions of \code{\link{sf.tiles_elbe}},
+#'    \code{\link{sf.tiles_rhine}} and \code{\link{sf.tiles_estuaries}}
 #' 
-#' @param name either 'Elbe' or 'Rhine'.
+#' @param name either 'Elbe', 'Rhine' or 'estuaries'.
 #' 
 #' @return \code{sf} with projected tiles
 #' 
-#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}}
+#' @seealso \code{\link{sf.tiles_elbe}}, \code{\link{sf.tiles_rhine}},
+#'    \code{\link{sf.tiles_estuaries}}
 #' 
 #' @examples 
 #'   library(hydflood)
@@ -224,12 +304,17 @@ sf.af <- function(name = NULL) {
 #' 
 #' @export
 sf.tiles <- function(name = NULL) {
+    stopifnot(name %in% c("Elbe", "Rhine", "estuaries"))
     if (name == "Elbe") {
         x <- sf.tiles_elbe
         sf::st_crs(x) <- sf::st_crs(25833)
         return(x)
     } else if (name == "Rhine") {
         x <- sf.tiles_rhine
+        sf::st_crs(x) <- sf::st_crs(25832)
+        return(x)
+    } else if (name == "estuaries") {
+        x <- sf.tiles_estuaries
         sf::st_crs(x) <- sf::st_crs(25832)
         return(x)
     } else {
