@@ -28,7 +28,7 @@ data-raw/raster.csa.tif
 data-raw/raster.csa*.tif
 data-raw/raster.csa_plittersdorf.tif
 data-raw/sf.*.rda
-data-raw/*_simplify_*
+data-raw/*_simplified.*
 data-raw/spdf.*.rda
 data-raw/estuary/*/old
 data-raw/estuary/*/debug
