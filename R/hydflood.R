@@ -1,5 +1,4 @@
 #' @name hydflood
-#' @docType package
 #' @aliases hydflood-package
 #' 
 #' @title hydflood: Flood Extents and Durations along the Rivers Elbe and Rhine
@@ -52,6 +51,8 @@
 #' @importFrom sf st_sfc
 #' @importFrom sf st_transform
 #' @importFrom sf st_union
+#' @importFrom smoothr fill_holes
+#' @importFrom smoothr smooth
 #' @importFrom stats na.omit
 #' @importFrom terra crs
 #' @importFrom terra classify
@@ -79,4 +80,4 @@
 #' @importFrom terra ymax
 #' @importFrom units set_units
 #' 
-NULL
+"_PACKAGE"
