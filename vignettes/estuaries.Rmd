@@ -1,0 +1,933 @@
+---
+title: "Estuaries"
+author: "Arnd Weber, Maike Heuner"
+date: "`r Sys.Date()`"
+output:
+  html_vignette:
+    toc: yes
+    toc_depth: 3
+bibliography: ../inst/REFERENCES.bib
+csl: apa_modified.csl
+vignette: |
+  %\VignetteIndexEntry{Estuaries}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.align="center",
+    fig.width = 7,
+    fig.height = 4, 
+    root.dir = "vignettes"
+)
+
+base_hyd1d <- "https://hyd1d.bafg.de/"
+```
+
+<!-- Indent in html version TOC
+     obtained from: 
+     https://stackoverflow.com/questions/46201753/rmarkdown-indentation-of-toc-items-in-html-output
+     -->
+
+<script>
+$(document).ready(function() {
+  $items = $('div#TOC li');
+  $items.each(function(idx) {
+    num_ul = $(this).parentsUntil('#TOC').length;
+    $(this).css({'padding-left': num_ul * 5px, 'box-shadow': none});
+  });
+
+});
+</script>
+
+<!-- numbering for figures and tables-->
+
+```{r captions, echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, include = FALSE}
+# set english locale to produce english plot labels
+Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
+
+# standard library path for the installed local packages
+options("hyd1d.datadir" = "~/.hyd1d")
+#library(hyd1d)
+options("hydflood.datadir" = "~/.hydflood")
+#library(hydflood)
+library(devtools)
+devtools::load_all()
+library(leaflet)
+terraOptions(
+    progress = 0,
+    memfrac = 0.5,
+    memmax = 60,
+    tempdir = "/scratch/webera/terra"
+)
+
+# Determine the output format of the document
+outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+if (outputFormat == "html") {
+    is_html <- TRUE
+} else {
+    is_html <- FALSE
+}
+
+# Figure and Table Caption Numbering, for HTML do it manually
+capTabNo <- 1
+capFigNo <- 1
+
+# Function to add the Table Number
+capTab <- function(x){
+    if(outputFormat == 'html'){
+        x <- paste0("**Tab. ", capTabNo, "**: ", x)
+        capTabNo <<- capTabNo + 1
+    } else if (outputFormat == 'latex'){
+        y <- str_replace_all(x, '(^.*)(\\[.*\\])(\\(.*\\))(.*$)', 
+                             '\\1\\\\href{\\3}{\\2}\\4')
+        y <- gsub("{(", "{", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub("{[", "{", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub(")}", "}", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub("]}", "}", y, fixed = TRUE, useBytes = TRUE)
+        x <- gsub("_", "\\_", y, fixed = TRUE, useBytes = TRUE)
+    }
+    return(x)
+}
+
+# Function to add the Figure Number
+capFig <- function(x){
+    if(outputFormat == 'html'){
+        x <- paste0("**Fig. ", capFigNo, "**: ", x)
+        capFigNo <<- capFigNo + 1
+    } else if (outputFormat == 'latex'){
+        y <- str_replace_all(x, '(^.*)(\\[.*\\])(\\(.*\\))(.*$)', 
+                             '\\1\\\\href{\\3}{\\2}\\4')
+        y <- gsub("{(", "{", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub("{[", "{", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub(")}", "}", y, fixed = TRUE, useBytes = TRUE)
+        y <- gsub("]}", "}", y, fixed = TRUE, useBytes = TRUE)
+        x <- gsub("_", "\\_", y, fixed = TRUE, useBytes = TRUE)
+    }
+    return(x)
+}
+
+href <- function(x, y) {
+    if (outputFormat == 'html') {
+        x <- paste0("[", x, "](", y, ")")
+    } else if (outputFormat == 'latex') {
+        x <- paste0("\\href{", y, "}{", x, "}")
+    }
+    return(x)
+}
+
+bf <- function(x) {
+    if (outputFormat == 'html') {
+        x <- paste0("**", x, "**")
+    } else if (outputFormat == 'latex') {
+        x <- paste0("\\textbf{", x, "}")
+    }
+    return(x)
+}
+```
+
+<BR>
+
+# Purpose
+
+**hydflood** is an R package originally designed to compute flood extent and
+duration along the German federal waterways Elbe and Rhine. In 2024, it was
+functionally extended to compute flood extents for characteristic tidal water
+levels in the estuaries of the rivers Elbe, Stoer and Ems.
+
+``` {r map, echo = FALSE}
+sf.estuaries_wgs84 <- st_transform(sf.af("estuaries"), st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = sf.estuaries_wgs84, weight = 0.5, fillOpacity = 0.5,
+                label = gsub("_tidal", "", sf.estuaries_wgs84$name,
+                             fixed = TRUE))
+```
+
+<BR>
+
+# Use
+
+## Data
+
+### Elbe
+
+``` {r createEstuaryCSA-import-elbe, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/elbe", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/elbe", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/elbe", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/elbe", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/elbe", "gs", quiet = TRUE)
+```
+
+``` {r createEstuaryCSA-import-leaflet-elbe, echo = FALSE}
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = x_wgs84, weight = 0.5, fillOpacity = 0.5) %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow"), 
+              labels = c("left", "right", "axis", "gauging station"),
+              opacity = c(0.5, 0.5, 0.5, 0.7))
+```
+
+### Stoer
+
+``` {r createEstuaryCSA-import-stoer}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/stoer", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/stoer", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/stoer", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/stoer", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/stoer", "gs", quiet = TRUE)
+```
+
+``` {r createEstuaryCSA-import-leaflet-stoer, echo = FALSE}
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = x_wgs84, weight = 0.5, fillOpacity = 0.5) %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow"), 
+              labels = c("left", "right", "axis", "gauging station"),
+              opacity = c(0.5, 0.5, 0.5, 0.7))
+```
+
+### Ems
+
+``` {r createEstuaryCSA-import-ems}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/ems", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/ems", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/ems", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/ems", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/ems", "gs", quiet = TRUE)
+```
+
+``` {r createEstuaryCSA-import-leaflet-ems, echo = FALSE}
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = x_wgs84, weight = 0.5, fillOpacity = 0.5) %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow"), 
+              labels = c("left", "right", "axis", "gauging station"),
+              opacity = c(0.5, 0.5, 0.5, 0.7))
+```
+
+## Preprocessing
+
+### Elbe
+
+``` {r createEstuaryCSA-reimport-elbe, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/elbe", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/elbe", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/elbe", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/elbe", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/elbe", "gs", quiet = TRUE)
+```
+
+### mode: "default"
+
+``` {r createEstuaryCSA-elbe-default, warning = FALSE}
+res <- createEstuaryCSA(x, axis, left, right, density, gs, "default")
+```
+
+``` {r createEstuaryCSA-leaflet-elbe-default, echo = FALSE}
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+### mode: "lines"
+
+``` {r createEstuaryCSA-elbe-lines, warning = FALSE}
+res <- createEstuaryCSA(x, axis, left, right, density, gs, "lines")
+```
+
+``` {r createEstuaryCSA-leaflet-elbe-lines, echo = FALSE}
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+### mode: "linesplit"
+
+``` {r createEstuaryCSA-elbe-linesplit, warning = FALSE}
+res <- createEstuaryCSA(x, axis, left, right, density, gs, "linesplit")
+```
+
+``` {r createEstuaryCSA-leaflet-elbe-linesplit, echo = FALSE}
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+## Stoer
+
+``` {r createEstuaryCSA-leaflet-stoer-linesplit-edited, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/stoer", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/stoer", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/stoer", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/stoer", "right", quiet = TRUE)
+gs <- st_read("~/hydflood/data-raw/estuary/stoer", "gs", quiet = TRUE)
+res <- st_read("~/hydflood/data-raw/estuary/stoer",
+               "sf.estuary_stoer_csa_linesplit_edited", quiet = TRUE)
+
+# transform
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+# plot
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+## Ems
+
+``` {r createEstuaryCSA-leaflet-ems-linesplit-edited, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/ems", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/ems", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/ems", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/ems", "right", quiet = TRUE)
+gs <- st_read("~/hydflood/data-raw/estuary/ems", "gs", quiet = TRUE)
+res <- st_read("~/hydflood/data-raw/estuary/ems",
+               "sf.estuary_ems_csa_linesplit_edited", quiet = TRUE)
+
+# transform
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+# plot
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("topright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+## Computation of flood extents
+
+- query data from pegelonline.wsv.de
+- provide data as `data.frame`
+
+``` {r fe-options}
+gdal_opts <- c("COMPRESS=LZW", "TFW=NO")
+datatype <- "INT1U"
+driver <- "ESRI Shapefile"
+```
+
+### Elbe
+
+``` {r fe-elbe-import}
+df <- read.table("~/hydflood/data-raw/estuary/elbe/df_2016.csv", header = TRUE,
+                 sep = ";", dec = ".")
+```
+
+``` {r fe-elbe}
+# cache dir
+p <- options()$hydflood.datadir
+
+# product dir
+product_dir <- "~/freigaben/Projekte/Elbe_U/EL_586_752_Morphozonen/data/fe/"
+
+# tiles
+tiles <- sf.tiles("estuaries")
+tiles <- tiles[grepl("Elbe_tidal", tiles$river), ]
+
+for (i in 1:nrow(tiles)) {
+    
+    if (tiles$name[i] == "elbet08_ITZEHOE"){next}
+    
+    print(tiles$name[i])
+    
+    # raster paths
+    filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
+    filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
+    filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
+    filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
+    filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    
+    # initialize x
+    x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
+                                        filename_csa = filename_csa))
+    
+    # compute fe_mthw
+    if (!file.exists(filename_mthw)) {
+        fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df,
+            filename = filename_mthw, datatype = datatype)
+    } else {
+        fe_mthw <- rast(filename_mthw)
+    }
+    
+    # convert fe_mthw to l_mthw
+    if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+        l_mthw <- tryCatch({
+            floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                              "ksmooth", smoothness = 10)
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+        
+        if (all(is.na(l_mthw))) {
+            print("Smoothing error: MThw")
+            l_mthw <- tryCatch({
+                floodExtentToLine(fe_mthw, as_units(100, "m²"))
+            },
+            error = function(e){
+                print(e)
+                return(NA)
+            },
+            warning = function(w){
+                print(w)
+                return(NA)
+            })
+        }
+        
+        if (all(!is.na(l_mthw))) {
+            st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+        }
+    }
+    
+    # compute fe_mtnw
+    if (!file.exists(filename_mtnw)) {
+        fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df,
+            filename = filename_mtnw, datatype = datatype)
+    } else {
+        fe_mtnw <- rast(filename_mtnw)
+    }
+    
+        # convert fe_mtnw to l_mtnw
+    if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+        l_mtnw <- tryCatch({
+            floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                              "ksmooth", smoothness = 10)
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+        
+        if (all(is.na(l_mtnw))) {
+            print("Smoothing error: MTnw")
+            l_mtnw <- tryCatch({
+                floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+            },
+            error = function(e){
+                print(e)
+                return(NA)
+            },
+            warning = function(w){
+                print(w)
+                return(NA)
+            })
+        }
+        
+        if (all(!is.na(l_mtnw))) {
+            st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+        }
+    }
+}
+```
+
+### Stoer
+
+``` {r fe-stoer, eval = FALSE}
+# product dir
+product_dir <- "~/freigaben/Projekte/Elbe_U/EL_586_752_Morphozonen/data/fe/stoer/"
+
+# initialize x
+e <- ext(c(xmin = 525500, xmax = 545850, ymin = 5963950, ymax = 5977450))
+c <- st_crs("EPSG:25832")
+
+# raster paths
+filename_dem <- paste0(product_dir , "STOER_DEM.tif")
+filename_csa <- paste0(product_dir , "STOER_CSA.tif")
+filename_mthw <- paste0(product_dir, "STOER_FE_MThw.tif")
+filename_mthw_l <- "STOER_Line_MThw"
+filename_mtnw <- paste0(product_dir, "STOER_FE_MTnw.tif")
+filename_mtnw_l <- "STOER_Line_MTnw"
+
+# initialize x
+x <- hydSpatRaster(filename_dem = filename_dem, filename_csa = filename_csa,
+                   ext = e, crs = c)
+
+# compute fe_mthw
+if (!file.exists(filename_mthw)) {
+    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", 
+        filename = filename_mthw, format = "GTiff", datatype = datatype)
+} else {
+    fe_mthw <- rast(filename_mthw)
+}
+
+# convert fe_mthw to l_mthw
+if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+    l_mthw <- tryCatch({
+        floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                          "ksmooth", smoothness = 10)
+    },
+    error = function(e){
+        print(e)
+        return(NA)
+    },
+    warning = function(w){
+        print(w)
+        return(NA)
+    })
+    
+    if (all(is.na(l_mthw))) {
+        print("Smoothing error: MThw")
+        l_mthw <- tryCatch({
+            floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+    }
+    
+    if (all(!is.na(l_mthw))) {
+        st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+}
+
+# compute fe_mtnw
+if (!file.exists(filename_mtnw)) {
+    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw",
+        filename = filename_mtnw, format = "GTiff", datatype = datatype)
+} else {
+    fe_mtnw <- rast(filename_mtnw)
+}
+
+# convert fe_mtnw to l_mtnw
+if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+    l_mtnw <- tryCatch({
+        floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                          "ksmooth", smoothness = 10)
+    },
+    error = function(e){
+        print(e)
+        return(NA)
+    },
+    warning = function(w){
+        print(w)
+        return(NA)
+    })
+    
+    if (all(is.na(l_mtnw))) {
+        print("Smoothing error: MTnw")
+        l_mtnw <- tryCatch({
+            floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+    }
+    
+    if (all(!is.na(l_mtnw))) {
+        st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+}
+```
+
+### Ems
+
+``` {r fe-ems-import}
+df <- read.table("~/hydflood/data-raw/estuary/ems/df_2015.csv", header = TRUE,
+                 sep = ";", dec = ".")
+df_historical <- read.table("~/hydflood/data-raw/estuary/ems/df_historic.csv",
+                            header = TRUE, sep = ";", dec = ".")
+```
+
+``` {r fe-ems}
+# cache dir
+p <- options()$hydflood.datadir
+
+# product dir
+product_dir <- "~/freigaben/Projekte/Ems_U/EMS_213_076_Morphozonen/data/fe/"
+
+# tiles
+tiles <- sf.tiles("estuaries")
+tiles <- tiles[grepl("Ems_tidal", tiles$river), ]
+
+for (i in 1:nrow(tiles)) {
+    
+    # if (tiles$name[i] == "emst06_GRONINGEN" |
+    #     tiles$name[i] == "emst08_ROTTUMERPLAAT"){next}
+    
+    print(tiles$name[i])
+    
+    # raster paths
+    filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
+    filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
+    filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
+    filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
+    filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    
+    # initialize x
+    x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
+                                        filename_csa = filename_csa))
+    
+    # compute fe_mthw
+    if (!file.exists(filename_mthw)) {
+        fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df,
+            filename = filename_mthw, datatype = datatype)
+    } else {
+        fe_mthw <- rast(filename_mthw)
+    }
+    
+    # convert fe_mthw to l_mthw
+    if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+        l_mthw <- tryCatch({
+            floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                              "ksmooth", smoothness = 10)
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+        
+        if (all(is.na(l_mthw))) {
+            print("Smoothing error: MThw")
+            l_mthw <- tryCatch({
+                floodExtentToLine(fe_mthw, as_units(100, "m²"))
+            },
+            error = function(e){
+                print(e)
+                return(NA)
+            },
+            warning = function(w){
+                print(w)
+                return(NA)
+            })
+        }
+        
+        if (all(!is.na(l_mthw))) {
+            st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+        }
+    }
+    
+    # compute fe_mtnw
+    if (!file.exists(filename_mtnw)) {
+        fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df,
+            filename = filename_mtnw, datatype = datatype)
+    } else {
+        fe_mtnw <- rast(filename_mtnw)
+    }
+    
+        # convert fe_mtnw to l_mtnw
+    if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+        l_mtnw <- tryCatch({
+            floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                              "ksmooth", smoothness = 10)
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+        
+        if (all(is.na(l_mtnw))) {
+            print("Smoothing error: MTnw")
+            l_mtnw <- tryCatch({
+                floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+            },
+            error = function(e){
+                print(e)
+                return(NA)
+            },
+            warning = function(w){
+                print(w)
+                return(NA)
+            })
+        }
+        
+        if (all(!is.na(l_mtnw))) {
+            st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+        }
+    }
+}
+```
+
+``` {r fe-ems-historical}
+# cache dir
+p <- options()$hydflood.datadir
+
+# product dir
+product_dir <- paste0("~/freigaben/Projekte/Ems_U/EMS_213_076_Morphozonen/data",
+                      "/fe/historical/")
+
+# crop full dem
+filename_dem <- paste0(product_dir , "EMS_DEM.tif")
+if (!file.exists(filename_dem)) {
+    filename_dem_full <- paste0(product_dir , "EMS_DEM_full.tif")
+    x <- st_read("~/hydflood/data-raw/estuary/ems_historic/", "x")
+    dem <- rast(filename_dem_full)
+    dem <- crop(dem, vect(x), filename = filename_dem)
+}
+
+# raster paths
+filename_csa <- paste0(product_dir , "EMS_CSA.tif")
+filename_mthw <- paste0(product_dir, "EMS_FE_MThw.tif")
+filename_mthw_l <- "EMS_Line_MThw"
+filename_mtnw <- paste0(product_dir, "EMS_FE_MTnw.tif")
+filename_mtnw_l <- "EMS_Line_MTnw"
+
+# initialize x
+x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
+                                    filename_csa = filename_csa))
+
+# compute fe_mthw
+if (!file.exists(filename_mthw)) {
+    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df_historical,
+        filename = filename_mthw, datatype = datatype)
+} else {
+    fe_mthw <- rast(filename_mthw)
+}
+
+# convert fe_mthw to l_mthw
+if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+    l_mthw <- tryCatch({
+        floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                          "ksmooth", smoothness = 10)
+    },
+    error = function(e){
+        print(e)
+        return(NA)
+    },
+    warning = function(w){
+        print(w)
+        return(NA)
+    })
+    
+    if (all(is.na(l_mthw))) {
+        print("Smoothing error: MThw")
+        l_mthw <- tryCatch({
+            floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+    }
+    
+    if (all(!is.na(l_mthw))) {
+        st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+}
+
+# compute fe_mtnw
+if (!file.exists(filename_mtnw)) {
+    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df_historical,
+        filename = filename_mtnw, datatype = datatype)
+} else {
+    fe_mtnw <- rast(filename_mtnw)
+}
+
+# convert fe_mtnw to l_mtnw
+if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+    l_mtnw <- tryCatch({
+        floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                          "ksmooth", smoothness = 10)
+    },
+    error = function(e){
+        print(e)
+        return(NA)
+    },
+    warning = function(w){
+        print(w)
+        return(NA)
+    })
+    
+    if (all(is.na(l_mtnw))) {
+        print("Smoothing error: MTnw")
+        l_mthw <- tryCatch({
+            floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        },
+        error = function(e){
+            print(e)
+            return(NA)
+        },
+        warning = function(w){
+            print(w)
+            return(NA)
+        })
+    }
+    
+    if (all(!is.na(l_mtnw))) {
+        st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+}
+```
+
+## Postprocessing
+
+# Products
+
+## Raster data
+
+Raster data with flood extents 
+
+## Vector data
+
+<BR>
+
+---
+nocite: |
+  @weber_hyd1d_2022
+...
+
+# References
+

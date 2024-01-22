@@ -196,7 +196,8 @@ for (a_file in files){
         } else if (startsWith(script, "https://hydflood.bafg.de/") |
                    startsWith(script, "../") |
                    startsWith(script, "deps/") |
-                   startsWith(script, "pkgdown.js")) {
+                   startsWith(script, "pkgdown.js") |
+                   startsWith(script, "estuaries_files/")) {
             script <- gsub("https://hydflood.bafg.de/", "" , script,
                            fixed = TRUE)
             script <- gsub("../", "" , script, fixed = TRUE)
@@ -244,7 +245,8 @@ for (a_file in files){
                    startsWith(link, "deps/") |
                    startsWith(link, "extra.css") |
                    startsWith(link, "favicon-") |
-                   startsWith(link, "apple-touch-")) {
+                   startsWith(link, "apple-touch-") |
+                   startsWith(link, "estuaries_files/")) {
             link <- gsub("https://hydflood.bafg.de/", "" , link, fixed = TRUE)
             link <- gsub("../", "" , link, fixed = TRUE)
             links_replace <- append(links_replace, paste0(pref, link))
