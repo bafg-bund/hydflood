@@ -38,6 +38,7 @@ Collate:
     'flood2.R'
     'flood3.R'
     'flood3Points.R'
+    'floodCharacteristicWaterlevel.R'
     'getDEM.R'
     'hydflood.R'
     'hydflood-internal.R'
