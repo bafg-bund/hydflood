@@ -4,12 +4,12 @@ context("createEstuaryCSA")
 
 test_that("createEstuaryCSA: checks", {
     if (Sys.info()["nodename"] == "pvil-r") {
-        x <- st_read("~/hydflood/data-raw", "estuary_area")
-        axis <- st_read("~/hydflood/data-raw", "estuary_axis")
-        left <- st_read("~/hydflood/data-raw", "estuary_left")
-        right <- st_read("~/hydflood/data-raw", "estuary_right")
+        x <- st_read("~/hydflood/data-raw/estuary/elbe", "x", quiet = TRUE)
+        axis <- st_read("~/hydflood/data-raw/estuary/elbe", "axis", quiet = TRUE)
+        left <- st_read("~/hydflood/data-raw/estuary/elbe", "left", quiet = TRUE)
+        right <- st_read("~/hydflood/data-raw/estuary/elbe", "right", quiet = TRUE)
         density <- 1/1000
-        gs <- st_read("~/hydflood/data-raw", "estuary_gs")
+        gs <- st_read("~/hydflood/data-raw/estuary/elbe", "gs", quiet = TRUE)
         
         # check x
         expect_error(createEstuaryCSA(x = 1, axis, left, right, density, gs),
@@ -154,6 +154,8 @@ test_that("createEstuaryCSA: checks", {
             createEstuaryCSA(x, axis, left, right, density, gs, "default"))
         expect_no_error(
             createEstuaryCSA(x, axis, left, right, density, gs, "lines"))
+        expect_no_error(
+            createEstuaryCSA(x, axis, left, right, density, gs, "linesplit"))
     }
 })
 
