@@ -164,6 +164,10 @@ for (a_file in files){
     } else {
         pref <- ""
     }
+    bn_file_ext <- basename(a_file)
+    bn_file <- gsub(".html", "", bn_file_ext)
+    bn_dir <- paste0(bn_file, "_files")
+    bp_file <- dirname(a_file)
     
     # place logo in navbar
     x <- readLines(paste0(public, a_file))
@@ -193,11 +197,15 @@ for (a_file in files){
     for (script in scripts_src) {
         if (is.na(script)) {
             next
+        } else if (startsWith(script, bn_dir)) {
+            script <- gsub(bn_dir, paste0(bp_file, "/", bn_dir, "/"),
+                           script, fixed = TRUE)
+            scripts_replace <- append(scripts_replace, paste0(pref, script))
+            next
         } else if (startsWith(script, "https://hydflood.bafg.de/") |
                    startsWith(script, "../") |
                    startsWith(script, "deps/") |
-                   startsWith(script, "pkgdown.js") |
-                   startsWith(script, "estuaries_files/")) {
+                   startsWith(script, "pkgdown.js")) {
             script <- gsub("https://hydflood.bafg.de/", "" , script,
                            fixed = TRUE)
             script <- gsub("../", "" , script, fixed = TRUE)
@@ -240,13 +248,17 @@ for (a_file in files){
     for (link in links_href) {
         if (is.na(link)) {
             next
+        } else if (startsWith(link, bn_dir)) {
+            link <- gsub(bn_dir, paste0(bp_file, "/", bn_dir, "/"),
+                         link, fixed = TRUE)
+            links_replace <- append(links_replace, paste0(pref, link))
+            next
         } else if (startsWith(link, "https://hydflood.bafg.de/") |
                    startsWith(link, "../") |
                    startsWith(link, "deps/") |
                    startsWith(link, "extra.css") |
                    startsWith(link, "favicon-") |
-                   startsWith(link, "apple-touch-") |
-                   startsWith(link, "estuaries_files/")) {
+                   startsWith(link, "apple-touch-")) {
             link <- gsub("https://hydflood.bafg.de/", "" , link, fixed = TRUE)
             link <- gsub("../", "" , link, fixed = TRUE)
             links_replace <- append(links_replace, paste0(pref, link))
