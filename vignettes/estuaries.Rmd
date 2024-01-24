@@ -680,7 +680,12 @@ for (i in 1:nrow(tiles)) {
 
 ### Stoer
 
-``` {r fe-stoer, eval = FALSE}
+``` {r fe-stoer-import}
+df <- read.table("~/hydflood/data-raw/estuary/stoer/df_2016.csv", header = TRUE,
+                 sep = ";", dec = ".")
+```
+
+``` {r fe-stoer}
 # product dir
 product_dir <- "~/freigaben/Projekte/Elbe_U/EL_586_752_Morphozonen/data/fe/stoer/"
 
@@ -702,8 +707,8 @@ x <- hydSpatRaster(filename_dem = filename_dem, filename_csa = filename_csa,
 
 # compute fe_mthw
 if (!file.exists(filename_mthw)) {
-    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", 
-        filename = filename_mthw, format = "GTiff", datatype = datatype)
+    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df = df,
+        filename = filename_mthw, datatype = datatype)
 } else {
     fe_mthw <- rast(filename_mthw)
 }
@@ -745,8 +750,8 @@ if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
 
 # compute fe_mtnw
 if (!file.exists(filename_mtnw)) {
-    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw",
-        filename = filename_mtnw, format = "GTiff", datatype = datatype)
+    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df = df,
+        filename = filename_mtnw, datatype = datatype)
 } else {
     fe_mtnw <- rast(filename_mtnw)
 }
