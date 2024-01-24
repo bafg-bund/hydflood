@@ -174,6 +174,17 @@ test_that("floodCharacteristicWaterlevel: checks", {
                  "inherits(df[, value], \"numeric\") | inheri",
                  fixed = TRUE)
     
+    # shift class
+    expect_error(floodCharacteristicWaterlevel(x = x, value = "MQ",
+                                               shift = "1"),
+                 "inherits(shift, \"numeric\") | inhe")
+    
+    # shift length
+    expect_error(floodCharacteristicWaterlevel(x = x, value = "MQ",
+                                               shift = c(1, 2)),
+                 "length(shift) == 1 is not TRUE",
+                 fixed = TRUE)
+    
     # filename class
     expect_error(floodCharacteristicWaterlevel(x = x, value = "MQ",
                                                filename = 1),

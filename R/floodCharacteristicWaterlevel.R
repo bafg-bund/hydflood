@@ -25,6 +25,8 @@
 #'   the columns \code{gauging_station}, \code{river}, \code{longitude},
 #'   \code{latitude}, \code{km_csa}, \code{pnp} and finally a water level column
 #'   named in \code{value}.
+#' @param shift an optional \code{numeric} constant to shift the water level
+#'   value.
 #' @param filename supplies an optional output filename and has to be type 
 #'   \code{character}.
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
@@ -67,7 +69,7 @@
 #' @export
 #' 
 floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
-                                          filename = '', ...) {
+                                          shift = NULL, filename = '', ...) {
     
     #####
     # check requirements
@@ -205,6 +207,13 @@ floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
         df[, value] <- as.numeric(df[, value])
     }
     
+    ## shift
+    if (! is.null(shift)) {
+        stopifnot(inherits(shift, "numeric") | inherits(shift, "integer"))
+        stopifnot(length(shift) == 1)
+        shift <- as.numeric(shift)
+    }
+    
     ## filename
     if (! missing(filename)) {
         if (!inherits(filename, "character")) {
@@ -255,6 +264,11 @@ floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
         wldf <- hyd1d::waterLevelFlys3(wldf_initial, name = value)
     } else {
         wldf <- hyd1d::waterLevelFlood2(wldf_initial, value = value, df = df)
+    }
+    
+    # add the shift
+    if (!is.null(shift)) {
+        wldf$w <- wldf$w + shift
     }
     
     ##
