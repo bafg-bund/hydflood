@@ -4,20 +4,32 @@ if (!(file.exists("data/sf.estuaries.rda"))) {
     
     # compine areas into one single polygon dataset
     # Elbe_tidal
-    x <- st_read("data-raw/estuary/elbe", "x_simplify_1m", quiet = TRUE)
+    x <- st_read("data-raw/estuary/elbe", "x", quiet = TRUE)
     x$id <- 1
     x$name <- "Elbe_tidal"
     sf.estuaries <- x[, c("geometry", "id", "name")]
     
     # Stoer
-    x <- st_read("data-raw/estuary/stoer", "x_simplify_1m", quiet = TRUE)
+    x <- st_read("data-raw/estuary/stoer", "x", quiet = TRUE)
     x$id <- 2
     x$name <- "Stoer_tidal"
     sf.estuaries <- rbind(sf.estuaries, x[, c("geometry", "id", "name")])
     
-    # Ems
-    x <- st_read("data-raw/estuary/ems", "x_simplify_1m", quiet = TRUE)
+    # Weser
+    x <- st_read("data-raw/estuary/weser", "x", quiet = TRUE)
     x$id <- 3
+    x$name <- "Weser_tidal"
+    sf.estuaries <- rbind(sf.estuaries, x[, c("geometry", "id", "name")])
+    
+    # Jade
+    x <- st_read("data-raw/estuary/jade", "x", quiet = TRUE)
+    x$id <- 4
+    x$name <- "Jade_tidal"
+    sf.estuaries <- rbind(sf.estuaries, x[, c("geometry", "id", "name")])
+    
+    # Ems
+    x <- st_read("data-raw/estuary/ems", "x", quiet = TRUE)
+    x$id <- 5
     x$name <- "Ems_tidal"
     sf.estuaries <- rbind(sf.estuaries, x[, c("geometry", "id", "name")])
     
@@ -29,12 +41,11 @@ if (!(file.exists("data/sf.estuaries.rda"))) {
                       compress = "bzip2")
     
     # clean up
-    rm(sf.estuaries)
+    rm(x, sf.estuaries)
     
 } else {
     write("data/sf.estuaries.rda exists already", stderr())
 }
-
 
 # store sf.tiles_estuaries
 if (!(file.exists("data/sf.tiles_estuaries.rda"))) {
@@ -48,6 +59,22 @@ if (!(file.exists("data/sf.tiles_estuaries.rda"))) {
         paste0(x$river[x$name == "elbet07_BROKDORF"], ";Stoer_tidal")
     x$river[x$name == "elbet08_ITZEHOE"] <- "Stoer_tidal"
     sf.tiles_estuaries <- x[, c("geometry", "id", "name", "river", "url")]
+    
+    # Weser
+    x <- st_read("data-raw/estuary/weser", "tiles_weser", quiet = TRUE)
+    x$id <- 1:nrow(x) + max(sf.tiles_estuaries$id)
+    x$river <- "Weser_tidal"
+    x$river[which(x$name %in% 
+                      c("wesert01_WUEMME", "wesert03_HUNTE"))] <- NA_character_
+    sf.tiles_estuaries <- rbind(sf.tiles_estuaries,
+                                x[, c("geometry", "id", "name", "river", "url")])
+    
+    # Jade
+    x <- st_read("data-raw/estuary/jade", "tiles_jade", quiet = TRUE)
+    x$id <- 1:nrow(x) + max(sf.tiles_estuaries$id)
+    x$river <- "Jade_tidal"
+    sf.tiles_estuaries <- rbind(sf.tiles_estuaries,
+                                x[, c("geometry", "id", "name", "river", "url")])
     
     # Ems
     x <- st_read("data-raw/estuary/ems", "tiles_ems", quiet = TRUE)
@@ -102,7 +129,7 @@ if (!(file.exists("data/sf.tiles_estuaries.rda"))) {
                       compress = "bzip2")
     
     # clean up
-    rm(sf.tiles_estuaries)
+    rm(x, sf.tiles_estuaries)
     
 } else {
     write("data/sf.tiles_estuaries.rda exists already", stderr())

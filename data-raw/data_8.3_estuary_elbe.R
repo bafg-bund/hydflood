@@ -160,9 +160,8 @@ if (!(file.exists("data-raw/estuary/elbe/sf.estuary_elbe_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/elbe/sf.estuary_elbe_sections.rda")
-        files <- paste0(options()$hydflood.datadir, "/", "elbet",
-                        sprintf("%02.0f", sf.estuary_elbe_sections$id), "_",
-                        toupper(sf.estuary_elbe_sections$name), "_CSA.tif")
+        files <- paste0(options()$hydflood.datadir, "/",
+                        sf.estuary_elbe_sections$name, "_CSA.tif")
         
         for (a_file in files) {
             

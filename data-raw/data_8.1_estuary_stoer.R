@@ -206,8 +206,7 @@ if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/stoer/sf.estuary_stoer_sections.rda")
         files <- paste0(options()$hydflood.datadir, "/",
-            "elbet", sprintf("%02.0f", sf.estuary_stoer_sections$id), "_",
-            toupper(sf.estuary_stoer_sections$name), "_CSA.tif")
+                        sf.estuary_stoer_sections$name, "_CSA.tif")
         
         for (a_file in files) {
             

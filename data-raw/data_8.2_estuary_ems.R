@@ -189,13 +189,12 @@ if (!(file.exists("data-raw/estuary/ems/sf.estuary_ems_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/ems/sf.estuary_ems_sections.rda")
-        files <- paste0(options()$hydflood.datadir, "/", "emst",
-                        sprintf("%02.0f", sf.estuary_ems_sections$id), "_",
-                        toupper(sf.estuary_ems_sections$name), "_CSA.tif")
+        files <- paste0(options()$hydflood.datadir, "/",
+                        sf.estuary_ems_sections$name, "_CSA.tif")
         
         for (a_file in files) {
             
-            if (grepl("LEDA-JUEMME", a_file)) {next}
+            if (grepl("LEDA_JUEMME", a_file)) {next}
             
             # get the existing dem
             dem <- rast(gsub("CSA", "DEM", a_file))

@@ -6,6 +6,7 @@
 .RData
 .Ruserdata
 .Rd2pdf*
+*.cpg
 *.dat
 *.log
 *.qgz

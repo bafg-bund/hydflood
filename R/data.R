@@ -128,15 +128,15 @@ sf.af <- function(name = NULL) {
 #' @title Active marshland along the German estuaries
 #' 
 #' @description This dataset contains three polygons of the active marshes of
-#'    the German Federal Waterways River Ems, River Stoer and River Elbe in the
-#'    coordinate reference system
+#'    the German Federal Waterways River Elbe, River Stoer, River Weser, River
+#'    Jade and River Ems in the coordinate reference system
 #'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-332n/}{ETRS 1989 UTM 32N}.
 #'    
 #'    These polygons were derived from .... For hydflood it was updated with
 #'    recent flood protection measures and manually improved with recent digital
 #'    elevation models and aerial images at a scale of < 1:10,000.
 #' 
-#' @format A \code{sf} containing 3 polygons with 3 attributes:
+#' @format A \code{sf} containing 5 polygons with 3 attributes:
 #' \describe{
 #'   \item{id}{of the estuary (type \code{integer}).} 
 #'   \item{name}{of the estuary (type \code{character}).}
@@ -200,15 +200,15 @@ sf.af <- function(name = NULL) {
 #' 
 #' @title Tiling of digital elevation models across German estuaries
 #' 
-#' @description This dataset contains 34 rectangular polygons covering the
-#'    German estuaries of the rivers Elbe, Ems and Stoer in the coordinate
-#'    reference system
+#' @description This dataset contains 46 rectangular polygons covering the
+#'    German estuaries of the rivers Elbe, Stoer, Weser, Jade and Ems in the
+#'    coordinate reference system
 #'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   
 #'   The tiles represent the original tiling of the internally used digital
 #'   elevation models (Weber & Heuner 2024).
 #' 
-#' @format A \code{sf} containing 34 polygons with 13 attributes:
+#' @format A \code{sf} containing 46 polygons with 13 attributes:
 #' \describe{
 #'   \item{geometry}{\code{sfc_POLYGON} column storing the geometries.}
 #'   \item{id}{of the tile (type \code{integer}).} 
