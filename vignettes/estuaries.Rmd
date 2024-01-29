@@ -286,7 +286,153 @@ leaflet() %>%
     addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
     addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
     addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
-    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("bottomright", colors = c("red", "blue", "black", "yellow"), 
+              labels = c("left", "right", "axis", "gauging station"),
+              opacity = c(0.5, 0.5, 0.5, 0.7))
+```
+
+### Weser
+
+``` {r density-weser}
+weser_upstream <- getPegelonlineCharacteristicValues(
+    gauging_station = "WESERWEHR UW", value = c("PNP", "MThw", "MTnw"),
+    as_list = FALSE, abs_height = TRUE)
+
+weser_downstream <- getPegelonlineCharacteristicValues(
+    gauging_station = "LEUCHTTURM ALTE WESER", value = c("PNP", "MThw", "MTnw"),
+    as_list = FALSE, abs_height = TRUE)
+
+df.gsd <- df.gauging_station_data[df.gauging_station_data$river == "WESER_tidal" &
+                                      df.gauging_station_data$data_present, ]
+station_int <- as.integer(seq(min(df.gsd$km_qps), max(df.gsd$km_qps), by = 0.1) * 1000)
+wldf <- WaterLevelDataFrame(river = "Weser_tidal", time = as.POSIXct(NA),
+                            station_int = station_int)
+weser_mthw <- waterLevelFlood2(wldf, "MThw")
+summary(weser_mthw)
+diff(range(weser_mthw$w))
+diff(range(weser_mthw$w)) / diff(range(wldf$station))
+
+weser_mtnw <- waterLevelFlood2(wldf, "MTnw")
+summary(weser_mtnw)
+diff(range(weser_mtnw$w))
+diff(range(weser_mtnw$w)) / diff(range(wldf$station))
+```
+
+``` {r density-weser-plot}
+plot(weser_mthw$station, weser_mthw$w, type = "n", ylim = c(-2, 7),
+     ylab = "elevation (m a.s.l.)", xlab = "river kilometer")
+df.stations <- getGaugingStations(weser_mthw)
+df.stations <- df.stations[!is.na(df.stations$pnp), ]
+abline(v = df.stations$km_qps, lty = 3, lwd = 0.5)
+text(df.stations$km_qps, rep(5, nrow(df.stations)),
+     df.stations$gauging_station, srt = 90, cex = 0.5)
+lines(weser_mtnw$station, weser_mtnw$w, col = "red")
+lines(weser_mthw$station, weser_mthw$w, col = "darkblue")
+legend("topright", legend = c("MThw", "MTnw"), col = c("darkblue", "red"),
+       lty = c(1, 1), cex = 0.7, bty = "n")
+```
+
+``` {r createEstuaryCSA-import-weser}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/weser", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/weser", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/weser", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/weser", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/weser", "gs", quiet = TRUE)[x, ]
+```
+
+``` {r createEstuaryCSA-import-leaflet-weser, echo = FALSE}
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+gs_wgs84 <- gs_wgs84[x_wgs84, ]
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = x_wgs84, weight = 0.5, fillOpacity = 0.5) %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("bottomright", colors = c("red", "blue", "black", "yellow"), 
+              labels = c("left", "right", "axis", "gauging station"),
+              opacity = c(0.5, 0.5, 0.5, 0.7))
+```
+
+### Jade
+
+``` {r density-jade}
+jade_upstream <- getPegelonlineCharacteristicValues(
+    gauging_station = "WHV ALTER VORHAFEN", value = c("PNP", "MThw", "MTnw"),
+    as_list = FALSE, abs_height = TRUE)
+
+jade_downstream <- getPegelonlineCharacteristicValues(
+    gauging_station = "WANGEROOGE NORD", value = c("PNP", "MThw", "MTnw"),
+    as_list = FALSE, abs_height = TRUE)
+
+df.gsd <- df.gauging_station_data[df.gauging_station_data$river == "JADE_tidal" &
+                                      df.gauging_station_data$data_present, ]
+station_int <- as.integer(seq(min(df.gsd$km_qps), max(df.gsd$km_qps), by = 0.1) * 1000)
+wldf <- WaterLevelDataFrame(river = "Jade_tidal", time = as.POSIXct(NA),
+                            station_int = station_int)
+jade_mthw <- waterLevelFlood2(wldf, "MThw")
+summary(jade_mthw)
+diff(range(jade_mthw$w))
+diff(range(jade_mthw$w)) / diff(range(wldf$station))
+
+jade_mtnw <- waterLevelFlood2(wldf, "MTnw")
+summary(jade_mtnw)
+diff(range(jade_mtnw$w))
+diff(range(jade_mtnw$w)) / diff(range(wldf$station))
+```
+
+``` {r density-jade-plot}
+plot(jade_mthw$station, jade_mthw$w, type = "n", ylim = c(-2, 6),
+     ylab = "elevation (m a.s.l.)", xlab = "river kilometer")
+df.stations <- getGaugingStations(jade_mthw)
+df.stations <- df.stations[!is.na(df.stations$pnp), ]
+abline(v = df.stations$km_qps, lty = 3, lwd = 0.5)
+text(df.stations$km_qps, rep(4, nrow(df.stations)),
+     df.stations$gauging_station, srt = 90, cex = 0.5)
+lines(jade_mtnw$station, jade_mtnw$w, col = "red")
+lines(jade_mthw$station, jade_mthw$w, col = "darkblue")
+legend("topright", legend = c("MThw", "MTnw"), col = c("darkblue", "red"),
+       lty = c(1, 1), cex = 0.7, bty = "n")
+```
+
+``` {r createEstuaryCSA-import-jade}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/jade", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/jade", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/jade", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/jade", "right", quiet = TRUE)
+density <- 1/1000
+gs <- st_read("~/hydflood/data-raw/estuary/jade", "gs", quiet = TRUE)[x, ]
+```
+
+``` {r createEstuaryCSA-import-leaflet-jade, echo = FALSE}
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))
+gs_wgs84 <- gs_wgs84[x_wgs84, ]
+
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = x_wgs84, weight = 0.5, fillOpacity = 0.5) %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
                      fillColor = "yellow", fillOpacity = 0.7,
                      color = "black", weight = 1, opacity = 0.9) %>%
     addLegend("bottomright", colors = c("red", "blue", "black", "yellow"), 
@@ -494,7 +640,85 @@ leaflet() %>%
     addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
     addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
     addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
-    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("bottomright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+## Weser
+
+``` {r createEstuaryCSA-leaflet-weser-lines-edited, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/weser", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/weser", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/weser", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/weser", "right", quiet = TRUE)
+gs <- st_read("~/hydflood/data-raw/estuary/weser", "gs", quiet = TRUE)
+res <- st_read("~/hydflood/data-raw/estuary/weser",
+               "sf.estuary_weser_csa_lines_edited", quiet = TRUE)
+
+# transform
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))[x_wgs84, ]
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+# plot
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
+                     fillColor = "yellow", fillOpacity = 0.7,
+                     color = "black", weight = 1, opacity = 0.9) %>%
+    addLegend("bottomright", colors = c("red", "blue", "black", "yellow",
+                                     "darkgreen"), 
+              labels = c("left", "right", "axis", "gauging station",
+                         "stationing"),
+              opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
+```
+
+## Jade
+
+``` {r createEstuaryCSA-leaflet-jade-lines-edited, echo = FALSE}
+# import preliminary vector data
+x <- st_read("~/hydflood/data-raw/estuary/jade", "x", quiet = TRUE)
+axis <- st_read("~/hydflood/data-raw/estuary/jade", "axis", quiet = TRUE)
+left <- st_read("~/hydflood/data-raw/estuary/jade", "left", quiet = TRUE)
+right <- st_read("~/hydflood/data-raw/estuary/jade", "right", quiet = TRUE)
+gs <- st_read("~/hydflood/data-raw/estuary/jade", "gs", quiet = TRUE)
+res <- st_read("~/hydflood/data-raw/estuary/jade",
+               "sf.estuary_jade_csa_lines_edited", quiet = TRUE)
+
+# transform
+x_wgs84 <- st_transform(x, st_crs(4326))
+axis_wgs84 <- st_transform(axis, st_crs(4326))
+left_wgs84 <- st_transform(left, st_crs(4326))
+right_wgs84 <- st_transform(right, st_crs(4326))
+gs_wgs84 <- st_transform(gs, st_crs(4326))[x_wgs84, ]
+res_wgs84 <- st_transform(res, st_crs(4326))
+
+# plot
+leaflet() %>%
+    addTiles() %>%
+    addPolygons(data = res_wgs84, weight = 1, fillOpacity = 0.3,
+                label = res_wgs84$station_int, fillColor = "darkgreen",
+                color = "darkgreen") %>%
+    addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
+    addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
+    addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
                      fillColor = "yellow", fillOpacity = 0.7,
                      color = "black", weight = 1, opacity = 0.9) %>%
     addLegend("bottomright", colors = c("red", "blue", "black", "yellow",
@@ -758,36 +982,196 @@ if (!file.exists(filename_mtnw)) {
 
 # convert fe_mtnw to l_mtnw
 if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
-    l_mtnw <- tryCatch({
-        floodExtentToLine(fe_mtnw, as_units(100, "m²"),
-                          "ksmooth", smoothness = 10)
-    },
-    error = function(e){
-        print(e)
-        return(NA)
-    },
-    warning = function(w){
-        print(w)
-        return(NA)
-    })
+    l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                "ksmooth", smoothness = 10)
+    if (!is.null(l_mtnw)) {
+        st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+}
+if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+    l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+    if (!is.null(l_mtnw)) {
+        st_write(l_mtnw, product_dir, filename_mtnw_l_s, driver = driver)
+    }
+}
+```
+
+### Weser
+
+``` {r fe-weser-import}
+df <- read.table("~/hydflood/data-raw/estuary/weser/df_2015.csv", header = TRUE,
+                 sep = ";", dec = ".")
+```
+
+``` {r fe-weser}
+# cache dir
+p <- options()$hydflood.datadir
+
+# product dir
+product_dir <- "~/freigaben/U/U3/Auengruppe_INFORM/UW_000_115_UFD/data/fe/"
+
+# tiles
+tiles <- sf.tiles("estuaries")
+tiles <- tiles[grepl("Weser_tidal", tiles$river), ]
+
+for (i in 1:nrow(tiles)) {
     
-    if (all(is.na(l_mtnw))) {
-        print("Smoothing error: MTnw")
-        l_mtnw <- tryCatch({
-            floodExtentToLine(fe_mtnw, as_units(100, "m²"))
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
+    print(tiles$name[i])
+    
+    # output paths
+    filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
+    filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
+    filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
+    filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mthw_l_s <- paste0(tiles$name[i], "_Line_MThw_not_smoothed")
+    filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
+    filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    
+    # initialize x
+    x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
+                                        filename_csa = filename_csa))
+    
+    # compute fe_mthw
+    if (!file.exists(filename_mthw)) {
+        fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df,
+            filename = filename_mthw, datatype = datatype)
+    } else {
+        fe_mthw <- rast(filename_mthw)
     }
     
-    if (all(!is.na(l_mtnw))) {
-        st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    # convert fe_mthw to l_mthw
+    if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l,
+                             driver = driver)
+        }
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l_s,
+                             driver = driver)
+        }
+    }
+    
+    # compute fe_mtnw
+    if (!file.exists(filename_mtnw)) {
+        fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df,
+            filename = filename_mtnw, datatype = datatype)
+    } else {
+        fe_mtnw <- rast(filename_mtnw)
+    }
+    
+        # convert fe_mtnw to l_mtnw
+    if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l,
+                             driver = driver)
+        }
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l_s,
+                             driver = driver)
+        }
+    }
+}
+```
+
+### Jade
+
+``` {r fe-jade-import}
+df <- read.table("~/hydflood/data-raw/estuary/jade/df_2018.csv", header = TRUE,
+                 sep = ";", dec = ".")
+```
+
+``` {r fe-jade}
+# cache dir
+p <- options()$hydflood.datadir
+
+# product dir
+product_dir <- "~/freigaben/U/U3/Auengruppe_INFORM/JA_000_058_UFD/data/fe/"
+
+# tiles
+tiles <- sf.tiles("estuaries")
+tiles <- tiles[grepl("Jade_tidal", tiles$river), ]
+
+for (i in 1:nrow(tiles)) {
+    
+    print(tiles$name[i])
+    
+    # output paths
+    filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
+    filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
+    filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
+    filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mthw_l_s <- paste0(tiles$name[i], "_Line_MThw_not_smoothed")
+    filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
+    filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    
+    # initialize x
+    x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
+                                        filename_csa = filename_csa))
+    
+    # compute fe_mthw
+    if (!file.exists(filename_mthw)) {
+        fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df,
+            filename = filename_mthw, datatype = datatype)
+    } else {
+        fe_mthw <- rast(filename_mthw)
+    }
+    
+    # convert fe_mthw to l_mthw
+    if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l,
+                             driver = driver)
+        }
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l_s,
+                             driver = driver)
+        }
+    }
+    
+    # compute fe_mtnw
+    if (!file.exists(filename_mtnw)) {
+        fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df,
+            filename = filename_mtnw, datatype = datatype)
+    } else {
+        fe_mtnw <- rast(filename_mtnw)
+    }
+    
+        # convert fe_mtnw to l_mtnw
+    if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l,
+                             driver = driver)
+        }
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l_s,
+                             driver = driver)
+        }
     }
 }
 ```
