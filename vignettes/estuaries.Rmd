@@ -802,13 +802,15 @@ for (i in 1:nrow(tiles)) {
     
     print(tiles$name[i])
     
-    # raster paths
+    # output paths
     filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
     filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
     filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
     filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mthw_l_s <- paste0(tiles$name[i], "_Line_MThw_not_smoothed")
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -824,36 +826,19 @@ for (i in 1:nrow(tiles)) {
     
     # convert fe_mthw to l_mthw
     if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
-        l_mthw <- tryCatch({
-            floodExtentToLine(fe_mthw, as_units(100, "m²"),
-                              "ksmooth", smoothness = 10)
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-        
-        if (all(is.na(l_mthw))) {
-            print("Smoothing error: MThw")
-            l_mthw <- tryCatch({
-                floodExtentToLine(fe_mthw, as_units(100, "m²"))
-            },
-            error = function(e){
-                print(e)
-                return(NA)
-            },
-            warning = function(w){
-                print(w)
-                return(NA)
-            })
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l,
+                             driver = driver)
         }
-        
-        if (all(!is.na(l_mthw))) {
-            st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l_s,
+                             driver = driver)
         }
     }
     
@@ -867,36 +852,19 @@ for (i in 1:nrow(tiles)) {
     
         # convert fe_mtnw to l_mtnw
     if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
-        l_mtnw <- tryCatch({
-            floodExtentToLine(fe_mtnw, as_units(100, "m²"),
-                              "ksmooth", smoothness = 10)
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-        
-        if (all(is.na(l_mtnw))) {
-            print("Smoothing error: MTnw")
-            l_mtnw <- tryCatch({
-                floodExtentToLine(fe_mtnw, as_units(100, "m²"))
-            },
-            error = function(e){
-                print(e)
-                return(NA)
-            },
-            warning = function(w){
-                print(w)
-                return(NA)
-            })
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l,
+                             driver = driver)
         }
-        
-        if (all(!is.na(l_mtnw))) {
-            st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l_s,
+                             driver = driver)
         }
     }
 }
@@ -922,8 +890,10 @@ filename_dem <- paste0(product_dir , "STOER_DEM.tif")
 filename_csa <- paste0(product_dir , "STOER_CSA.tif")
 filename_mthw <- paste0(product_dir, "STOER_FE_MThw.tif")
 filename_mthw_l <- "STOER_Line_MThw"
+filename_mthw_l_s <- "STOER_Line_MThw_not_smoothed"
 filename_mtnw <- paste0(product_dir, "STOER_FE_MTnw.tif")
 filename_mtnw_l <- "STOER_Line_MTnw"
+filename_mtnw_l_s <- "STOER_Line_MTnw_not_smoothed"
 
 # initialize x
 x <- hydSpatRaster(filename_dem = filename_dem, filename_csa = filename_csa,
@@ -939,36 +909,16 @@ if (!file.exists(filename_mthw)) {
 
 # convert fe_mthw to l_mthw
 if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
-    l_mthw <- tryCatch({
-        floodExtentToLine(fe_mthw, as_units(100, "m²"),
-                          "ksmooth", smoothness = 10)
-    },
-    error = function(e){
-        print(e)
-        return(NA)
-    },
-    warning = function(w){
-        print(w)
-        return(NA)
-    })
-    
-    if (all(is.na(l_mthw))) {
-        print("Smoothing error: MThw")
-        l_mthw <- tryCatch({
-            floodExtentToLine(fe_mthw, as_units(100, "m²"))
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-    }
-    
-    if (all(!is.na(l_mthw))) {
+    l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                "ksmooth", smoothness = 10)
+    if (!is.null(l_mthw)) {
         st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+}
+if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+    l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+    if (!is.null(l_mthw)) {
+        st_write(l_mthw, product_dir, filename_mthw_l_s, driver = driver)
     }
 }
 
@@ -1198,18 +1148,17 @@ tiles <- tiles[grepl("Ems_tidal", tiles$river), ]
 
 for (i in 1:nrow(tiles)) {
     
-    # if (tiles$name[i] == "emst06_GRONINGEN" |
-    #     tiles$name[i] == "emst08_ROTTUMERPLAAT"){next}
-    
     print(tiles$name[i])
     
-    # raster paths
+    # output paths
     filename_dem <- paste0(p, "/", tiles$name[i], "_DEM.tif")
     filename_csa <- paste0(p, "/", tiles$name[i], "_CSA.tif")
     filename_mthw <- paste0(product_dir, tiles$name[i], "_FE_MThw.tif")
     filename_mthw_l <- paste0(tiles$name[i], "_Line_MThw")
+    filename_mthw_l_s <- paste0(tiles$name[i], "_Line_MThw_not_smoothed")
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
+    filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1225,36 +1174,19 @@ for (i in 1:nrow(tiles)) {
     
     # convert fe_mthw to l_mthw
     if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
-        l_mthw <- tryCatch({
-            floodExtentToLine(fe_mthw, as_units(100, "m²"),
-                              "ksmooth", smoothness = 10)
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-        
-        if (all(is.na(l_mthw))) {
-            print("Smoothing error: MThw")
-            l_mthw <- tryCatch({
-                floodExtentToLine(fe_mthw, as_units(100, "m²"))
-            },
-            error = function(e){
-                print(e)
-                return(NA)
-            },
-            warning = function(w){
-                print(w)
-                return(NA)
-            })
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l,
+                             driver = driver)
         }
-        
-        if (all(!is.na(l_mthw))) {
-            st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+        l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+        if (!is.null(l_mthw)) {
+                    st_write(l_mthw, product_dir, filename_mthw_l_s,
+                             driver = driver)
         }
     }
     
@@ -1268,36 +1200,19 @@ for (i in 1:nrow(tiles)) {
     
         # convert fe_mtnw to l_mtnw
     if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
-        l_mtnw <- tryCatch({
-            floodExtentToLine(fe_mtnw, as_units(100, "m²"),
-                              "ksmooth", smoothness = 10)
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-        
-        if (all(is.na(l_mtnw))) {
-            print("Smoothing error: MTnw")
-            l_mtnw <- tryCatch({
-                floodExtentToLine(fe_mtnw, as_units(100, "m²"))
-            },
-            error = function(e){
-                print(e)
-                return(NA)
-            },
-            warning = function(w){
-                print(w)
-                return(NA)
-            })
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                    "ksmooth", smoothness = 10)
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l,
+                             driver = driver)
         }
-        
-        if (all(!is.na(l_mtnw))) {
-            st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+    
+    if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+        l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+        if (!is.null(l_mtnw)) {
+                    st_write(l_mtnw, product_dir, filename_mtnw_l_s,
+                             driver = driver)
         }
     }
 }
@@ -1324,8 +1239,10 @@ if (!file.exists(filename_dem)) {
 filename_csa <- paste0(product_dir , "EMS_CSA.tif")
 filename_mthw <- paste0(product_dir, "EMS_FE_MThw.tif")
 filename_mthw_l <- "EMS_Line_MThw"
+filename_mthw_l_s <- "EMS_Line_MThw_not_smoothed"
 filename_mtnw <- paste0(product_dir, "EMS_FE_MTnw.tif")
 filename_mtnw_l <- "EMS_Line_MTnw"
+filename_mtnw_l_s <- "EMS_Line_MTnw_not_smoothed"
 
 # initialize x
 x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1333,7 +1250,7 @@ x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
 
 # compute fe_mthw
 if (!file.exists(filename_mthw)) {
-    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df_historical,
+    fe_mthw <- floodCharacteristicWaterlevel(x, "MThw", df = df,
         filename = filename_mthw, datatype = datatype)
 } else {
     fe_mthw <- rast(filename_mthw)
@@ -1341,42 +1258,22 @@ if (!file.exists(filename_mthw)) {
 
 # convert fe_mthw to l_mthw
 if (!file.exists(paste0(product_dir, filename_mthw_l, ".shp"))) {
-    l_mthw <- tryCatch({
-        floodExtentToLine(fe_mthw, as_units(100, "m²"),
-                          "ksmooth", smoothness = 10)
-    },
-    error = function(e){
-        print(e)
-        return(NA)
-    },
-    warning = function(w){
-        print(w)
-        return(NA)
-    })
-    
-    if (all(is.na(l_mthw))) {
-        print("Smoothing error: MThw")
-        l_mthw <- tryCatch({
-            floodExtentToLine(fe_mthw, as_units(100, "m²"))
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-    }
-    
-    if (all(!is.na(l_mthw))) {
+    l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"),
+                                "ksmooth", smoothness = 10)
+    if (!is.null(l_mthw)) {
         st_write(l_mthw, product_dir, filename_mthw_l, driver = driver)
+    }
+}
+if (!file.exists(paste0(product_dir, filename_mthw_l_s, ".shp"))) {
+    l_mthw <- floodExtentToLine(fe_mthw, as_units(100, "m²"))
+    if (!is.null(l_mthw)) {
+        st_write(l_mthw, product_dir, filename_mthw_l_s, driver = driver)
     }
 }
 
 # compute fe_mtnw
 if (!file.exists(filename_mtnw)) {
-    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df_historical,
+    fe_mtnw <- floodCharacteristicWaterlevel(x, "MTnw", df = df,
         filename = filename_mtnw, datatype = datatype)
 } else {
     fe_mtnw <- rast(filename_mtnw)
@@ -1384,36 +1281,16 @@ if (!file.exists(filename_mtnw)) {
 
 # convert fe_mtnw to l_mtnw
 if (!file.exists(paste0(product_dir, filename_mtnw_l, ".shp"))) {
-    l_mtnw <- tryCatch({
-        floodExtentToLine(fe_mtnw, as_units(100, "m²"),
-                          "ksmooth", smoothness = 10)
-    },
-    error = function(e){
-        print(e)
-        return(NA)
-    },
-    warning = function(w){
-        print(w)
-        return(NA)
-    })
-    
-    if (all(is.na(l_mtnw))) {
-        print("Smoothing error: MTnw")
-        l_mthw <- tryCatch({
-            floodExtentToLine(fe_mtnw, as_units(100, "m²"))
-        },
-        error = function(e){
-            print(e)
-            return(NA)
-        },
-        warning = function(w){
-            print(w)
-            return(NA)
-        })
-    }
-    
-    if (all(!is.na(l_mtnw))) {
+    l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"),
+                                "ksmooth", smoothness = 10)
+    if (!is.null(l_mtnw)) {
         st_write(l_mtnw, product_dir, filename_mtnw_l, driver = driver)
+    }
+}
+if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
+    l_mtnw <- floodExtentToLine(fe_mtnw, as_units(100, "m²"))
+    if (!is.null(l_mtnw)) {
+        st_write(l_mtnw, product_dir, filename_mtnw_l_s, driver = driver)
     }
 }
 ```
