@@ -156,7 +156,19 @@ floodExtentToLine <- function(x, area_min = NULL,
     l <- sf::st_difference(l, l.ext)
     
     if (!is.null(smooth_method)) {
-        l <- smoothr::smooth(l, method = smooth_method, ...)
+        l <- tryCatch({
+                smoothr::smooth(l, method = smooth_method, ...)
+            },
+            error = function(e){
+                print(e)
+                warning("smoothing failed")
+                return(l)
+            },
+            warning = function(w){
+                print(w)
+                warning("smoothing failed")
+                return(l)}
+        )
     }
     
     return(l)
