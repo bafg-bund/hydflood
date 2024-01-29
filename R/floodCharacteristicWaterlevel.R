@@ -183,7 +183,9 @@ floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
         stopifnot(inherits(df$gauging_station, "character"))
         stopifnot("river" %in% names(df))
         stopifnot(inherits(df$river, "character"))
-        stopifnot(all(unique(tolower(df$river)) %in% 
+        stopifnot(length(unique(df$river)) == 1)
+        river_df <- unique(df$river)
+        stopifnot(all(tolower(unique(df$river)) %in% 
                          unique(tolower(hyd1d::df.gauging_station_data$river))))
         stopifnot("longitude" %in% names(df))
         stopifnot(inherits(df$longitude, "numeric") |
@@ -205,6 +207,11 @@ floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
         stopifnot(inherits(df[, value], "numeric") |
                       inherits(df[, value], "integer"))
         df[, value] <- as.numeric(df[, value])
+        if (river_df != river) {
+            message(paste0("The 'river' spedified in 'df' overwrites the spati",
+                           "ally selected."))
+            river <- river_df
+        }
     }
     
     ## shift
