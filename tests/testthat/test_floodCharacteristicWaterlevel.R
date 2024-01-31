@@ -81,7 +81,7 @@ test_that("floodCharacteristicWaterlevel: checks", {
     expect_error(floodCharacteristicWaterlevel(x = x, value = "MQ",
                                df = data.frame(gauging_station = "test",
                                                river = "test")),
-                 "all(unique(tolower(df$river)) %in% unique(",
+                 "all(tolower(unique(df$river)) %in% unique(",
                  fixed = TRUE)
     
     # names(df)
