@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   html_vignette:
     toc: yes
-    toc_depth: 3
+    toc_depth: 4
 bibliography: ../inst/REFERENCES.bib
 csl: apa_modified.csl
 vignette: |
@@ -183,6 +183,7 @@ diff(range(elbe_mtnw$w)) / diff(range(wldf$station))
 plot(elbe_mthw$station, elbe_mthw$w, type = "n", ylim = c(-1.7, 7),
      ylab = "elevation (m a.s.l.)", xlab = "river kilometer")
 df.stations <- getGaugingStations(elbe_mthw)
+df.stations <- df.stations[!is.na(df.stations$pnp), ]
 id <- c(2, 5, 6, 10, 13, 14, 17)
 abline(v = df.stations$km_qps, lty = 3, lwd = 0.5)
 text(df.stations$km_qps[id], rep(5, nrow(df.stations[id,])),
@@ -254,6 +255,7 @@ diff(range(stoer_mtnw$w)) / diff(range(wldf$station))
 plot(stoer_mthw$station, stoer_mthw$w, type = "n", ylim = c(-1.5, 6),
      ylab = "elevation (m a.s.l.)", xlab = "river kilometer")
 df.stations <- getGaugingStations(stoer_mthw)
+df.stations <- df.stations[!is.na(df.stations$pnp), ]
 abline(v = df.stations$km_qps, lty = 3, lwd = 0.5)
 text(df.stations$km_qps, rep(4, nrow(df.stations)),
      df.stations$gauging_station, srt = 90, cex = 0.5)
@@ -470,6 +472,7 @@ diff(range(ems_mtnw$w)) / diff(range(wldf$station))
 plot(ems_mthw$station, ems_mthw$w, type = "n", ylim = c(-2, 6),
      ylab = "elevation (m a.s.l.)", xlab = "river kilometer")
 df.stations <- getGaugingStations(ems_mthw)
+df.stations <- df.stations[!is.na(df.stations$pnp), ]
 abline(v = df.stations$km_qps, lty = 3, lwd = 0.5)
 text(df.stations$km_qps, rep(4, nrow(df.stations)),
      df.stations$gauging_station, srt = 90, cex = 0.5)
@@ -503,7 +506,7 @@ leaflet() %>%
     addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
     addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
     addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
-    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
                      fillColor = "yellow", fillOpacity = 0.7,
                      color = "black", weight = 1, opacity = 0.9) %>%
     addLegend("bottomright", colors = c("red", "blue", "black", "yellow"), 
@@ -525,7 +528,7 @@ density <- 1/1000
 gs <- st_read("~/hydflood/data-raw/estuary/elbe", "gs", quiet = TRUE)
 ```
 
-### mode: "default"
+#### mode: "default"
 
 ``` {r createEstuaryCSA-elbe-default, warning = FALSE}
 res <- createEstuaryCSA(x, axis, left, right, density, gs, "default")
@@ -557,7 +560,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-### mode: "lines"
+#### mode: "lines"
 
 ``` {r createEstuaryCSA-elbe-lines, warning = FALSE}
 res <- createEstuaryCSA(x, axis, left, right, density, gs, "lines")
@@ -584,7 +587,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-### mode: "linesplit"
+#### mode: "linesplit"
 
 ``` {r createEstuaryCSA-elbe-linesplit, warning = FALSE}
 res <- createEstuaryCSA(x, axis, left, right, density, gs, "linesplit")
@@ -611,7 +614,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-## Stoer
+### Stoer
 
 ``` {r createEstuaryCSA-leaflet-stoer-linesplit-edited, echo = FALSE}
 # import preliminary vector data
@@ -650,7 +653,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-## Weser
+### Weser
 
 ``` {r createEstuaryCSA-leaflet-weser-lines-edited, echo = FALSE}
 # import preliminary vector data
@@ -689,7 +692,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-## Jade
+### Jade
 
 ``` {r createEstuaryCSA-leaflet-jade-lines-edited, echo = FALSE}
 # import preliminary vector data
@@ -728,7 +731,7 @@ leaflet() %>%
               opacity = c(0.5, 0.5, 0.5, 0.7, 0.3))
 ```
 
-## Ems
+### Ems
 
 ``` {r createEstuaryCSA-leaflet-ems-linesplit-edited, echo = FALSE}
 # import preliminary vector data
@@ -757,7 +760,7 @@ leaflet() %>%
     addPolylines(data = left_wgs84, col = "red", weight = 3) %>%
     addPolylines(data = right_wgs84, col = "blue", weight = 3) %>%
     addPolylines(data = axis_wgs84, col = "black", weight = 3) %>%
-    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ga_station, radius = 4,
+    addCircleMarkers(data = gs_wgs84, label = gs_wgs84$ggng_st, radius = 4,
                      fillColor = "yellow", fillOpacity = 0.7,
                      color = "black", weight = 1, opacity = 0.9) %>%
     addLegend("bottomright", colors = c("red", "blue", "black", "yellow",
