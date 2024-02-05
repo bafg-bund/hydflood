@@ -169,19 +169,30 @@ floodExtentToLine <- function(x, area_min = NULL,
     l <- sf::st_difference(l, l.ext)
     
     if (!is.null(smooth_method)) {
-        l <- tryCatch({
-                smoothr::smooth(l, method = smooth_method, ...)
-            },
-            error = function(e){
-                print(e)
-                warning("smoothing failed")
-                return(l)
-            },
-            warning = function(w){
-                print(w)
-                warning("smoothing failed")
-                return(l)}
+        l_sm <- tryCatch({
+                   smoothr::smooth(l, method = smooth_method, ...)
+               },
+               error = function(e){
+                   print(e)
+                   warning("smoothing failed")
+                   return(l)
+               },
+               warning = function(w){
+                   print(w)
+                   warning("smoothing failed")
+                   return(l)}
         )
+        
+        if (!all(sf::st_is_valid(l_sm))) {
+            warning(paste0("Not all resulting geometries are valid. Invalid sm",
+                           "oothed geometries are replaced by\n  valid non-smo",
+                           "othed and an additional attribute 'smoothed' is ad",
+                           "ded."))
+            l[sf::st_is_valid(l_sm)] <- l_sm[sf::st_is_valid(l_sm)]
+            l <- sf::st_sf(geometry = l)
+            l$smoothed <- 0
+            l$smoothed[sf::st_is_valid(l_sm)] <- 1
+        }
     }
     
     return(l)
