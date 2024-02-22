@@ -190,8 +190,8 @@ function(input, output, session) {
                               fill = TRUE, fillColor = "lightblue", 
                               fillOpacity = 0.6, layerId = "afe")
             l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                              label = i18n()$t("Rhine"), color = "blue", weight = 2,
-                              fill = TRUE, fillColor = "lightblue", 
+                              label = i18n()$t("Rhine"), color = "blue",
+                              weight = 2, fill = TRUE, fillColor = "lightblue",
                               fillOpacity = 0.6, layerId = "afr")
         } else {
             if (res$river == "Elbe") {
@@ -203,18 +203,20 @@ function(input, output, session) {
             } else if (res$river == "Rhine") {
                 l %>% removeShape(layerId = c("afe"))
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = i18n()$t("Rhine"), color = "blue", weight = 2,
-                                  fill = TRUE, fillColor = "lightblue", 
-                                  fillOpacity = 0.6, layerId = "afr")
+                                  label = i18n()$t("Rhine"), color = "blue",
+                                  weight = 2, fill = TRUE,
+                                  fillColor = "lightblue", fillOpacity = 0.6,
+                                  layerId = "afr")
             } else {
                 l %>% addPolygons(lng = df.coor.afe$lon, lat = df.coor.afe$lat,
                                   label = "Elbe", color = "blue", weight = 2,
                                   fill = TRUE, fillColor = "lightblue", 
                                   fillOpacity = 0.6, layerId = "afe")
                 l %>% addPolygons(lng = df.coor.afr$lon, lat = df.coor.afr$lat,
-                                  label = i18n()$t("Rhine"), color = "blue", weight = 2,
-                                  fill = TRUE, fillColor = "lightblue", 
-                                  fillOpacity = 0.6, layerId = "afr")
+                                  label = i18n()$t("Rhine"), color = "blue",
+                                  weight = 2, fill = TRUE,
+                                  fillColor = "lightblue", fillOpacity = 0.6,
+                                  layerId = "afr")
             }
         }
     }, priority = 5)

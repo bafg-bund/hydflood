@@ -21,7 +21,7 @@ Description: Raster based flood modelling internally using 'hyd1d', an R package
 Depends: R (>= 4.0.0), sf, terra, hyd1d, units (>= 0.7-0)
 Imports: stats, Rdpack, grDevices, raster, lwgeom, smoothr
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D,
-    plotrix, shiny, shinyjs, shiny.i18n, leaflet, leaflet.extras, leaflet.esri,
+    shiny, shinyjs, shiny.i18n, leaflet, leaflet.extras, leaflet.esri,
     pangaear, rgrass, stringr
 RdMacros: Rdpack
 License: GPL-2

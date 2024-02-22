@@ -11,11 +11,11 @@ test_that("General tests", {
     if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
-                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_D",
-                               "EM.asc")
+                               "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_DEM",
+                               ".asc")
         filename_csa <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
-                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_C",
-                               "SA.asc")
+                               "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_CSA",
+                               ".asc")
         ext <- ext(436500, 438000, 5415000, 5416500)
         
         # tests
