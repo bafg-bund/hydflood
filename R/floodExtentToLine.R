@@ -140,36 +140,44 @@ floodExtentToLine <- function(x, area_min = NULL,
     # processing
     ##
     # convert raster to polygons
-    p <- sf::st_as_sf(terra::as.polygons(x))
+    p <- sf::st_as_sf(terra::as.polygons(x, na.rm = FALSE))
     
     # select only wet areas
-    cats <- unique(x)[, 1]
     col <- names(x)
-    p <- p[which(as.data.frame(p)[, col] == cats[2]), ]
+    categories <- unique(x, na.rm = FALSE)[, col]
+    p.fl <- p[which(as.data.frame(p)[, col] == max(categories, na.rm = TRUE)), ]
+    p.na <- p[is.na(categories), ]
     
     # convert MULTIPOLYGON to POLYGON
-    p <- sf::st_cast(p$geometry, "POLYGON")
+    p.fl <- sf::st_cast(p.fl$geometry, "POLYGON")
+    p.na <- sf::st_cast(p.na$geometry, "POLYGON")
     
     # remove small polygons and islands
     if (!is.null(area_min)) {
         if (inherits(area_min, "units")) {
-            p <- p[which(sf::st_area(p) >= area_min)]
+            p.fl <- p.fl[which(sf::st_area(p.fl) >= area_min)]
         } else {
-            p <- p[as.numeric(sf::st_area(p)) >= area_min]
+            p.fl <- p.fl[as.numeric(sf::st_area(p.fl)) >= area_min]
         }
-        p <- smoothr::fill_holes(p, threshold = area_min)
+        p.fl <- smoothr::fill_holes(p.fl, threshold = area_min)
     }
     
     # convert the remaining polygons to LINESTRING
-    l <- sf::st_cast(p, "LINESTRING")
+    l.fl <- sf::st_cast(p.fl, "LINESTRING")
     
-    # remove lines on the extent
+    # border lines of NA areas
+    l.na <- sf::st_cast(p.na, "LINESTRING")
+    
+    # lines of the extent
     l.ext <- rasterextent2polygon(x)
     l.ext <- sf::st_cast(l.ext, "LINESTRING")
-    l <- sf::st_difference(l, l.ext)
+    
+    # remove ext and na
+    l <- sf::st_difference(l.fl, l.ext)
+    l <- sf::st_difference(l, sf::st_union(l.na))
     
     if (!is.null(smooth_method)) {
-        l_sm <- tryCatch({
+        l.sm <- tryCatch({
                    smoothr::smooth(l, method = smooth_method, ...)
                },
                error = function(e){
