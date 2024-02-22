@@ -127,14 +127,42 @@ sf.af <- function(name = NULL) {
 #' 
 #' @title Active marshland along the German estuaries
 #' 
-#' @description This dataset contains three polygons of the active marshes of
+#' @description This dataset contains five polygons of the active marshes of
 #'    the German Federal Waterways River Elbe, River Stoer, River Weser, River
 #'    Jade and River Ems in the coordinate reference system
 #'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-332n/}{ETRS 1989 UTM 32N}.
 #'    
-#'    These polygons were derived from .... For hydflood it was updated with
-#'    recent flood protection measures and manually improved with recent digital
-#'    elevation models and aerial images at a scale of < 1:10,000.
+#'    The Elbe polygon was digitalized using the line of the dike crest
+#'    in digital elevation model 2016 (Weber et al. 2024). As there was no
+#'    continuous dyke line running through Hamburg additional datasets (Flood
+#'    Risk Management web map service
+#'    (\url{https://geodienste.hamburg.de/HH_WMS_Risikogebiete_HW?REQUEST=GetCapabilities}), 
+#'    3D Bruchkanten Hamburg - harbour web map service
+#'    (\url{https://geodienste.hamburg.de/HH_WMS_Bruchkanten?REQUEST=GetCapabilities}))
+#'    were used.
+#'    
+#'    The Stoer polygon was originally taken from Bundesanstalt f&uuml;r
+#'    Gew&auml;sserkunde (2022). It was manually updated using the dike lines of
+#'    the digital elevation model for River Elbe of 2016 (Sellerhoff et al.
+#'    2016, Weber et al. 2024).
+#'    
+#'    The Weser polygon was originally produced as boundary of the digital
+#'    elevation model from dike to dike (Grosser et al. 2018, Weber et al.
+#'    2024). It was manually validated and updated to have seamless boundaries
+#'    to the polygons of the rivers Elbe and Jade.
+#'    
+#'    The Jade polygon was originally produced as boundary of the digital
+#'    elevation model from dike to dike (Schirmer and Sellerhof 2019, Weber
+#'    et al. 2024). It was manually validated and updated to have seamless
+#'    boundaries to the polygons of the rivers Weser and Ems.
+#'    
+#'    The Ems polygon was originally produced as boundary of the digital
+#'    elevation model (Sellerhoff et al. 2016, Weber et al. 2024). It was
+#'    manually validated and updated to have a seamless boundary to the polygon
+#'    of the river Jade.
+#'    
+#'    All manual improvements were carried out with recent digital elevation
+#'    models and aerial images at a scale of < 1:10,000.
 #' 
 #' @format A \code{sf} containing 5 polygons with 3 attributes:
 #' \describe{
@@ -147,6 +175,18 @@ sf.af <- function(name = NULL) {
 #' 
 #' @references 
 #'   \insertRef{weber_flood_estuary_2024}{hydflood}
+#'   
+#'   \insertRef{weber_dems_2024}{hydflood}
+#'   
+#'   \insertRef{uhp_stoer_2022}{hydflood}
+#'   
+#'   \insertRef{smile_als_2016}{hydflood}
+#'   
+#'   \insertRef{inphoris_airborne_2018}{hydflood}
+#'   
+#'   \insertRef{smile_erstellung_2019}{hydflood}
+#'   
+#'   \insertRef{smile_aufbau_2016}{hydflood}
 #' 
 "sf.estuaries"
 
@@ -206,7 +246,7 @@ sf.af <- function(name = NULL) {
 #'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{ETRS 1989 UTM 32N}.
 #'   
 #'   The tiles represent the original tiling of the internally used digital
-#'   elevation models (Weber & Heuner 2024).
+#'   elevation models (Weber et al. 2024).
 #' 
 #' @format A \code{sf} containing 46 polygons with 13 attributes:
 #' \describe{
@@ -232,6 +272,10 @@ sf.af <- function(name = NULL) {
 #'   \insertRef{weber_dgms_2024}{hydflood}
 #'   
 #'   \insertRef{weber_dgm_elbe_2024}{hydflood}
+#'   
+#'   \insertRef{weber_dgm_weser_2024}{hydflood}
+#'   
+#'   \insertRef{weber_dgm_jade_2024}{hydflood}
 #'   
 #'   \insertRef{weber_dgm_ems_2024}{hydflood}
 #' 
