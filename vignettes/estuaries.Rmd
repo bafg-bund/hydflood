@@ -50,12 +50,24 @@ $(document).ready(function() {
 Sys.setlocale(category = "LC_ALL", locale = "en_US.utf8")
 
 # standard library path for the installed local packages
-library(devtools)
+debug <- TRUE
+if (debug) {
+    library(devtools)
+}
 options("hyd1d.datadir" = "~/.hyd1d")
-library(hyd1d)
+if (debug) {
+    devtools::load_all("~/hyd1d")
+} else {
+    library(hyd1d)
+}
 options("hydflood.datadir" = "~/.hydflood")
-library(hydflood)
+if (debug) {
+    devtools::load_all("~/hydflood")
+} else {
+    library(hydflood)
+}
 library(leaflet)
+library(knitr)
 terraOptions(
     progress = 0,
     memfrac = 0.5,
@@ -64,7 +76,11 @@ terraOptions(
 )
 
 # Determine the output format of the document
-outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+if (debug) {
+    outputFormat <- "html"
+} else {
+    outputFormat <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+}
 if (outputFormat == "html") {
     is_html <- TRUE
 } else {
