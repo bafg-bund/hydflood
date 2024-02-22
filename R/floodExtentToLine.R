@@ -192,15 +192,17 @@ floodExtentToLine <- function(x, area_min = NULL,
                    return(l)}
         )
         
-        if (!all(sf::st_is_valid(l_sm))) {
+        if (all(sf::st_is_valid(l.sm))) {
+            return(l.sm)
+        } else {
             warning(paste0("Not all resulting geometries are valid. Invalid sm",
                            "oothed geometries are replaced by\n  valid non-smo",
                            "othed and an additional attribute 'smoothed' is ad",
                            "ded."))
-            l[sf::st_is_valid(l_sm)] <- l_sm[sf::st_is_valid(l_sm)]
+            l[sf::st_is_valid(l.sm)] <- l.sm[sf::st_is_valid(l.sm)]
             l <- sf::st_sf(geometry = l)
             l$smoothed <- 0
-            l$smoothed[sf::st_is_valid(l_sm)] <- 1
+            l$smoothed[sf::st_is_valid(l.sm)] <- 1
         }
     }
     
