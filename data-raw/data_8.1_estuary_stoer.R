@@ -205,6 +205,12 @@ if (!(file.exists("data-raw/estuary/stoer/sf.estuary_stoer_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/stoer/sf.estuary_stoer_sections.rda")
+        if (!exists("x")) {
+            x <- st_read("data-raw/estuary/stoer", "x", quiet = TRUE)
+        }
+        sf.estuary_stoer_sections <- sf.estuary_stoer_sections[x, ]
+        rm(x)
+        
         files <- paste0(options()$hydflood.datadir, "/",
                         sf.estuary_stoer_sections$name, "_CSA.tif")
         

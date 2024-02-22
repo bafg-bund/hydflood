@@ -190,6 +190,12 @@ if (!(file.exists("data-raw/estuary/jade/sf.estuary_jade_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/jade/sf.estuary_jade_sections.rda")
+        if (!exists("x")) {
+            x <- st_read("data-raw/estuary/jade", "x", quiet = TRUE)
+        }
+        sf.estuary_jade_sections <- sf.estuary_jade_sections[x, ]
+        rm(x)
+        
         files <- paste0(options()$hydflood.datadir, "/",
                         sf.estuary_jade_sections$name, "_CSA.tif")
         

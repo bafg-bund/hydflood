@@ -189,12 +189,16 @@ if (!(file.exists("data-raw/estuary/ems/sf.estuary_ems_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/ems/sf.estuary_ems_sections.rda")
+        if (!exists("x")) {
+            x <- st_read("data-raw/estuary/ems", "x", quiet = TRUE)
+        }
+        sf.estuary_ems_sections <- sf.estuary_ems_sections[x, ]
+        rm(x)
+        
         files <- paste0(options()$hydflood.datadir, "/",
                         sf.estuary_ems_sections$name, "_CSA.tif")
         
         for (a_file in files) {
-            
-            if (grepl("LEDA_JUEMME", a_file)) {next}
             
             # get the existing dem
             dem <- rast(gsub("CSA", "DEM", a_file))

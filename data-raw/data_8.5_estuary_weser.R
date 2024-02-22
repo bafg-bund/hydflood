@@ -161,9 +161,15 @@ if (!(file.exists("data-raw/estuary/weser/sf.estuary_weser_csa.rda"))) {
 if (!is.null(options()$hydflood.datadir)) {
     if (dir.exists(options()$hydflood.datadir)) {
         load("data-raw/estuary/weser/sf.estuary_weser_sections.rda")
+        if (!exists("x")) {
+            x <- st_read("data-raw/estuary/weser", "x", quiet = TRUE)
+        }
+        sf.estuary_weser_sections <- sf.estuary_weser_sections[x, ]
+        rm(x)
+        
         files <- paste0(options()$hydflood.datadir, "/",
                         sf.estuary_weser_sections$name, "_CSA.tif")
-        
+
         for (a_file in files) {
             
             # get the existing dem
