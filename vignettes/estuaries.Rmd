@@ -776,9 +776,22 @@ leaflet() %>%
 - provide data as `data.frame`
 
 ``` {r fe-options}
+# export options
 gdal_opts <- c("COMPRESS=LZW", "TFW=NO")
 datatype <- "INT1U"
 driver <- "ESRI Shapefile"
+
+# tidal_zone raster categories
+cls <- data.frame(value = c(0, 1, 2, 3, 4, 5, 6), 
+                  tidal_zone = c("Hinterland", "Vorland",
+                                 "Watt und tiefliegende Landflaechen",
+                                 "Flachwasser", "Uebergangszone",
+                                 "Tiefenwasserzone I", "Tiefenwasserzone II"))
+
+# append colortab
+cols <- data.frame(value = c(NA, 0, 1, 2, 3, 4, 5, 6),
+                   col = c("grey95", "#bfeea0", "#5b9933", "#dbb757", "#abdadd",
+                           "#79bde8", "#4d91cd", "#2d81b4"))
 ```
 
 ### Elbe
@@ -794,6 +807,10 @@ p <- options()$hydflood.datadir
 
 # product dir
 product_dir <- "~/freigaben/Projekte/Elbe_U/EL_586_752_Morphozonen/data/fe/"
+
+# counts
+counts_elbe <- data.frame(layer = numeric(), value = character(),
+                          count = numeric())
 
 # tiles
 tiles <- sf.tiles("estuaries")
@@ -814,6 +831,13 @@ for (i in 1:nrow(tiles)) {
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
     filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    filename_mtnw_m02 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus02.tif")
+    filename_mtnw_m04 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus04.tif")
+    filename_mtnw_m10 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus10.tif")
+    filename_tz <- paste0(product_dir, tiles$name[i], "_tidal_zones.tif")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -870,7 +894,74 @@ for (i in 1:nrow(tiles)) {
                              driver = driver)
         }
     }
+    
+    # compute fe_mtnw_m02
+    if (!file.exists(filename_mtnw_m02)) {
+        fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+            filename = filename_mtnw_m02, datatype = datatype)
+    } else {
+        fe_mtnw_m02 <- rast(filename_mtnw_m02)
+    }
+    
+    # compute fe_mtnw_m04
+    if (!file.exists(filename_mtnw_m04)) {
+        fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+            filename = filename_mtnw_m04, datatype = datatype)
+    } else {
+        fe_mtnw_m04 <- rast(filename_mtnw_m04)
+    }
+    
+    # compute fe_mtnw_m10
+    if (!file.exists(filename_mtnw_m10)) {
+        fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+            filename = filename_mtnw_m10, datatype = datatype)
+    } else {
+        fe_mtnw_m10 <- rast(filename_mtnw_m10)
+    }
+    
+    # compute tidal_zones
+    if (!file.exists(filename_tz)) {
+        tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                            vals = NA_integer_)
+        tidal_zones[!is.na(x$csa)] <- 1
+        tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+            fe_mtnw_m04 + fe_mtnw_m10
+        set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+        names(tidal_zones) <- "tidal_zones"
+        coltab(tidal_zones) <- cols
+        writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+    } else {
+        tidal_zones <- rast(filename_tz)
+    }
+    
+    counts_tmp <- freq(tidal_zones)
+    counts_tmp$layer <- i
+    
+    counts_elbe <- rbind(counts_elbe, counts_tmp)
 }
+```
+
+``` {r plot-example-elbe}
+tidal_zones1 <- rast(paste0(product_dir, "/elbet10_OTTERNDORF_tidal_zones.tif"))
+tidal_zones2 <- rast(paste0(product_dir, "/elbet11_CUXHAVEN_tidal_zones.tif"))
+tidal_zones3 <- rast(paste0(product_dir, "/elbet12_TRISCHEN_tidal_zones.tif"))
+tidal_zones <- merge(tidal_zones1, tidal_zones2, tidal_zones3)
+set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+names(tidal_zones) <- "tidal_zones"
+coltab(tidal_zones) <- cols
+plot(tidal_zones)
+```
+
+``` {r aggregate-counts-elbe}
+agg_counts <- aggregate(counts_elbe[, c("count")], list(counts_elbe$value), sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ### Stoer
@@ -883,6 +974,10 @@ df <- read.table("~/hydflood/data-raw/estuary/stoer/df_2016.csv", header = TRUE,
 ``` {r fe-stoer}
 # product dir
 product_dir <- "~/freigaben/Projekte/Elbe_U/EL_586_752_Morphozonen/data/fe/stoer/"
+
+# counts
+counts_stoer <- data.frame(layer = numeric(), value = character(),
+                           count = numeric())
 
 # initialize x
 e <- ext(c(xmin = 525500, xmax = 545850, ymin = 5963950, ymax = 5977450))
@@ -897,6 +992,10 @@ filename_mthw_l_s <- "STOER_Line_MThw_not_smoothed"
 filename_mtnw <- paste0(product_dir, "STOER_FE_MTnw.tif")
 filename_mtnw_l <- "STOER_Line_MTnw"
 filename_mtnw_l_s <- "STOER_Line_MTnw_not_smoothed"
+filename_mtnw_m02 <- paste0(product_dir, "STOER_FE_MTnw_minus02.tif")
+filename_mtnw_m04 <- paste0(product_dir, "STOER_FE_MTnw_minus04.tif")
+filename_mtnw_m10 <- paste0(product_dir, "STOER_FE_MTnw_minus10.tif")
+filename_tz <- paste0(product_dir, "STOER_tidal_zones.tif")
 
 # initialize x
 x <- hydSpatRaster(filename_dem = filename_dem, filename_csa = filename_csa,
@@ -947,6 +1046,63 @@ if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
         st_write(l_mtnw, product_dir, filename_mtnw_l_s, driver = driver)
     }
 }
+
+# compute fe_mtnw_m02
+if (!file.exists(filename_mtnw_m02)) {
+    fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+        filename = filename_mtnw_m02, datatype = datatype)
+} else {
+    fe_mtnw_m02 <- rast(filename_mtnw_m02)
+}
+
+# compute fe_mtnw_m04
+if (!file.exists(filename_mtnw_m04)) {
+    fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+        filename = filename_mtnw_m04, datatype = datatype)
+} else {
+    fe_mtnw_m04 <- rast(filename_mtnw_m04)
+}
+
+# compute fe_mtnw_m10
+if (!file.exists(filename_mtnw_m10)) {
+    fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+        filename = filename_mtnw_m10, datatype = datatype)
+} else {
+    fe_mtnw_m10 <- rast(filename_mtnw_m10)
+}
+
+# compute tidal_zones
+if (!file.exists(filename_tz)) {
+    tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                        vals = NA_integer_)
+    tidal_zones[!is.na(x$csa)] <- 1
+    tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+        fe_mtnw_m04 + fe_mtnw_m10
+    set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+    names(tidal_zones) <- "tidal_zones"
+    coltab(tidal_zones) <- cols
+    writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+} else {
+    tidal_zones <- rast(filename_tz)
+}
+
+counts_tmp <- freq(tidal_zones)
+counts_tmp$layer <- NA
+
+counts_stoer <- rbind(counts_stoer, counts_tmp)
+```
+
+``` {r aggregate-counts-stoer}
+agg_counts <- aggregate(counts_stoer[, c("count")], list(counts_stoer$value),
+                        sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ### Weser
@@ -962,6 +1118,10 @@ p <- options()$hydflood.datadir
 
 # product dir
 product_dir <- "~/freigaben/U/U3/Auengruppe_INFORM/UW_000_115_UFD/data/fe/"
+
+# counts
+counts_weser <- data.frame(layer = numeric(), value = character(),
+                           count = numeric())
 
 # tiles
 tiles <- sf.tiles("estuaries")
@@ -980,6 +1140,13 @@ for (i in 1:nrow(tiles)) {
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
     filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    filename_mtnw_m02 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus02.tif")
+    filename_mtnw_m04 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus04.tif")
+    filename_mtnw_m10 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus10.tif")
+    filename_tz <- paste0(product_dir, tiles$name[i], "_tidal_zones.tif")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1036,7 +1203,64 @@ for (i in 1:nrow(tiles)) {
                              driver = driver)
         }
     }
+    
+    # compute fe_mtnw_m02
+    if (!file.exists(filename_mtnw_m02)) {
+        fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+            filename = filename_mtnw_m02, datatype = datatype)
+    } else {
+        fe_mtnw_m02 <- rast(filename_mtnw_m02)
+    }
+    
+    # compute fe_mtnw_m04
+    if (!file.exists(filename_mtnw_m04)) {
+        fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+            filename = filename_mtnw_m04, datatype = datatype)
+    } else {
+        fe_mtnw_m04 <- rast(filename_mtnw_m04)
+    }
+    
+    # compute fe_mtnw_m10
+    if (!file.exists(filename_mtnw_m10)) {
+        fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+            filename = filename_mtnw_m10, datatype = datatype)
+    } else {
+        fe_mtnw_m10 <- rast(filename_mtnw_m10)
+    }
+    
+    # compute tidal_zones
+    if (!file.exists(filename_tz)) {
+        tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                            vals = NA_integer_)
+        tidal_zones[!is.na(x$csa)] <- 1
+        tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+            fe_mtnw_m04 + fe_mtnw_m10
+        set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+        names(tidal_zones) <- "tidal_zones"
+        coltab(tidal_zones) <- cols
+        writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+    } else {
+        tidal_zones <- rast(filename_tz)
+    }
+    
+    counts_tmp <- freq(tidal_zones)
+    counts_tmp$layer <- i
+    
+    counts_weser <- rbind(counts_weser, counts_tmp)
 }
+```
+
+``` {r aggregate-counts-weser}
+agg_counts <- aggregate(counts_weser[, c("count")], list(counts_weser$value),
+                        sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ### Jade
@@ -1052,6 +1276,10 @@ p <- options()$hydflood.datadir
 
 # product dir
 product_dir <- "~/freigaben/U/U3/Auengruppe_INFORM/JA_000_058_UFD/data/fe/"
+
+# counts
+counts_jade <- data.frame(layer = numeric(), value = character(),
+                          count = numeric())
 
 # tiles
 tiles <- sf.tiles("estuaries")
@@ -1070,6 +1298,13 @@ for (i in 1:nrow(tiles)) {
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
     filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    filename_mtnw_m02 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus02.tif")
+    filename_mtnw_m04 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus04.tif")
+    filename_mtnw_m10 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus10.tif")
+    filename_tz <- paste0(product_dir, tiles$name[i], "_tidal_zones.tif")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1126,7 +1361,64 @@ for (i in 1:nrow(tiles)) {
                              driver = driver)
         }
     }
+    
+    # compute fe_mtnw_m02
+    if (!file.exists(filename_mtnw_m02)) {
+        fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+            filename = filename_mtnw_m02, datatype = datatype)
+    } else {
+        fe_mtnw_m02 <- rast(filename_mtnw_m02)
+    }
+    
+    # compute fe_mtnw_m04
+    if (!file.exists(filename_mtnw_m04)) {
+        fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+            filename = filename_mtnw_m04, datatype = datatype)
+    } else {
+        fe_mtnw_m04 <- rast(filename_mtnw_m04)
+    }
+    
+    # compute fe_mtnw_m10
+    if (!file.exists(filename_mtnw_m10)) {
+        fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+            filename = filename_mtnw_m10, datatype = datatype)
+    } else {
+        fe_mtnw_m10 <- rast(filename_mtnw_m10)
+    }
+    
+    # compute tidal_zones
+    if (!file.exists(filename_tz)) {
+        tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                            vals = NA_integer_)
+        tidal_zones[!is.na(x$csa)] <- 1
+        tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+            fe_mtnw_m04 + fe_mtnw_m10
+        set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+        names(tidal_zones) <- "tidal_zones"
+        coltab(tidal_zones) <- cols
+        writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+    } else {
+        tidal_zones <- rast(filename_tz)
+    }
+    
+    counts_tmp <- freq(tidal_zones)
+    counts_tmp$layer <- i
+    
+    counts_jade <- rbind(counts_jade, counts_tmp)
 }
+```
+
+``` {r aggregate-counts-jade}
+agg_counts <- aggregate(counts_jade[, c("count")], list(counts_jade$value),
+                        sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ### Ems
@@ -1145,6 +1437,10 @@ p <- options()$hydflood.datadir
 # product dir
 product_dir <- "~/freigaben/Projekte/Ems_U/EMS_213_076_Morphozonen/data/fe/"
 
+# counts
+counts_ems <- data.frame(layer = numeric(), value = character(),
+                         count = numeric())
+
 # tiles
 tiles <- sf.tiles("estuaries")
 tiles <- tiles[grepl("Ems_tidal", tiles$river), ]
@@ -1162,6 +1458,13 @@ for (i in 1:nrow(tiles)) {
     filename_mtnw <- paste0(product_dir, tiles$name[i], "_FE_MTnw.tif")
     filename_mtnw_l <- paste0(tiles$name[i], "_Line_MTnw")
     filename_mtnw_l_s <- paste0(tiles$name[i], "_Line_MTnw_not_smoothed")
+    filename_mtnw_m02 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus02.tif")
+    filename_mtnw_m04 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus04.tif")
+    filename_mtnw_m10 <- paste0(product_dir, tiles$name[i],
+                                "_FE_MTnw_minus10.tif")
+    filename_tz <- paste0(product_dir, tiles$name[i], "_tidal_zones.tif")
     
     # initialize x
     x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1218,7 +1521,64 @@ for (i in 1:nrow(tiles)) {
                              driver = driver)
         }
     }
+    
+    # compute fe_mtnw_m02
+    if (!file.exists(filename_mtnw_m02)) {
+        fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+            filename = filename_mtnw_m02, datatype = datatype)
+    } else {
+        fe_mtnw_m02 <- rast(filename_mtnw_m02)
+    }
+    
+    # compute fe_mtnw_m04
+    if (!file.exists(filename_mtnw_m04)) {
+        fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+            filename = filename_mtnw_m04, datatype = datatype)
+    } else {
+        fe_mtnw_m04 <- rast(filename_mtnw_m04)
+    }
+    
+    # compute fe_mtnw_m10
+    if (!file.exists(filename_mtnw_m10)) {
+        fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+            filename = filename_mtnw_m10, datatype = datatype)
+    } else {
+        fe_mtnw_m10 <- rast(filename_mtnw_m10)
+    }
+    
+    # compute tidal_zones
+    if (!file.exists(filename_tz)) {
+        tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                            vals = NA_integer_)
+        tidal_zones[!is.na(x$csa)] <- 1
+        tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+            fe_mtnw_m04 + fe_mtnw_m10
+        set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+        names(tidal_zones) <- "tidal_zones"
+        coltab(tidal_zones) <- cols
+        writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+    } else {
+        tidal_zones <- rast(filename_tz)
+    }
+    
+    counts_tmp <- freq(tidal_zones)
+    counts_tmp$layer <- i
+    
+    counts_ems <- rbind(counts_ems, counts_tmp)
 }
+```
+
+``` {r aggregate-counts-ems}
+agg_counts <- aggregate(counts_ems[, c("count")], list(counts_ems$value),
+                        sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ``` {r fe-ems-historical}
@@ -1228,6 +1588,10 @@ p <- options()$hydflood.datadir
 # product dir
 product_dir <- paste0("~/freigaben/Projekte/Ems_U/EMS_213_076_Morphozonen/data",
                       "/fe/historical/")
+
+# counts
+counts_ems_historical <- data.frame(layer = numeric(), value = character(),
+                                    count = numeric())
 
 # crop full dem
 filename_dem <- paste0(product_dir , "EMS_DEM.tif")
@@ -1246,6 +1610,10 @@ filename_mthw_l_s <- "EMS_Line_MThw_not_smoothed"
 filename_mtnw <- paste0(product_dir, "EMS_FE_MTnw.tif")
 filename_mtnw_l <- "EMS_Line_MTnw"
 filename_mtnw_l_s <- "EMS_Line_MTnw_not_smoothed"
+filename_mtnw_m02 <- paste0(product_dir, "EMS_FE_MTnw_minus02.tif")
+filename_mtnw_m04 <- paste0(product_dir, "EMS_FE_MTnw_minus04.tif")
+filename_mtnw_m10 <- paste0(product_dir, "EMS_FE_MTnw_minus10.tif")
+filename_tz <- paste0(product_dir, "EMS_tidal_zones.tif")
 
 # initialize x
 x <- suppressWarnings(hydSpatRaster(filename_dem = filename_dem,
@@ -1296,9 +1664,71 @@ if (!file.exists(paste0(product_dir, filename_mtnw_l_s, ".shp"))) {
         st_write(l_mtnw, product_dir, filename_mtnw_l_s, driver = driver)
     }
 }
+
+# compute fe_mtnw_m02
+if (!file.exists(filename_mtnw_m02)) {
+    fe_mtnw_m02 <- floodCharacteristicWaterlevel(x, "MTnw", df, -2,
+        filename = filename_mtnw_m02, datatype = datatype)
+} else {
+    fe_mtnw_m02 <- rast(filename_mtnw_m02)
+}
+
+# compute fe_mtnw_m04
+if (!file.exists(filename_mtnw_m04)) {
+    fe_mtnw_m04 <- floodCharacteristicWaterlevel(x, "MTnw", df, -4,
+        filename = filename_mtnw_m04, datatype = datatype)
+} else {
+    fe_mtnw_m04 <- rast(filename_mtnw_m04)
+}
+
+# compute fe_mtnw_m10
+if (!file.exists(filename_mtnw_m10)) {
+    fe_mtnw_m10 <- floodCharacteristicWaterlevel(x, "MTnw", df, -10,
+        filename = filename_mtnw_m10, datatype = datatype)
+} else {
+    fe_mtnw_m10 <- rast(filename_mtnw_m10)
+}
+
+# compute tidal_zones
+if (!file.exists(filename_tz)) {
+    tidal_zones <- rast(fe_mthw, nlyrs = 1, names = "tidal_zones",
+                        vals = NA_integer_)
+    tidal_zones[!is.na(x$csa)] <- 1
+    tidal_zones <- tidal_zones + fe_mthw + fe_mtnw + fe_mtnw_m02 +
+        fe_mtnw_m04 + fe_mtnw_m10
+    set.cats(tidal_zones, value = cls[, c("value", "tidal_zone")])
+    names(tidal_zones) <- "tidal_zones"
+    coltab(tidal_zones) <- cols
+    writeRaster(tidal_zones, filename = filename_tz, datatype = datatype)
+} else {
+    tidal_zones <- rast(filename_tz)
+}
+
+counts_tmp <- freq(tidal_zones)
+counts_tmp$layer <- NA
+
+counts_ems_historical <- rbind(counts_ems_historical, counts_tmp)
+```
+
+``` {r aggregate-counts-ems-historical}
+agg_counts <- aggregate(counts_ems_historical[, c("count")],
+                        list(counts_ems_historical$value), sum)
+names(agg_counts) <- c("value", "count")
+row.names(agg_counts) <- agg_counts$value
+cls_counts <- cls[cls$tidal_zone %in% agg_counts$value, ]
+agg_counts <- agg_counts[cls_counts$tidal_zone, ]
+agg_counts$count <- round(agg_counts$count / 1000000, 2)
+agg_counts$prop <- round(agg_counts$count / sum(agg_counts$count) * 100, 2)
+kable(agg_counts, row.names = FALSE, col.names = c("Tidal Zone", "Area (km²)",
+                                                   "Area (%)"))
 ```
 
 ## Postprocessing
+
+``` {r save-counts}
+save(counts_elbe, counts_stoer, counts_weser, counts_jade, counts_ems,
+     counts_ems_historical, file = "counts.Rdata")
+```
 
 # Products
 
