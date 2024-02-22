@@ -112,7 +112,7 @@ test_that("createEstuaryCSA: checks", {
                      fixed = TRUE)
         expect_no_error(createEstuaryCSA(x, axis, left, right,
                                          density = units::set_units(10, 1/km),
-                                         gs))
+                                         gs, mode = "lines"))
         expect_error(createEstuaryCSA(x, axis, left, right, density = c(1, 2),
                                       gs),
                      'length(density) == 1', fixed = TRUE)

@@ -208,7 +208,7 @@ floodCharacteristicWaterlevel <- function(x, value = NULL, df = NULL,
                       inherits(df[, value], "integer"))
         df[, value] <- as.numeric(df[, value])
         if (river_df != river) {
-            message(paste0("The 'river' spedified in 'df' overwrites the spati",
+            message(paste0("The 'river' specified in 'df' overwrites the spati",
                            "ally selected."))
             river <- river_df
         }

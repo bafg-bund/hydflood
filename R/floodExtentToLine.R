@@ -91,13 +91,13 @@ floodExtentToLine <- function(x, area_min = NULL,
             
             if (mm["min", 1] == mm["max", 1]) {
                 if (mm["min", 1] == 0) {
-                    message(paste0("The selected area is fully dry. There floo",
-                                   "dExtentToLine returns NULL."))
+                    message(paste0("The selected area is fully dry. ",
+                                   "floodExtentToLine() returns NULL."))
                     return(NULL)
                 }
                 if (mm["min", 1] == 1) {
-                    message(paste0("The selected area is fully flooded. There ",
-                                   "floodExtentToLine returns NULL."))
+                    message(paste0("The selected area is fully flooded. ",
+                                   "floodExtentToLine() returns NULL."))
                     return(NULL)
                 }
             }
@@ -118,7 +118,8 @@ floodExtentToLine <- function(x, area_min = NULL,
     
     ## smooth
     if (!is.null(smooth_method)) {
-        stopifnot(smooth_method %in% c("chaikin", "ksmooth", "spline", "densify"))
+        stopifnot(smooth_method %in% c("chaikin", "ksmooth", "spline",
+                                       "densify"))
     }
     
     ## ...
