@@ -133,8 +133,8 @@ sf.af <- function(name = NULL) {
 #'    \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-332n/}{ETRS 1989 UTM 32N}.
 #'    
 #'    The Elbe polygon was digitalized using the line of the dike crest
-#'    in digital elevation model 2016 (Weber et al. 2024). As there was no
-#'    continuous dyke line running through Hamburg additional datasets (Flood
+#'    in the digital elevation model 2016 (Weber et al. 2024). As there was no
+#'    continuous dyke line running through Hamburg, additional datasets (Flood
 #'    Risk Management web map service
 #'    (\url{https://geodienste.hamburg.de/HH_WMS_Risikogebiete_HW?REQUEST=GetCapabilities}), 
 #'    3D Bruchkanten Hamburg - harbour web map service
