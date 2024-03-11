@@ -137,6 +137,18 @@ if (file.exists(f_mean_vt)) {
                   filetype = "GTiff", gdal = c("COMPRESS=LZW", "TFW=NO"))
 }
 
+# depth_mq
+f_depth_mq <- paste0(o, "/", n, "_depth_mq.tif")
+
+if (file.exists(f_depth_mq)) {
+    print(paste0(f_depth_mq, " exists already"))
+} else {
+    print(paste0(f_depth_mq, " will be computed"))
+    x <- hydflood::hydSpatRaster(filename_dem = dem, filename_csa = csa)
+    waterDepth(x = x, value = "MQ", filename = f_depth_mq,
+               filetype = "GTiff", gdal = c("COMPRESS=LZW", "TFW=NO"))
+}
+
 #####
 # quit
 q("no")

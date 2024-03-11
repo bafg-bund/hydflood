@@ -1,5 +1,4 @@
 #' @name hydflood
-#' @docType package
 #' @aliases hydflood-package
 #' 
 #' @title hydflood: Flood Extents and Durations along the Rivers Elbe and Rhine
@@ -60,4 +59,4 @@
 #' @importFrom sf st_transform
 #' @importFrom sf st_join
 #' 
-NULL
+"_PACKAGE"
