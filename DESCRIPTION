@@ -45,6 +45,7 @@ Collate:
     'hydflood-internal.R'
     'hydSpatRaster.R'
     'w80ToSpatial.R'
+    'waterDepth.R'
     'zzz.R'
 VignetteBuilder: knitr
 BugReports: https://github.com/bafg-bund/hydflood/issues/

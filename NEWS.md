@@ -1,3 +1,7 @@
+# hydflood
+
+* add waterDepth()-function
+
 # hydflood 0.5.7
 
 * adapt BfG's new corporate design

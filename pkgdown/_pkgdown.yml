@@ -22,7 +22,7 @@ reference:
     contents:
       - "`hydflood`"
   - title: "Functions"
-    desc: Functions to compute flood extent and duration
+    desc: Functions to compute flood extent, duration and depth
     contents:
       - "`flood1`"
       - "`flood2`"
@@ -30,6 +30,7 @@ reference:
       - "`flood3Points`"
       - "`floodCharacteristicWaterlevel`"
       - "`hydSpatRaster`"
+      - "`waterDepth`"
   - title: Postprocessing
     desc: Functions to postprocess flood durations and extents
     contents:
