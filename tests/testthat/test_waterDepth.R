@@ -192,65 +192,65 @@ test_that("waterDepth: FLYS3", {
     }
 })
 
-# test_that("waterDepth: Elbe_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
-#         # Elbe_tidal
-#         p <- options()$hydflood.datadir
-#         df <- read.table("~/hydflood/data-raw/estuary/elbe/df_2010.csv",
-#                          header = TRUE, sep = ";", dec = ".")
-#         x <- hydSpatRaster(
-#             filename_dem = paste0(p, "/elbet01_GEESTHACHT_DEM.tif"),
-#             filename_csa = paste0(p, "/elbet01_GEESTHACHT_CSA.tif"))
-#         # fe <- waterDepth(x = x, value = "MTnw")
-#         expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
-#         
-#         x <- suppressWarnings(
-#             hydSpatRaster(
-#                 filename_dem = paste0(p, "/elbet07_BROKDORF_DEM.tif"),
-#                 filename_csa = paste0(p, "/elbet07_BROKDORF_CSA.tif"))
-#         )
-#         # fe <- waterDepth(x = x, value = "MTnw")
-#         expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
-#         
-#         x <- hydSpatRaster(
-#             filename_dem = paste0(p, "/elbet12_TRISCHEN_DEM.tif"),
-#             filename_csa = paste0(p, "/elbet12_TRISCHEN_CSA.tif"))
-#         expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
-#     }
-# })
-# 
-# test_that("waterDepth: Stoer_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
-#         # Stoer_tidal
-#         p <- options()$hydflood.datadir
-#         x <- hydSpatRaster(
-#             filename_dem = paste0(p, "/elbet08_ITZEHOE_DEM.tif"),
-#             filename_csa = paste0(p, "/elbet08_ITZEHOE_CSA.tif"))
-#         expect_no_error(
-#             suppressWarnings(
-#                 waterDepth(x = x, value = "MTnw")))
-#     }
-# })
-# 
-# test_that("waterDepth: Ems_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
-#         
-#         # Ems_tidal
-#         p <- options()$hydflood.datadir
-#         df <- read.table("~/hydflood/data-raw/estuary/ems/df_2015.csv",
-#                          header = TRUE, sep = ";", dec = ".")
-#         
-#         # emst04_DOLLART
-#         x <- hydSpatRaster(
-#             filename_dem = paste0(p, "/emst04_DOLLART_DEM.tif"),
-#             filename_csa = paste0(p, "/emst04_DOLLART_CSA.tif"))
-#         expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
-#         
-#         # emst15_SPIEKEROOG
-#         x <- hydSpatRaster(
-#             filename_dem = paste0(p, "/emst15_SPIEKEROOG_DEM.tif"),
-#             filename_csa = paste0(p, "/emst15_SPIEKEROOG_CSA.tif"))
-#         expect_no_condition(waterDepth(x = x, value = "MThw", df = df))
-#     }
-# })
-# 
+test_that("waterDepth: Elbe_tidal", {
+    if (Sys.info()["nodename"] == "pvil-r") {
+        # Elbe_tidal
+        p <- options()$hydflood.datadir
+        df <- read.table("~/hydflood/data-raw/estuary/elbe/df_2010.csv",
+                         header = TRUE, sep = ";", dec = ".")
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/elbet01_GEESTHACHT_DEM.tif"),
+            filename_csa = paste0(p, "/elbet01_GEESTHACHT_CSA.tif"))
+        # fe <- waterDepth(x = x, value = "MTnw")
+        expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
+
+        x <- suppressWarnings(
+            hydSpatRaster(
+                filename_dem = paste0(p, "/elbet07_BROKDORF_DEM.tif"),
+                filename_csa = paste0(p, "/elbet07_BROKDORF_CSA.tif"))
+        )
+        # fe <- waterDepth(x = x, value = "MTnw")
+        expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
+
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/elbet12_TRISCHEN_DEM.tif"),
+            filename_csa = paste0(p, "/elbet12_TRISCHEN_CSA.tif"))
+        expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
+    }
+})
+
+test_that("waterDepth: Stoer_tidal", {
+    if (Sys.info()["nodename"] == "pvil-r") {
+        # Stoer_tidal
+        p <- options()$hydflood.datadir
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/elbet08_ITZEHOE_DEM.tif"),
+            filename_csa = paste0(p, "/elbet08_ITZEHOE_CSA.tif"))
+        expect_no_error(
+            suppressWarnings(
+                waterDepth(x = x, value = "MTnw")))
+    }
+})
+
+test_that("waterDepth: Ems_tidal", {
+    if (Sys.info()["nodename"] == "pvil-r") {
+
+        # Ems_tidal
+        p <- options()$hydflood.datadir
+        df <- read.table("~/hydflood/data-raw/estuary/ems/df_2015.csv",
+                         header = TRUE, sep = ";", dec = ".")
+
+        # emst04_DOLLART
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/emst04_DOLLART_DEM.tif"),
+            filename_csa = paste0(p, "/emst04_DOLLART_CSA.tif"))
+        expect_no_condition(waterDepth(x = x, value = "MTnw", df = df))
+
+        # emst15_SPIEKEROOG
+        x <- hydSpatRaster(
+            filename_dem = paste0(p, "/emst15_SPIEKEROOG_DEM.tif"),
+            filename_csa = paste0(p, "/emst15_SPIEKEROOG_CSA.tif"))
+        expect_no_condition(waterDepth(x = x, value = "MThw", df = df))
+    }
+})
+
