@@ -44,12 +44,12 @@ for (a_year in 1960:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
         print(paste0(f, " exists already"))
     } else {
         print(paste0(f, " will be computed"))
-        x <- hydflood::hydSpatRaster(filename_dem = dem, filename_csa = csa)
+        x <- hydSpatRaster(filename_dem = dem, filename_csa = csa)
         s <- seq.Date(from = as.Date(paste0(a_year, "-01-01")),
                       to = as.Date(paste0(a_year, "-12-31")), by = "day")
         print(paste0(length(s), " days in ", a_year))
-        hydflood::flood3(x, s, filename = f, format = "GTiff",
-                         options = c("COMPRESS=LZW", "TFW=NO"))
+        flood3(x, s, filename = f, format = "GTiff",
+               options = c("COMPRESS=LZW", "TFW=NO"))
     }
     print("")
 }
@@ -144,9 +144,9 @@ if (file.exists(f_depth_mq)) {
     print(paste0(f_depth_mq, " exists already"))
 } else {
     print(paste0(f_depth_mq, " will be computed"))
-    x <- hydflood::hydSpatRaster(filename_dem = dem, filename_csa = csa)
+    x <- hydSpatRaster(filename_dem = dem, filename_csa = csa)
     waterDepth(x = x, value = "MQ", filename = f_depth_mq,
-               filetype = "GTiff", gdal = c("COMPRESS=LZW", "TFW=NO"))
+               filetype = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 #####
