@@ -1,8 +1,8 @@
 Package: hydflood
 Type: Package
 Title: Flood Extents and Durations along the Rivers Elbe and Rhine
-Version: 0.5.7
-Date: 2023-11-17
+Version: 0.5.8
+Date: 2024-07-05
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
@@ -19,7 +19,7 @@ Description: Raster based flood modelling internally using 'hyd1d', an R package
     demanding annual flood durations have been computed already and data
     products were published by Weber (2022) <doi:10.1594/PANGAEA.948042>.
 Depends: R (>= 4.0.0), sf, terra, raster, hyd1d
-Imports: stats, Rdpack, grDevices
+Imports: stats, Rdpack, grDevices, httr2, curl
 Suggests: knitr, rmarkdown, devtools, pkgdown, roxygen2, testthat, plot3D,
     shiny, shinyjs, shiny.i18n, leaflet, leaflet.extras, leaflet.esri,
     pangaear, rgrass, stringr
@@ -28,7 +28,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Collate:
     'classifyToPNV.R'
     'createTiles.R'

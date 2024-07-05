@@ -1,5 +1,6 @@
-# hydflood
+# hydflood 0.5.8
 
+* move file downloads from `utils::download.file` to `httr2`
 * add waterDepth()-function
 
 # hydflood 0.5.7

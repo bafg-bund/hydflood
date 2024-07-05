@@ -256,29 +256,11 @@ getDEM <- function(filename = '', ext, crs, ...) {
     
     merge_files <- list(nrow(sf.tiles))
     missing_files <- NA_character_
-    mode <- ifelse(.Platform$OS.type == "windows", "wb", "w")
     for (i in 1:nrow(sf.tiles)) {
         file <- paste0(options()$hydflood.datadir, "/", sf.tiles$name[i],
                        "_DEM.tif")
         if (!file.exists(file)) {
-            
-            tryCatch({
-                utils::download.file(sf.tiles$url[i], file, quiet = TRUE,
-                                     mode = mode)
-            }, error = function(e){
-                mess <- paste0("It was not possible to download:\n",
-                               sf.tiles$url[i], "\nPlease try again!")
-                w <- warnings()
-                w_mess <- names(w)
-                w_mess <- w_mess[startsWith(w_mess, "URL")]
-                if (grepl("Timeout", w_mess) & grepl("was reached", w_mess)) {
-                    mess <- paste0(mess, "\nSince a timeout was reached, it is",
-                                   " recommended to increase the value of \n",
-                                   "options('timeout') presently set to ",
-                                   options('timeout')$timeout, " seconds.")
-                }
-                message(mess)
-            })
+            .download_pangaea(sf.tiles$url[i], file)
         }
         
         if (file.exists(file)) {
@@ -369,3 +351,36 @@ getDEM <- function(filename = '', ext, crs, ...) {
     
 }
 
+.download_pangaea <- function(x, file) {
+  # check internet
+  if (!curl::has_internet()) {
+    stop("Dataset provided by pangaea.de is unavailable without internet.",
+         call. = FALSE)
+  }
+  
+  # assemble request
+  req <- httr2::request(x)
+  req <- httr2::req_method(req, "GET")
+  req <- httr2::req_retry(req, max_tries = 5L)
+  req <- httr2::req_timeout(req, seconds = options()$timeout)
+  req <- httr2::req_error(req, is_error = \(resp) FALSE)
+  
+  # perform the request
+  resp <- httr2::req_perform(req, path = file, verbosity = 0)
+  
+  # handle errors
+  status_code <- as.character(resp$status_code)
+  if (startsWith(status_code, "4")) {
+    mess <- paste0("The request to pangaea.de returned a status code of:",
+                   "\n   '", status_code, " - ", resp_status_desc(resp),
+                   "'\nPlease adjust your request accordingly:\n   url: ", x)
+    stop(mess, call. = FALSE)
+  }
+  if (startsWith(status_code, "5")) {
+    mess <- paste0("The request to pangaea.de returned a status code of:",
+                   "\n   '", status_code, " - ", resp_status_desc(resp), "'",
+                   "\nPlease try again later.")
+    stop(mess, call. = FALSE)
+  }
+  return(TRUE)
+}
