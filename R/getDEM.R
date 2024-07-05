@@ -361,7 +361,7 @@ getDEM <- function(filename = '', ext, crs, ...) {
   # assemble request
   req <- httr2::request(x)
   req <- httr2::req_method(req, "GET")
-  req <- httr2::req_retry(req, max_tries = 5L)
+  req <- httr2::req_retry(req, max_tries = 10L)
   req <- httr2::req_timeout(req, seconds = options()$timeout)
   req <- httr2::req_error(req, is_error = \(resp) FALSE)
   
