@@ -8,22 +8,20 @@ utm33n <- st_crs(25833)
 wgs <- st_crs(4326)
 
 test_that("General tests", {
-    
-    # smaller extent (crop)
     if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
-                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_D",
-                               "EM.asc")
+                               "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_DEM",
+                               ".asc")
         filename_csa <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
-                               "RH_336_867_UFD/data/ascii/r002_PLITTERSDORF1_C",
-                               "SA.asc")
+                               "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_CSA",
+                               ".asc")
         ext <- ext(436500, 438000, 5415000, 5416500)
         
         # tests
         expect_message(a <- hydSpatRaster(filename_dem, filename_csa, ext,
                                           crs = utm32n),
-                       "'ext' will be used to crop the supplied raster file(s).",
+                       "'ext' will be used to crop the supplied raster file(s)",
                        fixed = TRUE)
         # expect_message(b <- hydSpatRaster(filename_csa = filename_csa, 
         #                                    ext = ext, crs = utm32n),
@@ -130,4 +128,3 @@ test_that("General tests", {
                  "'filename_csa' must have length 1")
     
 })
-

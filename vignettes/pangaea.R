@@ -8,19 +8,23 @@ source("R/hydflood-internal.R")
 utm33 <- sf::st_crs(25833)
 utm32 <- sf::st_crs(25832)
 
-el <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tiff/flood3",
+el <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tif/flood3",
                  "*.tif")
-elp <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tiff/flood3",
+elp <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/EL_000_586_UFD/data/tif/flood3",
                   "*.tif", full.names = TRUE)
-id.exc <- endsWith(el, "1990_2020.tif") | endsWith(el, "1990_2021.tif") | endsWith(el, ".tif.aux.xml")
+id.exc <- endsWith(el, "1990_2020.tif") | endsWith(el, "1990_2021.tif") | 
+    endsWith(el, "1990_2022.tif") | endsWith(el, "1990_2023.tif") | 
+    endsWith(el, ".tif.aux.xml") | endsWith(el, "_depth_mq.tif")
 el <- el[!id.exc]
 elp <- elp[!id.exc]
 
-rh <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/RH_336_867_UFD/data/tiff/flood3",
+rh <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/RH_336_867_UFD/data/tif/flood3",
                  "*.tif")
-rhp <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/RH_336_867_UFD/data/tiff/flood3",
+rhp <- list.files("~/freigaben/U/U3/Auengruppe_INFORM/RH_336_867_UFD/data/tif/flood3",
                   "*.tif", full.names = TRUE)
-id.exc <- endsWith(rh, "1990_2020.tif") | endsWith(rh, "1990_2021.tif")
+id.exc <- endsWith(rh, "1990_2020.tif") | endsWith(rh, "1990_2021.tif") | 
+    endsWith(rh, "1990_2022.tif") | endsWith(rh, "1990_2023.tif") | 
+    endsWith(rh, ".tif.aux.xml") | endsWith(rh, "_depth_mq.tif")
 rh <- rh[!id.exc]
 rhp <- rhp[!id.exc]
 
@@ -114,11 +118,23 @@ df.export <- df[, c("date_start", "date_end", "filename", "fileformat",
                     "utm_north_min", "utm_north_max", "longitude_min",
                     "longitude_max", "latitude_min", "latitude_max",
                     "tilename", "dataset_type", "epsg", "md5sum")]
+df.export$filesize <- paste0(as.character(round(df.export$filesize / 1000, 1)),
+                             " MBytes")
 
 write.table(df.export, file = "vignettes/pangaea.tab", sep = "\t", dec = ".",
             row.names = FALSE, quote = FALSE)
 
 write.table(df, file = "vignettes/pangaea_all.tab", sep = "\t", dec = ".",
+            row.names = FALSE, quote = FALSE)
+
+# 2022
+df_2022 <- df.export[endsWith(df.export$filename, "_2022"), ]
+write.table(df_2022, file = "vignettes/pangaea_2022.tab", sep = "\t", dec = ".",
+            row.names = FALSE, quote = FALSE)
+
+# 2023
+df_2023 <- df.export[endsWith(df.export$filename, "_2023"), ]
+write.table(df_2023, file = "vignettes/pangaea_2023.tab", sep = "\t", dec = ".",
             row.names = FALSE, quote = FALSE)
 
 q("no")

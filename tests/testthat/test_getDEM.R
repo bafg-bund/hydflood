@@ -19,7 +19,7 @@ test_that("General tests", {
     expect_error(getDEM(ext = c(1,2,3), crs = utm32n),
                  "'ext' must be type 'SpatExtent'")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = utm32n),
-                 "'ext' does NOT overlap with the active floodplain of River R")
+                 "'ext' does NOT overlap with the active floodplain of River ")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = utm33n),
                  "'ext' does NOT overlap with the active floodplain of River E")
     expect_error(getDEM(ext = ext(1,2,3,4), crs = "c"),
@@ -30,7 +30,7 @@ test_that("General tests", {
     if (Sys.info()["nodename"] == "pvil-r") {
         # input data
         filename <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/RH_3",
-                           "36_867_UFD/data/tiff/r002_PLITTERSDORF1_DEM.tif")
+                           "36_867_UFD/data/tif/r002_PLITTERSDORF1_DEM.tif")
         ext <- ext(436500, 438000, 5415000, 5416500)
         
         # tests

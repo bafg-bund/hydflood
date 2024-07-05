@@ -1,3 +1,9 @@
+# hydflood 0.5.8
+
+* move file downloads from `utils::download.file` to `httr2`
+* add waterDepth()-function
+* fix broken urls
+
 # hydflood 0.5.7
 
 * adapt BfG's new corporate design

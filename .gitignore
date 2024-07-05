@@ -16,6 +16,7 @@
 # ignore directories and files
 build
 built
+data-raw/estuary
 data-raw/raster.*.tif
 data-raw/Thumbs.db
 data-raw/*.sbn
@@ -27,6 +28,8 @@ data-raw/raster.csa*.tif
 data-raw/raster.csa_plittersdorf.tif
 data-raw/sf.*.rda
 data-raw/spdf.*.rda
+data-raw/*_not_simplified.*
+data-raw/*.qgz
 doc
 /doc/
 docs

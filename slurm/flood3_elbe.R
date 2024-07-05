@@ -52,12 +52,12 @@ for (a_year in 1960:(as.numeric(strftime(Sys.Date(), "%Y")) - 1)) {
     print(paste0(f, " exists already"))
   } else {
     print(paste0(f, " will be computed"))
-    x <- hydflood::hydSpatRaster(filename_dem = dem, filename_csa = csa)
+    x <- hydSpatRaster(filename_dem = dem, filename_csa = csa)
     s <- seq.Date(from = as.Date(paste0(a_year, "-01-01")),
                   to = as.Date(paste0(a_year, "-12-31")), by = "day")
     print(paste0(length(s), " days in ", a_year))
-    hydflood::flood3(x, s, filename = f, format = "GTiff",
-                     options = c("COMPRESS=LZW", "TFW=NO"))
+    flood3(x, s, filename = f, format = "GTiff",
+           options = c("COMPRESS=LZW", "TFW=NO"))
   }
   print("")
 }
@@ -143,6 +143,18 @@ if (file.exists(f_mean_vt)) {
     print(paste0(f_mean_vt, " will be computed"))
     classifyToPNV(x = rast(f_mean), rcl = df.pnv, filename = f_mean_vt,
                   filetype = "GTiff", gdal = c("COMPRESS=LZW", "TFW=NO"))
+}
+
+# depth_mq
+f_depth_mq <- paste0(o, "/", n, "_depth_mq.tif")
+
+if (file.exists(f_depth_mq)) {
+    print(paste0(f_depth_mq, " exists already"))
+} else {
+    print(paste0(f_depth_mq, " will be computed"))
+    x <- hydSpatRaster(filename_dem = dem, filename_csa = csa)
+    waterDepth(x = x, value = "MQ", filename = f_depth_mq,
+               filetype = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 #####

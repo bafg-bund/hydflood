@@ -1,5 +1,4 @@
 #' @name hydflood
-#' @docType package
 #' @aliases hydflood-package
 #' 
 #' @title hydflood: Flood Extents and Durations along the Rivers Elbe and Rhine
@@ -18,6 +17,14 @@
 #' @importFrom Rdpack reprompt
 #' @importFrom stats na.omit
 #' @importFrom grDevices rgb
+#' @importFrom curl has_internet
+#' @importFrom httr2 request
+#' @importFrom httr2 req_method
+#' @importFrom httr2 req_retry
+#' @importFrom httr2 req_timeout
+#' @importFrom httr2 req_error
+#' @importFrom httr2 req_perform
+#' @importFrom httr2 resp_status_desc
 #' @importFrom raster canProcessInMemory
 #' @importFrom raster blockSize
 #' @importFrom raster pbCreate
@@ -60,4 +67,4 @@
 #' @importFrom sf st_transform
 #' @importFrom sf st_join
 #' 
-NULL
+"_PACKAGE"

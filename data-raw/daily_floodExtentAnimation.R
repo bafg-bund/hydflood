@@ -216,16 +216,16 @@ for (a_date in dates) {
 if (require("ElBiota")) {
     
     # loop over areas
-    for (an_area in spdf.areas_sel$mapset) {
+    for (an_area in sf.areas_sel$mapset) {
         
         print(an_area)
         
-        spdf.area <- spdf.areas_sel[which(spdf.areas_sel$mapset == an_area), ]
-        sac <- spdf.sac[which(spdf.sac$mapset == an_area), ]
+        sf.area <- sf.areas_sel[which(sf.areas_sel$mapset == an_area), ]
+        sac <- sf.sac[which(sf.sac$mapset == an_area), ]
         
         if (! file.exists(paste0("data-raw/raster.dem_", an_area, ".tif"))) {
             r <- getDEM(paste0("data-raw/raster.dem_", an_area, ".tif"),
-                        ext = ext(spdf.area), crs = crs)
+                        ext = ext(sf.area), crs = crs)
         } else {
             r <- rast(paste0("data-raw/raster.dem_", an_area, ".tif"))
         }

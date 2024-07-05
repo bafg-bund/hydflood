@@ -13,6 +13,7 @@
       {"en": "Rhine", "de": "Rhein"},
       {"en": "Imprint", "de": "Impressum"},
       {"en": "https://www.bafg.de/EN/Service/Imprint/imprint_node.html",
-       "de": "https://www.bafg.de/DE/Service/Impressum/impressum_node.html"}
+       "de": "https://www.bafg.de/DE/Service/Impressum/impressum_node.html"},
+       {"en": "data source", "de": "Datenquelle"}
     ]
 }

@@ -204,12 +204,7 @@ flood3Points <- function(x, seq) {
             f <- paste0(options()$hydflood.datadir, "/", i, "_DEM.tif")
             if (!file.exists(f)) {
                 url <- sf.tiles$url[which(sf.tiles$tile_name == i)]
-                tryCatch({
-                    utils::download.file(url, f, quiet = TRUE, mode = mode)
-                }, error = function(e){
-                    stop(paste0("It was not possible to download:\n",
-                                url, "\nTry again later!"))
-                })
+                .download_pangaea(url, f)
             }
             x$dem[id] <- round(terra::extract(terra::rast(f),
                                               sf::st_coordinates(x[id, ]))[,1],
@@ -223,13 +218,7 @@ flood3Points <- function(x, seq) {
         if (!file.exists(csa_file)) {
             url <- paste0("https://hydflood.bafg.de/downloads/sf.af",
                           tolower(substring(river, 1, 1)), "_csa.rda")
-            tryCatch({
-                utils::download.file(url, csa_file, quiet = TRUE, mode = mode)
-            }, error = function(e){
-                message(paste0("It was not possible to download:\n", url,
-                               "\nTry again later!"))
-                return(NULL)
-            })
+            .download_bfg(url, csa_file)
         }
         load(csa_file)
         if (river == "Elbe") {
