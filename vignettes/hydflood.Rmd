@@ -220,9 +220,9 @@ To create a water surface raster, which can be compared to the `dem`, a simple
 with the package [`hyd1d`](`r paste0(base_hyd1d)`). Therefore
 so called cross section areas (`csa`) are needed. They originate from cross
 sections used for the SOBEK models run for and incorporated into
-[FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html).
+[FLYS](https://www.bafg.de/DE/5_Informiert/1_Portale_Dienste/FLYS/flys_node.html).
 
-```{r figure-cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/08_Ref/M2/03_Fliessgewmod/01_FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
+```{r figure-cs, fig.show = 'asis', fig.cap = capFig("Cross sections produced to gather input data for SOBEK models used in [FLYS](https://www.bafg.de/DE/5_Informiert/1_Portale_Dienste/FLYS/flys_node.html) at the River Elbe near Rosslau and Dessau."), echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, fig.show = 'asis', out.width = "95%", fig.pos="H", fig.align = "center"}
 knitr::include_graphics('./screenshot_hydflood_crosssections.png')
 ```
 
