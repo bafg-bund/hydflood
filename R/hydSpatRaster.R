@@ -511,14 +511,16 @@ hydSpatRaster <- function(filename_dem = '', filename_csa = '', ext, crs, ...) {
     status_code <- as.character(resp$status_code)
     if (startsWith(status_code, "4")) {
         mess <- paste0("The request to hydflood.bafg.de returned a status code",
-                       " of:\n   '", status_code, " - ", resp_status_desc(resp),
+                       " of:\n   '", status_code, " - ",
+                       httr2::resp_status_desc(resp),
                        "'\nPlease adjust your request accordingly:\n   url: ",
                        x)
         stop(mess, call. = FALSE)
     }
     if (startsWith(status_code, "5")) {
         mess <- paste0("The request to hydflood.bafg.de returned a status code",
-                       " of:\n   '", status_code, " - ", resp_status_desc(resp),
+                       " of:\n   '", status_code, " - ",
+                       httr2::resp_status_desc(resp),
                        "'\nPlease try again later.")
         stop(mess, call. = FALSE)
     }
