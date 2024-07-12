@@ -35,7 +35,7 @@
 #'   
 #'   # import the raster data and create a raster stack
 #'   c <- st_crs("EPSG:25833")
-#'   e <- ext(309000, 309300, 5749000, 5749300)
+#'   e <- ext(309000, 310000, 5749000, 5750000)
 #'   x <- hydSpatRaster(ext = e, crs = c)
 #'   
 #'   # create a temporal sequence

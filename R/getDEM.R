@@ -371,16 +371,62 @@ getDEM <- function(filename = '', ext, crs, ...) {
   # handle errors
   status_code <- as.character(resp$status_code)
   if (startsWith(status_code, "4")) {
-    mess <- paste0("The request to pangaea.de returned a status code of:",
-                   "\n   '", status_code, " - ", resp_status_desc(resp),
+    mess <- paste0("\nThe request to pangaea.de returned a status code of:",
+                   "\n   '", status_code, " - ", httr2::resp_status_desc(resp),
                    "'\nPlease adjust your request accordingly:\n   url: ", x)
     stop(mess, call. = FALSE)
   }
   if (startsWith(status_code, "5")) {
-    mess <- paste0("The request to pangaea.de returned a status code of:",
-                   "\n   '", status_code, " - ", resp_status_desc(resp), "'",
-                   "\nPlease try again later.")
-    stop(mess, call. = FALSE)
+    # try alternative download from hydflood.bafg.de
+    ad <- .download_bfg_dem(x, file)
+    if (! ad$logical) {
+        mess <- paste0("\nThe request to pangaea.de returned a status code of:",
+                       "\n   '", status_code, " - ",
+                       httr2::resp_status_desc(resp), "'.")
+        mess <- paste0(mess, "\n\n", ad$message)
+        stop(mess, call. = FALSE)
+    }
   }
   return(TRUE)
+}
+
+.download_bfg_dem <- function(x, file) {
+    
+    message("Trying alternative download from hydflood.bafg.de")
+    
+    # check internet
+    if (!curl::has_internet()) {
+        stop(paste0("Dataset provided by hydflood.bafg.de is unavailable witho",
+                    "ut internet."), call. = FALSE)
+    }
+    
+    # assemble request
+    file <- basename(x)
+    url <- paste0("https://hydflood.bafg.de/downloads/dem/", file)
+    req <- httr2::request(file)
+    req <- httr2::req_method(req, "GET")
+    req <- httr2::req_retry(req, max_tries = 10L)
+    req <- httr2::req_timeout(req, seconds = options()$timeout)
+    req <- httr2::req_error(req, is_error = \(resp) FALSE)
+    
+    # perform the request
+    resp <- httr2::req_perform(req, path = file, verbosity = 0)
+    
+    # handle errors
+    status_code <- as.character(resp$status_code)
+    if (startsWith(status_code, "4")) {
+        mess <- paste0("The alternative request to hydflood.bafg.de returned a",
+                       " status code of:\n   '",
+                       status_code, " - ", httr2::resp_status_desc(resp),
+                       "'\nPlease adjust your request accordingly:\n   url:", x)
+        return(list(logical = FALSE, message = mess))
+    }
+    if (startsWith(status_code, "5")) {
+        mess <- paste0("The alternative request to hydflood.bafg.de returned a",
+                       " status code of:\n   '",
+                       status_code, " - ", httr2::resp_status_desc(resp),
+                       "'\n\nPlease try again later.")
+        return(list(logical = FALSE, message = mess))
+    }
+    return(list(logical = TRUE, message = NA_character_))
 }
