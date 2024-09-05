@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/hydflood)](https://cran.r-project.org/package=hydflood)
-[![](https://cranlogs.r-pkg.org/badges/grand-total/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
-[![](https://cranlogs.r-pkg.org/badges/last-month/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
-[![](https://cranlogs.r-pkg.org/badges/last-week/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![CRAN total downloads](https://cranlogs.r-pkg.org/badges/grand-total/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![CRAN monthly downloads](https://cranlogs.r-pkg.org/badges/last-month/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
+[![CRAN weekly downloads](https://cranlogs.r-pkg.org/badges/last-week/hydflood?color=green)](https://cran.r-project.org/package=hydflood)
 <!-- badges: end -->
 
 The R package **hydflood** is designed to compute flood extents and
@@ -53,4 +53,4 @@ fd <- flood3(x = x, seq = seq)
 plot(fd)
 ```
 
-<img src="man/figures/README-usage-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-usage-1.png" alt="example plot of a hydflood::flood3() raster product" style="display: block; margin: auto;" />

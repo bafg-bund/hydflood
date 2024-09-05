@@ -1,5 +1,6 @@
 # hydflood 0.5.8
 
+* improve website accessibility
 * move file downloads from `utils::download.file` to `httr2`
 * add waterDepth()-function
 * fix broken urls
