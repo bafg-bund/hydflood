@@ -111,19 +111,19 @@ pkg_files <- list.files(path = build,
                                          ":]\\.tar\\.gz"))
 
 for (a_file in pkg_files) {
-    
+
     write(a_file, stdout())
-    
+
     # seperate package name from version string
     package_name <- unlist(strsplit(a_file, "_"))[1]
     package_version <- gsub(".tar.gz", "", unlist(strsplit(a_file, "_"))[2])
-    
+
     # check presently installed local packages
     pkgs <- as.data.frame(installed.packages())
     if (package_name %in% pkgs$Package) {
         if (compareVersion(as.character(packageVersion(package_name)),
                            package_version) < 1) {
-            install.packages(paste(build, a_file, sep = "/"), 
+            install.packages(paste(build, a_file, sep = "/"),
                              dependencies = TRUE)
         }
     } else {
@@ -339,7 +339,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "pvil-r" & user == "WeberA" & R_version == "4.4.1") {
+if (host == "pvil-rr" & user == "WeberA" & R_version == "4.4.1") {
     # copy html output to ~/public_html
     system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
                   "l/hydflood/"))
