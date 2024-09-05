@@ -8,7 +8,7 @@ utm33n <- st_crs(25833)
 wgs <- st_crs(4326)
 
 test_that("General tests", {
-    if (Sys.info()["nodename"] == "pvil-r") {
+    if (Sys.info()["nodename"] == "pvil-rr") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
                                "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_DEM",

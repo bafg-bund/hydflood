@@ -74,8 +74,10 @@ navbar:
   right:
     - text: BfG
       href: https://www.bafg.de
+      aria-label: BfG Website
     - icon: fa-github
-      href: https://github.com/bafg-bund/hydflood
+      href: https://github.com/bafg-bund/hyd1d
+      aria-label: View source code on github.com
 footer:
   structure: 
     left: built_with

@@ -216,12 +216,12 @@ for (a_date in dates) {
 if (require("ElBiota")) {
     
     # loop over areas
-    for (an_area in sf.areas_sel$mapset) {
+    for (an_area in sf.areas_sel()$mapset) {
         
         print(an_area)
         
-        sf.area <- sf.areas_sel[which(sf.areas_sel$mapset == an_area), ]
-        sac <- sf.sac[which(sf.sac$mapset == an_area), ]
+        sf.area <- sf.areas_sel()[which(sf.areas_sel()$mapset == an_area), ]
+        sac <- sf.sac()[which(sf.sac()$mapset == an_area), ]
         
         if (! file.exists(paste0("data-raw/raster.dem_", an_area, ".tif"))) {
             r <- getDEM(paste0("data-raw/raster.dem_", an_area, ".tif"),
@@ -271,7 +271,7 @@ if (require("ElBiota")) {
                 # error = function(cond) {NA})
                 
                 # plotting with raster functions
-                    if (inherits(flood_extent, "SpatRaster")) {
+                if (inherits(flood_extent, "SpatRaster")) {
                     png(filename = f_out, width = 960, height = 640, 
                         units = "px")
                     plot(raster(r), col = dem_colfunc((24 - 9)*2),
@@ -283,7 +283,8 @@ if (require("ElBiota")) {
                     plot(raster(flood_extent), col = "blue", add = TRUE,
                          legend = FALSE)
                     points(sac, pch = 21, bg = "white", cex = 0.8)
-                    text(sac, pos = 3, labels = sac$plot_id, cex = 0.8)
+                    text(st_coordinates(sac), pos = 3, labels = sac$plot_id,
+                         cex = 0.8)
                     dev.off()
                 }
             }

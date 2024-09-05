@@ -111,19 +111,19 @@ pkg_files <- list.files(path = build,
                                          ":]\\.tar\\.gz"))
 
 for (a_file in pkg_files) {
-    
+
     write(a_file, stdout())
-    
+
     # seperate package name from version string
     package_name <- unlist(strsplit(a_file, "_"))[1]
     package_version <- gsub(".tar.gz", "", unlist(strsplit(a_file, "_"))[2])
-    
+
     # check presently installed local packages
     pkgs <- as.data.frame(installed.packages())
     if (package_name %in% pkgs$Package) {
         if (compareVersion(as.character(packageVersion(package_name)),
                            package_version) < 1) {
-            install.packages(paste(build, a_file, sep = "/"), 
+            install.packages(paste(build, a_file, sep = "/"),
                              dependencies = TRUE)
         }
     } else {
@@ -281,24 +281,14 @@ for (a_file in files){
     
 }
 
-# download additional missing files
-dir <- paste0(public, "deps/font-awesome/5.12.1/webfonts/")
-dir.create(dir, FALSE, TRUE)
-files <- c("fa-brands-400.woff2", "fa-brands-400.woff", "fa-brands-400.ttf",
-           "fa-solid-900.woff2", "fa-solid-900.woff", "fa-solid-900.ttf")
-for (a_file in files) {
-    if (!file.exists(paste0(dir, a_file))) {
-        u <- paste0("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.",
-                    "1/webfonts/", a_file)
-        destfile <- paste0(dir, a_file)
-        download.file(u, destfile, method = "curl", quiet = TRUE)
-    }
-}
-
 # clean up
-rm(a_file, files, x, y, z, pref, page,
-   scripts, script, scriptt, script_replace, scripts_replace, scripts_src,
-   links, link, linkt, link_replace, links_replace, links_href, destfile)
+rm(a_file, files, x, y, z, pref, page, scripts, script, scripts_replace,
+   scripts_src, links, link, links_replace, links_href)
+if (exists("destfile")) {rm(destfile)}
+if (exists("link_replace")) {rm(link_replace)}
+if (exists("linkt")) {rm(linkt)}
+if (exists("script_replace")) {rm(script_replace)}
+if (exists("scriptt")) {rm(scriptt)}
 if (exists("linkth")) {rm(linkth)}
 if (exists("scriptth")) {rm(scriptth)}
 if (exists("pos")) {rm(pos)}
@@ -339,7 +329,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "pvil-r" & user == "WeberA" & R_version == "4.4.1") {
+if (host == "pvil-rr" & user == "WeberA" & R_version == "4.4.1") {
     # copy html output to ~/public_html
     system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
                   "l/hydflood/"))

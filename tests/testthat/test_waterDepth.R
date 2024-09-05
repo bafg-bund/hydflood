@@ -171,7 +171,7 @@ test_that("waterDepth: checks", {
 })
 
 test_that("waterDepth: FLYS3", {
-    if (Sys.info()["nodename"] == "pvil-r") {
+    if (Sys.info()["nodename"] == "pvil-rr") {
         # Elbe
         hf <- Sys.getenv("hydflood")
         x <- hydSpatRaster(
@@ -193,7 +193,7 @@ test_that("waterDepth: FLYS3", {
 })
 
 # test_that("waterDepth: Elbe_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
+#     if (Sys.info()["nodename"] == "pvil-rr") {
 #         # Elbe_tidal
 #         p <- options()$hydflood.datadir
 #         df <- read.table("~/hydflood/data-raw/estuary/elbe/df_2010.csv",
@@ -220,7 +220,7 @@ test_that("waterDepth: FLYS3", {
 # })
 # 
 # test_that("waterDepth: Stoer_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
+#     if (Sys.info()["nodename"] == "pvil-rr") {
 #         # Stoer_tidal
 #         p <- options()$hydflood.datadir
 #         x <- hydSpatRaster(
@@ -233,7 +233,7 @@ test_that("waterDepth: FLYS3", {
 # })
 # 
 # test_that("waterDepth: Ems_tidal", {
-#     if (Sys.info()["nodename"] == "pvil-r") {
+#     if (Sys.info()["nodename"] == "pvil-rr") {
 #         
 #         # Ems_tidal
 #         p <- options()$hydflood.datadir

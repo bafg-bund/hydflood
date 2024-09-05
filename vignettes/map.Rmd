@@ -7,7 +7,7 @@ output:
 ---
 
 
-``` {r map, fig.width = 6, fig.height = 8}
+``` {r map, fig.width = 6, fig.height = 8, fig.alt = "prettymap output of the model areas along the rivers Elbe and Rhine"}
 library(hydflood)
 library(prettymapr)
 library(ggplot2)
@@ -101,7 +101,7 @@ prettymap({
 ```
 
 
-``` {r ggmap, fig.width = 6, fig.height = 8}
+``` {r ggmap, fig.width = 6, fig.height = 8, fig.alt = "ggmap output of the model areas along the rivers Elbe and Rhine"}
 theme_set(theme_bw())
 
 library("ggspatial")
@@ -163,7 +163,7 @@ ggplot() +
 ggsave("map.pdf", width = 6, height = 8, dpi = 600)
 ```
 
-``` {r ggmap_zoom, fig.width = 6, fig.height = 8}
+``` {r ggmap_zoom, fig.width = 6, fig.height = 8, fig.alt = "ggmap output of the model areas along the rivers Elbe and Rhine indicating the zoomed area"}
 
 ids <- seq(min(which(sf.gs$gauging_station %in% c("ROSSLAU", "GORLEBEN"))),
            max(which(sf.gs$gauging_station %in% c("ROSSLAU", "GORLEBEN"))),
@@ -248,7 +248,7 @@ ggsave("map_zoom.pdf", width = 6, height = 8, dpi = 600)
 ```
 
 
-``` {r ggmap_zoomed, fig.width = 4, fig.height = 8}
+``` {r ggmap_zoomed, fig.width = 4, fig.height = 8, fig.alt = "ggmap output of the zoomed model area along the River Elbe"}
 
 ids <- seq(min(which(sf.gs$gauging_station %in% c("ROSSLAU", "GORLEBEN"))),
            max(which(sf.gs$gauging_station %in% c("ROSSLAU", "GORLEBEN"))), 1)

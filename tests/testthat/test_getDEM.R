@@ -27,7 +27,7 @@ test_that("General tests", {
     expect_error(getDEM(ext = ext(1,2,3,4), crs = wgs),
                  "'crs' must be either 'ETRS 1989 UTM 32N' or")
     
-    if (Sys.info()["nodename"] == "pvil-r") {
+    if (Sys.info()["nodename"] == "pvil-rr") {
         # input data
         filename <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/RH_3",
                            "36_867_UFD/data/tif/r002_PLITTERSDORF1_DEM.tif")
