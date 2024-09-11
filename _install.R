@@ -40,5 +40,8 @@ if (!require("rnaturalearthhires")) {
                      type = "source")
 }
 
+# install bfgdown
+devtools::install_github("bafg-bund/bfgdown")
+
 # exit
 q("no")
