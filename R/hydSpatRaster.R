@@ -30,7 +30,7 @@
 #'   of both raster datasets must match.
 #'   
 #'   Supported file types depend on available
-#'   \href{https://gdal.org/drivers/raster/index.html}{GDAL raster drivers}.
+#'   \href{https://gdal.org/en/latest/drivers/raster/index.html}{GDAL raster drivers}.
 #' 
 #' @param filename_csa an optional argument of length 1 with type 
 #'   \code{character} specifying a filename of a **c**ross **s**ection 

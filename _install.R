@@ -21,7 +21,7 @@ packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack",
               "usethis", "lattice", "pangaear", "rgrass", "knitr",
               "shiny.i18n", "prettymapr", "ggplot2", "maps", "rosm",
               "sfheaders", "rnaturalearth", "rnaturalearthdata", "ggspatial",
-              "ggmap", "xml2", "bslib")
+              "ggmap", "xml2", "bslib", "urlchecker")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages()[, "Package"])) {

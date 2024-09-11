@@ -43,6 +43,7 @@ library(pkgdown)
 library(hyd1d)
 library(bslib)
 library(xml2)
+library(urlchecker)
 
 # set standard projections
 wgs84 <- st_crs(4326)
@@ -78,6 +79,13 @@ devtools::load_all(".")
 write("#####", stdout())
 write(" document", stdout())
 devtools::document(".")
+
+#####
+# check and update urls
+write("#####", stdout())
+write(" url checks", stdout())
+urlchecker::url_check(".")
+urlchecker::url_update(".")
 
 #####
 # build vignettes

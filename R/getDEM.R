@@ -13,8 +13,8 @@
 #' @param ext argument of type \code{\link[terra]{SpatExtent}}.
 #' @param crs argument of type \code{\link[sf:st_crs]{crs}} or 
 #'   \code{\link[terra]{crs}}. It is
-#'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-33n/}{'ETRS 1989 UTM 33N'}; Rhine:
-#'   \href{https://spatialreference.org/ref/epsg/etrs89-utm-zone-32n/}{'ETRS 1989 UTM 32N'})
+#'   used to select the respective river (Elbe: \href{https://spatialreference.org/ref/epsg/25833/}{'ETRS 1989 UTM 33N'}; Rhine:
+#'   \href{https://spatialreference.org/ref/epsg/25832/}{'ETRS 1989 UTM 32N'})
 #' @param \dots additional arguments as for \code{\link[terra]{writeRaster}}.
 #' 
 #' @return \code{SpatRaster} object containing elevation data for the selected
