@@ -43,6 +43,8 @@ library(pkgdown)
 library(hyd1d)
 library(bslib)
 library(xml2)
+library(urlchecker)
+library(bfgdown)
 
 # set standard projections
 wgs84 <- st_crs(4326)
@@ -78,6 +80,13 @@ devtools::load_all(".")
 write("#####", stdout())
 write(" document", stdout())
 devtools::document(".")
+
+#####
+# check and update urls
+write("#####", stdout())
+write(" url checks", stdout())
+urlchecker::url_check(".")
+urlchecker::url_update(".")
 
 #####
 # build vignettes
@@ -157,147 +166,30 @@ for (a_file in files){
     
     # skip presentations
     if (startsWith(a_file, "articles/presentation")) {next}
-    
-    # prefix
-    if (grepl("/", a_file, fixed = TRUE)){
-        pref <- "../"
-    } else {
-        pref <- ""
-    }
-    
+
     # place logo in navbar
     x <- readLines(paste0(public, a_file))
-    y <- gsub('href="https://www.bafg.de">BfG</a>',
-              paste0('href="https://www.bafg.de"><img class="bfglogo" border="',
-                     '0" src="', pref, 'bfg_logo.png" height="50px" width="98',
-                     'px"></a>'), x)
     
     # edit footer
     y <- gsub('Developed by Arnd Weber.',
               paste0('Developed by Arnd Weber. <a href="https://www.bafg.de/EN',
-                     '/Service/Imprint/imprint_node.html">Imprint</a>.'), y)
+                     '/Service/Imprint/imprint_node.html">Imprint</a>.'), x)
     
     # remove the prefix "technical report" in references
     z <- gsub('Technical Report ', '', y)
     
     # export html
     cat(z, file = paste0(public, a_file), sep="\n")
-    
-    # replace external js and css sources
-    page <- read_html(paste0(public, a_file), "utf-8")
-    
-    # scripts
-    scripts <- xml_find_all(page, ".//script")
-    scripts_src <- xml_attr(scripts, "src")
-    scripts_replace <- character()
-    for (script in scripts_src) {
-        if (is.na(script)) {
-            next
-        } else if (startsWith(script, "https://hydflood.bafg.de/") |
-                   startsWith(script, "../") |
-                   startsWith(script, "deps/") |
-                   startsWith(script, "pkgdown.js")) {
-            script <- gsub("https://hydflood.bafg.de/", "" , script,
-                           fixed = TRUE)
-            script <- gsub("../", "" , script, fixed = TRUE)
-            scripts_replace <- append(scripts_replace, paste0(pref, script))
-            next
-        } else if (startsWith(script, "https://cdn.jsdelivr.net/gh/afeld/")) {
-            scriptt <- gsub("https://cdn.jsdelivr.net/gh/afeld/", "", script,
-                            fixed = TRUE)
-        } else if (startsWith(script,
-                              "https://cdnjs.cloudflare.com/ajax/libs/")) {
-            scriptt <- gsub("https://cdnjs.cloudflare.com/ajax/libs/", "",
-                            script, fixed = TRUE)
-        } else {
-            stop(paste0(script, " is not known yet"))
-        }
-        
-        destfile <- paste0(public, "deps/", scriptt)
-        if (!file.exists(destfile)) {
-            # create storage directory
-            pos <- unlist(gregexpr("/", scriptt, fixed = TRUE))
-            scriptth <- substr(scriptt, 1, pos[length(pos)])
-            dir.create(paste0(public, "deps/", scriptth), FALSE, TRUE)
-            
-            # download file to that directory
-            download.file(script, destfile, method = "curl", quiet = TRUE)
-        }
-        
-        # replace path in html file
-        script_replace <- paste0("deps/", scriptt)
-        scripts_replace <- append(scripts_replace, paste0(pref, script_replace))
-    }
-    xml_attr(scripts, "src")[xml_has_attr(scripts, "src")] <- scripts_replace
-    xml_attr(scripts, "integrity") <- NULL
-    xml_attr(scripts, "crossorigin") <- NULL
-    
-    # links
-    links <- xml_find_all(page, ".//link")
-    links_href <- xml_attr(links, "href")
-    links_replace <- character()
-    for (link in links_href) {
-        if (is.na(link)) {
-            next
-        } else if (startsWith(link, "https://hydflood.bafg.de/") |
-                   startsWith(link, "../") |
-                   startsWith(link, "deps/") |
-                   startsWith(link, "extra.css") |
-                   startsWith(link, "favicon-") |
-                   startsWith(link, "apple-touch-")) {
-            link <- gsub("https://hydflood.bafg.de/", "" , link, fixed = TRUE)
-            link <- gsub("../", "" , link, fixed = TRUE)
-            links_replace <- append(links_replace, paste0(pref, link))
-            next
-        } else if (startsWith(link,
-                              "https://cdnjs.cloudflare.com/ajax/libs/")) {
-            linkt <- gsub("https://cdnjs.cloudflare.com/ajax/libs/", "",
-                          link, fixed = TRUE)
-        } else {
-            stop(paste0(link, " is not known yet"))
-        }
-        
-        destfile <- paste0(public, "deps/", linkt)
-        if (!file.exists(destfile)) {
-            # create storage directory
-            pos <- unlist(gregexpr("/", linkt, fixed = TRUE))
-            linkth <- substr(linkt, 1, pos[length(pos)])
-            dir.create(paste0(public, "deps/", linkth), FALSE, TRUE)
-            
-            # download file to that directory
-            download.file(link, destfile, method = "curl", quiet = TRUE)
-        }
-        
-        # replace path in html file
-        link_replace <- paste0("deps/", linkt)
-        links_replace <- append(links_replace, paste0(pref, link_replace))
-    }
-    xml_attr(links, "href")[xml_has_attr(links, "href")] <- links_replace
-    xml_attr(links, "integrity") <- NULL
-    xml_attr(links, "crossorigin") <- NULL
-    
-    # store changes
-    write_html(page, paste0(public, a_file), encoding = "utf-8")
-    
 }
 
 # clean up
-rm(a_file, files, x, y, z, pref, page, scripts, script, scripts_replace,
-   scripts_src, links, link, links_replace, links_href)
-if (exists("destfile")) {rm(destfile)}
-if (exists("link_replace")) {rm(link_replace)}
-if (exists("linkt")) {rm(linkt)}
-if (exists("script_replace")) {rm(script_replace)}
-if (exists("scriptt")) {rm(scriptt)}
-if (exists("linkth")) {rm(linkth)}
-if (exists("scriptth")) {rm(scriptth)}
-if (exists("pos")) {rm(pos)}
-if (exists("u")) {rm(u)}
+rm(a_file, files, x, y, z)
 
-# copy logo
-if (!(file.exists(paste0(public, "bfg_logo.png")))){
-    file.copy("pkgdown/bfg_logo.png", public)
-}
+#####
+# post-process html-files
+bfgdown::cleanAll(public, "https://hydflood.bafg.de/", FALSE, TRUE)
+bfgdown::insertLogo(public, "pkgdown/bfg_logo.png",
+                    href = "https://www.bafg.de", text = "BfG")
 
 #####
 # create docs/downloads directory and copy hydflood_*.tar.gz-files into it

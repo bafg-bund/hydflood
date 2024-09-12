@@ -21,7 +21,7 @@ packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack",
               "usethis", "lattice", "pangaear", "rgrass", "knitr",
               "shiny.i18n", "prettymapr", "ggplot2", "maps", "rosm",
               "sfheaders", "rnaturalearth", "rnaturalearthdata", "ggspatial",
-              "ggmap", "xml2", "bslib")
+              "ggmap", "xml2", "bslib", "urlchecker")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages()[, "Package"])) {
@@ -39,6 +39,9 @@ if (!require("rnaturalearthhires")) {
                      repos = "https://ropensci.r-universe.dev",
                      type = "source")
 }
+
+# install bfgdown
+devtools::install_github("bafg-bund/bfgdown")
 
 # exit
 q("no")
