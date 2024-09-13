@@ -108,7 +108,7 @@ test_that("General tests", {
                      "does NOT overlap with the active floodplain of River Elb")
         expect_error(hydSpatRaster(ext = ext(200000, 201000, 5749000, 5749500),
                                    crs = utm32n),
-                     "does NOT overlap with the active floodplains of River Rh")
+                     "does NOT overlap with the active floodplain of River Rh")
         
         unlink(tmp_dem1)
         unlink(tmp_dem2)
