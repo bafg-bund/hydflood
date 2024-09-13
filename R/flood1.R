@@ -153,8 +153,6 @@
 #' 
 flood1 <- function(x, seq, gauging_station, uuid, filename = '', ...) {
     
-    options("rgdal_show_exportToProj4_warnings" =  "none")
-    
     #####
     # check requirements
     ##
