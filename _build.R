@@ -221,7 +221,7 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "pvil-rr" & user == "WeberA" & R_version == "4.4.1") {
+if (host == "pvil-rr.bafg.de" & user == "WeberA" & R_version == "4.4.1") {
     # copy html output to ~/public_html
     system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
                   "l/hydflood/"))
