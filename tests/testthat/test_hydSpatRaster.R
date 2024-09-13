@@ -8,7 +8,7 @@ utm33n <- st_crs(25833)
 wgs <- st_crs(4326)
 
 test_that("General tests", {
-    if (Sys.info()["nodename"] == "pvil-rr") {
+    if (Sys.info()["nodename"] == "pvil-rr.bafg.de") {
         # input data
         filename_dem <- paste0("/home/WeberA/freigaben/U/U3/Auengruppe_INFORM/",
                                "RH_336_867_UFD/data/asc/r002_PLITTERSDORF1_DEM",
@@ -105,10 +105,10 @@ test_that("General tests", {
                      "crs must be either 'ETRS 1989 UTM 32N' or 'ETRS 1989 UTM 33N")
         expect_error(hydSpatRaster(ext = ext(200000, 201000, 5749000, 5749500),
                                    crs = crs_csa),
-                     "does NOT overlap with the active floodplain of River Elbe")
+                     "does NOT overlap with the active floodplain of River Elb")
         expect_error(hydSpatRaster(ext = ext(200000, 201000, 5749000, 5749500),
                                    crs = utm32n),
-                     "does NOT overlap with the active floodplain of River Rhine")
+                     "does NOT overlap with the active floodplain of River Rh")
         
         unlink(tmp_dem1)
         unlink(tmp_dem2)

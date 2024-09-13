@@ -4,7 +4,7 @@ library(hydflood)
 context("flood3")
 
 test_that("Elbe", {
-    if (Sys.info()["nodename"] == "pvil-rr") {
+    if (Sys.info()["nodename"] == "pvil-rr.bafg.de") {
         # Elbe
         hf <- Sys.getenv("hydflood")
         x <- hydSpatRaster(
@@ -74,7 +74,7 @@ test_that("Elbe", {
 
 
 test_that("Rhine", {
-    if (Sys.info()["nodename"] == "pvil-rr") {
+    if (Sys.info()["nodename"] == "pvil-rr.bafg.de") {
         # Rhine
         hf <- Sys.getenv("hydflood")
         x <- hydSpatRaster(
