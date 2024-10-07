@@ -55,7 +55,7 @@
 #'   match.
 #'   
 #'   Supported file types depend on available
-#'   \href{https://gdal.org/drivers/raster/index.html}{GDAL raster drivers}.
+#'   \href{https://gdal.org/en/latest/drivers/raster/index.html}{GDAL raster drivers}.
 #' 
 #' @param ext optional argument of type \code{\link[terra]{SpatExtent}}. If neither 
 #'   \code{filename_dem} nor \code{filename_csa} are specified, \code{ext} is 

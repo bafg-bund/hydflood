@@ -72,8 +72,6 @@
 #' 
 flood3 <- function(x, seq, filename = '', ...) {
     
-    options("rgdal_show_exportToProj4_warnings" =  "none")
-    
     #####
     # check requirements
     ##
