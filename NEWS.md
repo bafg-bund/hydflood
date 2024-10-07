@@ -1,10 +1,14 @@
+# hydflood 0.5.9
+
+* bug fixing in `getDEM()`
+
 # hydflood 0.5.8
 
 * replace scripted html-postprocessing with packaged (`bfgdown::cleanAll`)
-* deactivate time-consuming classifyToPNV() example
+* deactivate time-consuming `classifyToPNV()` example
 * improve website accessibility
 * move file downloads from `utils::download.file` to `httr2`
-* add waterDepth()-function
+* add `waterDepth()`-function
 * fix broken urls
 
 # hydflood 0.5.7
@@ -16,7 +20,7 @@
 
 * set download.file mode = "wb" on windows
 * check package on r-hub.io
-* reduce spatial extent of the example of classifyToPNV, thereby computational efforts, to reduce check duration
+* reduce spatial extent of the example of `classifyToPNV`, thereby computational efforts, to reduce check duration
 * use the stable user interface of class `SpatExtent` in terra (Issue #16)
 * add reference to the flood3 data computed for 2022 and published on pangaea.de
 
