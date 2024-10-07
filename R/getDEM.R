@@ -401,9 +401,9 @@ getDEM <- function(filename = '', ext, crs, ...) {
     }
     
     # assemble request
-    file <- basename(x)
-    url <- paste0("https://hydflood.bafg.de/downloads/dem/", file)
-    req <- httr2::request(file)
+    filename <- basename(x)
+    url <- paste0("https://hydflood.bafg.de/downloads/dem/", filename)
+    req <- httr2::request(url)
     req <- httr2::req_method(req, "GET")
     req <- httr2::req_retry(req, max_tries = 10L)
     req <- httr2::req_timeout(req, seconds = options()$timeout)
