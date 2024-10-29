@@ -1,3 +1,7 @@
+# hydflood
+
+* add a reference to the 2023 flood3 products published on pangaea.de
+
 # hydflood 0.5.9
 
 * bug fixing in `getDEM()`
