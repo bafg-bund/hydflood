@@ -41,7 +41,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
-#'   options("timeout" = 120)
+#'   options("timeout" = 200)
 #'   library(hydflood)
 #'   dem <- getDEM(ext = ext(c(309000, 310000, 5749000, 5750000)),
 #'                 crs = st_crs("EPSG:25833"))
