@@ -1,5 +1,6 @@
 # hydflood
 
+* capture download timeout errors
 * add a reference to the 2023 flood3 products published on pangaea.de
 
 # hydflood 0.5.9

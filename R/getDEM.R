@@ -366,7 +366,27 @@ getDEM <- function(filename = '', ext, crs, ...) {
   req <- httr2::req_error(req, is_error = \(resp) FALSE)
   
   # perform the request
-  resp <- httr2::req_perform(req, path = file, verbosity = 0)
+  withCallingHandlers({
+      resp <- httr2::req_perform(req, path = file, verbosity = 0)
+  }, httr2_error = function(cnd) {
+      m <- cnd$parent$message
+      if (!is.null(m)) {
+          if (startsWith(m, "Timeout")) {
+              mn <- sub(" bytes received*", "", sub(".*seconds with ", "", m))
+              size_dl <- as.numeric(sub(" out of .*", "", mn))
+              size_total <- as.numeric(sub(".*out of ", "", mn))
+              t <- as.numeric(sub(" milliseconds.*", "",
+                                  sub(".*out after ", "", m))) / 1000
+              timeout <- ceiling(size_total/size_dl * t * 1.5)
+              if (is.na(timeout)) {timeout <- 200}
+              m <- paste0(m, '. Please increase the timeout through \'options(',
+                          '"timeout") <- ', as.character(timeout), '\'.')
+              stop(m, call. = FALSE)
+          }
+      } else {
+          stop("Failed to download data from pangaea.de.", cnd)
+      }
+  })
   
   # handle errors
   status_code <- as.character(resp$status_code)
@@ -410,7 +430,27 @@ getDEM <- function(filename = '', ext, crs, ...) {
     req <- httr2::req_error(req, is_error = \(resp) FALSE)
     
     # perform the request
-    resp <- httr2::req_perform(req, path = file, verbosity = 0)
+    withCallingHandlers({
+        resp <- httr2::req_perform(req, path = file, verbosity = 0)
+    }, httr2_error = function(cnd) {
+        m <- cnd$parent$message
+        if (!is.null(m)) {
+            if (startsWith(m, "Timeout")) {
+                mn <- sub(" bytes received*", "", sub(".*seconds with ", "", m))
+                size_dl <- as.numeric(sub(" out of .*", "", mn))
+                size_total <- as.numeric(sub(".*out of ", "", mn))
+                t <- as.numeric(sub(" milliseconds.*", "",
+                                    sub(".*out after ", "", m))) / 1000
+                timeout <- ceiling(size_total/size_dl * t * 1.5)
+                if (is.na(timeout)) {timeout <- 200}
+                m <- paste0(m, '. Please increase the timeout through \'option',
+                            's("timeout") <- ', as.character(timeout), '\'.')
+                stop(m, call. = FALSE)
+            }
+        } else {
+            stop("Failed to download data from hydflood.bafg.de.", cnd)
+        }
+    })
     
     # handle errors
     status_code <- as.character(resp$status_code)
