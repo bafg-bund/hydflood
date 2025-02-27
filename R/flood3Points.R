@@ -51,6 +51,7 @@
 #' 
 #' @examples \donttest{
 #'   options("hydflood.datadir" = tempdir())
+#'   options("timeout" = 200)
 #'   library(hydflood)
 #'   
 #'   # create a random points object

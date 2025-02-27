@@ -97,8 +97,7 @@ load("data/sf.gsd.rda")
 # df.gauging_data
 # download daily refreshed dataset from aqualogy.de and rename it to df.gd
 file_gd <- "data/df.gauging_data_latest.RDS"
-url <- paste0("https://www.aqualogy.de/wp-content/uploads",
-              "/bfg/df.gauging_data_latest.RDS")
+url <- paste0("https://hyd1d.bafg.de/downloads/df.gauging_data_latest.RDS")
 if (! file.exists(file_gd)) {
     utils::download.file(url, file_gd, quiet = TRUE)
 } else {
