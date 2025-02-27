@@ -1,3 +1,9 @@
+# hydflood 0.5.10
+
+* require R >= 4.1.0
+* capture download timeout errors
+* add a reference to the 2023 flood3 products published on pangaea.de
+
 # hydflood 0.5.9
 
 * bug fixing in `getDEM()`

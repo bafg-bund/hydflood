@@ -320,7 +320,7 @@ plot(fd)
 Raster data with annual flood durations between 1960 and 2021 for the active 
 floodplains of the River Rhine and the River Elbe have been submitted to and
 published on [pangaea.de](https://www.pangaea.de)
-[@weber_flood3data_2022; @weber_flood3data_2023].
+[@weber_flood3data_2022; @weber_flood3data_2023; @weber_flood3data_2024].
 
 <BR>
 
@@ -353,7 +353,7 @@ knitr::include_graphics('screenshot_flood3daily.png')
 
 The [`flood3`](https://hydflood.bafg.de/reference/flood3.html) function is the
 central function of the package **hydflood**. With the help of this function
-annual flood durations between 1990 and 2022 have been computed for the active
+annual flood durations between 1990 and 2023 have been computed for the active
 floodplains of the River Rhine and the River Elbe. These large scale raster
 products have been visualized as web map services and are available through a
 shiny web application:
