@@ -271,8 +271,8 @@ function(input, output, session) {
                            df.from_to_reactive()$to_val)
         if (any(input$from_to != river_from_to)) {
             res$from_to <- input$from_to
-            res$map_from_to <- c(min(spdf.stationInBounds_reactive()$station),
-                                 max(spdf.stationInBounds_reactive()$station))
+            res$map_from_to <- c(min(spdf.sIB_reactive()$station),
+                                 max(spdf.sIB_reactive()$station))
             res$river_from_to <- river_from_to
         }
     }, ignoreNULL = TRUE, ignoreInit = TRUE)
@@ -281,7 +281,7 @@ function(input, output, session) {
     # responsive datasets
     ##
     # responsive spdf.station
-    spdf.stationFromTo_reactive <- reactive({
+    spdf.sFT_reactive <- reactive({
         if (is.na(res$river)) {
             return(spdf.station)
         } else {
@@ -299,7 +299,7 @@ function(input, output, session) {
     
     # A reactive expression that returns the set of stations that are
     # in bounds right now
-    spdf.stationInBounds_reactive <- reactive({
+    spdf.sIB_reactive <- reactive({
         if (is.null(input$map_bounds)) {
             return(spdf.station[FALSE,])
         }
@@ -316,10 +316,10 @@ function(input, output, session) {
                    longitude >= lngRng[1] & longitude <= lngRng[2])
     })
     
-    observeEvent(spdf.stationInBounds_reactive(), {
-        if (nrow(spdf.stationInBounds_reactive()) > 0) {
-            res$map_from_to <- c(min(spdf.stationInBounds_reactive()$station),
-                                 max(spdf.stationInBounds_reactive()$station))
+    observeEvent(spdf.sIB_reactive(), {
+        if (nrow(spdf.sIB_reactive()) > 0) {
+            res$map_from_to <- c(min(spdf.sIB_reactive()$station),
+                                 max(spdf.sIB_reactive()$station))
         }
     })
     
@@ -333,8 +333,8 @@ function(input, output, session) {
                 from_to <- c(df.from_to_reactive()$from_val,
                              df.from_to_reactive()$to_val)
                 res$from_to <- from_to
-                res$map_from_to <- c(min(spdf.stationInBounds_reactive()$station),
-                                     max(spdf.stationInBounds_reactive()$station))
+                res$map_from_to <- c(min(spdf.sIB_reactive()$station),
+                                     max(spdf.sIB_reactive()$station))
                 res$river_from_to <- from_to
                 return(from_to)
             } else {
@@ -373,10 +373,10 @@ function(input, output, session) {
     ##
     # modify background's extent
     # observe({
-    #     if (nrow(spdf.stationFromTo_reactive()) != 0 &
-    #         nrow(spdf.stationInBounds_reactive()) != 0) {
-    #         station_a <- spdf.stationFromTo_reactive()$station
-    #         station_b <- spdf.stationInBounds_reactive()$station
+    #     if (nrow(spdf.sFT_reactive()) != 0 &
+    #         nrow(spdf.sIB_reactive()) != 0) {
+    #         station_a <- spdf.sFT_reactive()$station
+    #         station_b <- spdf.sIB_reactive()$station
     #         
     #         l <- leafletProxy("map")
     #         
@@ -386,8 +386,8 @@ function(input, output, session) {
     #                 if (length(stations) != 1) {
     #                     isolate(
     #                         l %>% setView(
-    #                             lng = spdf.stationFromTo_reactive()$longitude,
-    #                             lat = spdf.stationFromTo_reactive()$latitude,
+    #                             lng = spdf.sFT_reactive()$longitude,
+    #                             lat = spdf.sFT_reactive()$latitude,
     #                             zoom = 16)
     #                     )
     #                 }
@@ -396,14 +396,14 @@ function(input, output, session) {
     #                 if (length(stations) < 1) {
     #                     isolate(
     #                         l %>% setView(
-    #                             lng = spdf.stationFromTo_reactive()$longitude,
-    #                             lat = spdf.stationFromTo_reactive()$latitude,
+    #                             lng = spdf.sFT_reactive()$longitude,
+    #                             lat = spdf.sFT_reactive()$latitude,
     #                             zoom = 16)
     #                     )
     #                 } else if (length(stations) / length(station_b) < 1/10) {
-    #                     spdf.station_sel <- spdf.stationInBounds_reactive()
+    #                     spdf.station_sel <- spdf.sIB_reactive()
     #                     id <- which(spdf.station_sel$station >= stations - 0.5 &
-    #                                     spdf.station_sel$station <= stations + 0.5)
+    #                                 spdf.station_sel$station <= stations + 0.5)
     #                     spdf.station_sel <- spdf.station_sel[id,]
     #                     isolate(
     #                         l %>% fitBounds(extent(spdf.station_sel)@xmin,
@@ -417,20 +417,20 @@ function(input, output, session) {
     #             if (length(station_b) == 0) {
     #                 isolate(
     #                     l %>% fitBounds(
-    #                         extent(spdf.stationFromTo_reactive())@xmin,
-    #                         extent(spdf.stationFromTo_reactive())@ymin,
-    #                         extent(spdf.stationFromTo_reactive())@xmax,
-    #                         extent(spdf.stationFromTo_reactive())@ymax)
+    #                         extent(spdf.sFT_reactive())@xmin,
+    #                         extent(spdf.sFT_reactive())@ymin,
+    #                         extent(spdf.sFT_reactive())@xmax,
+    #                         extent(spdf.sFT_reactive())@ymax)
     #                 )
     #             } else if (length(station_b) == 1) {
     #                 stations <- intersect(station_a, station_b)
     #                 if (length(stations) != 1) {
     #                     isolate(
     #                         l %>% fitBounds(
-    #                             extent(spdf.stationFromTo_reactive())@xmin,
-    #                             extent(spdf.stationFromTo_reactive())@ymin,
-    #                             extent(spdf.stationFromTo_reactive())@xmax,
-    #                             extent(spdf.stationFromTo_reactive())@ymax)
+    #                             extent(spdf.sFT_reactive())@xmin,
+    #                             extent(spdf.sFT_reactive())@ymin,
+    #                             extent(spdf.sFT_reactive())@xmax,
+    #                             extent(spdf.sFT_reactive())@ymax)
     #                     )
     #                 }
     #             } else {
@@ -444,7 +444,7 @@ function(input, output, session) {
     #                       length(stations_b_in_a) / length(station_b) == 1))) {
     # 
     #                     station_center <- gCentroid(
-    #                         spdf.stationFromTo_reactive())
+    #                         spdf.sFT_reactive())
     #                     map_center <- SpatialPoints(
     #                         as.data.frame(input$map_center), crs)
     #                     map_bounds <- input$map_bounds
@@ -454,16 +454,16 @@ function(input, output, session) {
     #                                     bb = map_bounds)) {
     #                         isolate(
     #                             l %>% fitBounds(
-    #                                 extent(spdf.stationFromTo_reactive())@xmin,
-    #                                 extent(spdf.stationFromTo_reactive())@ymin,
-    #                                 extent(spdf.stationFromTo_reactive())@xmax,
-    #                                 extent(spdf.stationFromTo_reactive())@ymax)
+    #                                 extent(spdf.sFT_reactive())@xmin,
+    #                                 extent(spdf.sFT_reactive())@ymin,
+    #                                 extent(spdf.sFT_reactive())@xmax,
+    #                                 extent(spdf.sFT_reactive())@ymax)
     #                         )
     #                     }
     #                 } else {
     #                     
     #                     station_center <- gCentroid(
-    #                         spdf.stationFromTo_reactive())
+    #                         spdf.sFT_reactive())
     #                     map_center <- SpatialPoints(
     #                         as.data.frame(input$map_center), crs)
     #                     map_bounds <- input$map_bounds
@@ -473,10 +473,10 @@ function(input, output, session) {
     #                                     bb = map_bounds)) {
     #                         isolate(
     #                             l %>% fitBounds(
-    #                                 extent(spdf.stationFromTo_reactive())@xmin,
-    #                                 extent(spdf.stationFromTo_reactive())@ymin,
-    #                                 extent(spdf.stationFromTo_reactive())@xmax,
-    #                                 extent(spdf.stationFromTo_reactive())@ymax)
+    #                                 extent(spdf.sFT_reactive())@xmin,
+    #                                 extent(spdf.sFT_reactive())@ymin,
+    #                                 extent(spdf.sFT_reactive())@xmax,
+    #                                 extent(spdf.sFT_reactive())@ymax)
     #                         )
     #                     }
     #                 }
@@ -628,7 +628,9 @@ function(input, output, session) {
     
     output$imprint <- renderUI({
         tagList(a(i18n()$t("Imprint"), 
-                  href = i18n()$t("https://www.bafg.de/EN/Service/Imprint/imprint_node.html")))
+                  href = i18n()$t(
+                      paste0("https://www.bafg.de/EN/Service/Imprint/imprint_n",
+                             "ode.html"))))
     })
     
 }
