@@ -1,5 +1,6 @@
 # hydflood
 
+* remove dependency to the deprecated R-package `leaflet.esri`
 * capture errors caused by missing gauging data during daily flood extent computation
 * deploy shinyapps automatically using `make shiny`
 * general updates
