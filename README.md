@@ -24,9 +24,9 @@ install.packages("hydflood")
 To install the latest development version from Github run:
 
 ``` r
-install.packages("devtools")
-library(devtools)
-devtools::install_github("bafg-bund/hydflood")
+install.packages("pak")
+library(pak)
+pak::pak("bafg-bund/hydflood")
 ```
 
 ## Usage

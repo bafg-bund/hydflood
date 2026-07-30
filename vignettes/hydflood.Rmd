@@ -180,9 +180,9 @@ To install the recent developmental version from Github execute the following
 commands:
 
 ```{r install-git, eval = FALSE}
-install.packages("devtools")
-library(devtools)
-devtools::install_github("bafg-bund/hydflood")
+install.packages("pak")
+library(pak)
+pak::pak("bafg-bund/hydflood")
 ```
 
 Afterwards **hydflood** can be loaded like every other R package with the 

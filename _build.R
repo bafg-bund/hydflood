@@ -92,14 +92,13 @@ urlchecker::url_update(".")
 # build vignettes
 write("#####", stdout())
 write(" build vignettes", stdout())
-devtools::build_vignettes(".")
+pkgdown::build_articles(".", quiet = FALSE)
 tools::compactPDF(paths = "doc", gs_quality = "ebook")
 
 #####
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
-Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
 devtools::check(".", document = TRUE, manual = TRUE, error_on = "never",
                 build_args = c('--compact-vignettes=both'))
 
@@ -241,6 +240,4 @@ if (host == "pvil-rr.bafg.de" & user == "WeberA" & R_version == "4.6.1") {
                   " ] && cp -rp ", public, "downloads/hydflood_*.tar.gz /home/",
                   user, "/freigaben_r/_packages/package_sources"))
 }
-
-#q("no")
 

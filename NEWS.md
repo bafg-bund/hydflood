@@ -1,5 +1,7 @@
 # hydflood
 
+* install source packages using `pak:pak()`
+* remove dependencies to deprecated `devtools::`-functions
 * updated slurm computations
 * remove dependency to the deprecated R-package `leaflet.esri`
 * capture errors caused by missing gauging data during daily flood extent computation

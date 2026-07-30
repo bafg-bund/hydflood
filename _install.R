@@ -30,8 +30,8 @@ for (a_package in packages) {
 }
 
 # install the local package
-library(devtools)
-devtools::install(".", quick = TRUE)  #, dependencies = TRUE)
+library(pak)
+pak::pak(".")
 
 # rnaturalearthhires
 if (!require("rnaturalearthhires")) {
@@ -41,7 +41,7 @@ if (!require("rnaturalearthhires")) {
 }
 
 # install bfgdown
-devtools::install_github("bafg-bund/bfgdown")
+pak::pak("bafg-bund/bfgdown")
 
 # exit
 q("no")
