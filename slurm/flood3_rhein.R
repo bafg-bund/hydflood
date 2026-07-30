@@ -4,7 +4,7 @@ i <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 #####
 # output directory
-o <- "/scratch/webera/flood3"
+o <- "~/flood3_rhine/"
 dir.create(o, FALSE, FALSE)
 
 #####
@@ -13,9 +13,9 @@ options("hyd1d.datadir" = "~/.hyd1d")
 library(hyd1d, lib.loc = paste0("~/R/", getRversion()))
 options("hydflood.datadir" = "~/.hydflood")
 library(hydflood, lib.loc = paste0("~/R/", getRversion()))
-terraOptions(tempdir = "/scratch/webera/terra//")
+terraOptions(tempdir = "~/tmp/")
 terraOptions(memmax = 15)
-terraOptions(memfrac = 0.25)
+terraOptions(memfrac = 0.1)
 terraOptions()
 
 # subset spdf.tiles_elbe

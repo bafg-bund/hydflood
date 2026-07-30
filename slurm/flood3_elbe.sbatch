@@ -2,9 +2,8 @@
 #SBATCH --job-name=flood3elbe
 #SBATCH --mail-type=FAIL,BEGIN,END
 #SBATCH --mail-user=arnd.weber@bafg.de
-#SBATCH --partition=CentOS              # queue for array jobs without mpiexec/mpirun
-#SBATCH --array=1-49%3                  # 1-49%10
-#SBATCH --ntasks=1                      # number of tasks per node
+#SBATCH --partition=hpc                 # queue for array jobs without mpiexec/mpirun
+#SBATCH --array=1-49%10                 # 1-49%10
 #SBATCH --time=20-00:00                 # time DD-HH:MM
 #SBATCH --error=log/flood3_elbe_%A_%4a.err
 #SBATCH --output=log/flood3_elbe_%A_%4a.out
@@ -20,13 +19,13 @@ cd $WORKDIR
 #---------------------------------------------------------------
 # set module environment on the compute nodes
 #---------------------------------------------------------------
-module add i4/R/4.2.3
+module add R/4.6.1
 module list
 
 #---------------------------------------------------------------
 # set major binaries ( MPI executable, model executable, etc )
 #---------------------------------------------------------------
-MODELEXE=/opt/i4/R-4.2.3/bin/Rscript
+MODELEXE=/opt/R/4.6.1/bin/Rscript
 MODELSCRIPT=flood3_elbe.R
 
 #----------------------------------------------------------------
