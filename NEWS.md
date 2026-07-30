@@ -1,5 +1,6 @@
 # hydflood
 
+* deploy shinyapps automatically using `make shiny`
 * general updates
 
 # hydflood 0.5.10

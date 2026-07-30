@@ -14,6 +14,7 @@
 ^makefile$
 ^Meta$
 ^README\.Rmd$
+^rsconnect$
 ^pkgdown$
 ^_pkgdown\.yml$
 ^shinyapps$

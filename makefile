@@ -41,6 +41,12 @@ syncscr2rh:
 mvlog:
 	mv /home/WeberA/sbatch/log/flood3_* /home/WeberA/hydflood/slurm/log/
 
+shiny:
+	. /usr/share/Modules/init/bash; \
+	module purge; \
+	module load R/latest; \
+	Rscript shinyapps/deployApps.R
+
 www:
 	rsync -auv --delete --exclude apps/flood3daily /srv/cifs-mounts/WeberA_home/WeberA/hydflood/docs/ /srv/cifs-mounts/WeberA/U/U3/Auengruppe_INFORM/Weber_etal_2022_hyd1d_hydflood/www/hydflood
 
