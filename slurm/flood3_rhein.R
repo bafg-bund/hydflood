@@ -149,6 +149,19 @@ if (file.exists(f_depth_mq)) {
                filetype = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
+# fink et al 2025
+# reference period 1971 - 2000
+f_mean <- paste0(o, "/", n, "_flood3_mean_1971_2000.tif")
+
+if (file.exists(f_mean)) {
+    print(paste0(f_mean, " exists already"))
+} else {
+    print(paste0(f_mean, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1971:2000)]),
+                 fun = mean, na.rm = TRUE, filename = f_mean,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+}
+
 #####
 # quit
 q("no")
