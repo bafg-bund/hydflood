@@ -1,5 +1,6 @@
 # hydflood
 
+* migrate repository from github.com to opencode.de
 * fully reproduce contents of `docs/`
 * install source packages using `pak:pak()`
 * remove dependencies to deprecated `devtools::`-functions

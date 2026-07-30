@@ -44,6 +44,6 @@ Collate:
     'waterDepth.R'
     'zzz.R'
 VignetteBuilder: knitr
-BugReports: https://github.com/bafg-bund/hydflood/issues/
-URL: https://hydflood.bafg.de, https://github.com/bafg-bund/hydflood
+BugReports: https://gitlab.opencode.de/bafg-bund/hydflood/-/work_items
+URL: https://hydflood.bafg.de, https://gitlab.opencode.de/bafg-bund/hydflood
 Config/roxygen2/version: 8.0.0

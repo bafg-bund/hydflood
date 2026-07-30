@@ -26,7 +26,7 @@ To install the latest development version from Github run:
 ``` r
 install.packages("pak")
 library(pak)
-pak::pak("bafg-bund/hydflood")
+pak::pak("git::https://gitlab.opencode.de/bafg-bund/hydflood.git")
 ```
 
 ## Usage

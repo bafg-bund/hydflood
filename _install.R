@@ -41,7 +41,7 @@ if (!require("rnaturalearthhires")) {
 }
 
 # install bfgdown
-pak::pak("bafg-bund/bfgdown")
+pak::pak("git::https://gitlab.opencode.de/bafg-bund/bfgdown.git")
 
 # exit
 q("no")
