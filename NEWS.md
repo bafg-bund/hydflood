@@ -1,5 +1,6 @@
 # hydflood
 
+* fully reproduce contents of `docs/`
 * install source packages using `pak:pak()`
 * remove dependencies to deprecated `devtools::`-functions
 * updated slurm computations
