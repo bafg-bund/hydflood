@@ -17,52 +17,60 @@ import(hyd1d)
 importFrom(Rdpack,reprompt)
 importFrom(curl,has_internet)
 importFrom(grDevices,rgb)
-importFrom(httr2,req_error)
-importFrom(httr2,req_method)
-importFrom(httr2,req_perform)
-importFrom(httr2,req_retry)
-importFrom(httr2,req_timeout)
-importFrom(httr2,request)
-importFrom(httr2,resp_status_desc)
-importFrom(raster,blockSize)
-importFrom(raster,canProcessInMemory)
-importFrom(raster,getValues)
-importFrom(raster,pbClose)
-importFrom(raster,pbCreate)
-importFrom(raster,pbStep)
-importFrom(raster,setValues)
-importFrom(raster,writeValues)
-importFrom(sf,st_as_sf)
-importFrom(sf,st_as_sfc)
-importFrom(sf,st_bbox)
-importFrom(sf,st_coordinates)
-importFrom(sf,st_crs)
-importFrom(sf,st_join)
-importFrom(sf,st_sf)
-importFrom(sf,st_sfc)
-importFrom(sf,st_transform)
+importFrom(httr2,
+  req_error,
+  req_method,
+  req_perform,
+  req_retry,
+  req_timeout,
+  request,
+  resp_status_desc
+)
+importFrom(raster,
+  blockSize,
+  canProcessInMemory,
+  getValues,
+  pbClose,
+  pbCreate,
+  pbStep,
+  setValues,
+  writeValues
+)
+importFrom(sf,
+  st_as_sf,
+  st_as_sfc,
+  st_bbox,
+  st_coordinates,
+  st_crs,
+  st_join,
+  st_sf,
+  st_sfc,
+  st_transform
+)
 importFrom(stats,na.omit)
-importFrom(terra,classify)
-importFrom(terra,coltab)
-importFrom(terra,crop)
-importFrom(terra,crs)
-importFrom(terra,ext)
-importFrom(terra,extend)
-importFrom(terra,intersect)
-importFrom(terra,merge)
-importFrom(terra,minmax)
-importFrom(terra,rast)
-importFrom(terra,rasterize)
-importFrom(terra,res)
-importFrom(terra,set.cats)
-importFrom(terra,sprc)
-importFrom(terra,trim)
-importFrom(terra,unique)
-importFrom(terra,vect)
-importFrom(terra,writeRaster)
-importFrom(terra,writeStart)
-importFrom(terra,writeStop)
-importFrom(terra,xmax)
-importFrom(terra,xmin)
-importFrom(terra,ymax)
-importFrom(terra,ymin)
+importFrom(terra,
+  classify,
+  coltab,
+  crop,
+  crs,
+  ext,
+  extend,
+  intersect,
+  merge,
+  minmax,
+  rast,
+  rasterize,
+  res,
+  set.cats,
+  sprc,
+  trim,
+  unique,
+  vect,
+  writeRaster,
+  writeStart,
+  writeStop,
+  xmax,
+  xmin,
+  ymax,
+  ymin
+)
