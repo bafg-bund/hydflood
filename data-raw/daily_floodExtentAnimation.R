@@ -101,11 +101,9 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        # flood_extent <- tryCatch({
-            flood_extent <- flood3(x, as.Date(a_date))
-            flood_extent[flood_extent == 0] <- NA
-        # },
-        # error = function(cond) {NA})
+        flood_extent <- tryCatch(flood3(x, as.Date(a_date)),
+                                 error = function(error) {return(NA)})
+        flood_extent[flood_extent == 0] <- NA
         
         # plotting with raster functions
         if (inherits(flood_extent, "SpatRaster")) {
@@ -182,11 +180,9 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        # flood_extent <- tryCatch({
-            flood_extent <- flood3(x, as.Date(a_date))
-            flood_extent[flood_extent == 0] <- NA
-        # },
-        # error = function(cond) {NA})
+        flood_extent <- tryCatch(flood3(x, as.Date(a_date)),
+                                 error = function(error) {return(NA)})
+        flood_extent[flood_extent == 0] <- NA
         
         # plotting with raster functions
         if (inherits(flood_extent, "SpatRaster")) {
@@ -264,11 +260,9 @@ if (require("ElBiota")) {
                 write("  will be computed", stdout())
                 
                 # compute flood extent
-                # flood_extent <- tryCatch({
-                    flood_extent <- flood3(x, as.Date(a_date))
-                    flood_extent[flood_extent == 0] <- NA
-                # },
-                # error = function(cond) {NA})
+                flood_extent <- tryCatch(flood3(x, as.Date(a_date)),
+                                         error = function(error) {return(NA)})
+                flood_extent[flood_extent == 0] <- NA
                 
                 # plotting with raster functions
                 if (inherits(flood_extent, "SpatRaster")) {
@@ -348,11 +342,9 @@ for (a_date in dates) {
         write("  will be computed", stdout())
         
         # compute flood extent
-        # flood_extent <- tryCatch({
-        flood_extent <- flood3(x, as.Date(a_date))
+        flood_extent <- tryCatch(flood3(x, as.Date(a_date)),
+                                 error = function(error) {return(NA)})
         flood_extent[flood_extent == 0] <- NA
-        # },
-        # error = function(cond) {NA})
         
         # plotting with raster functions
         if (inherits(flood_extent, "SpatRaster")) {

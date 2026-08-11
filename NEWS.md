@@ -1,3 +1,15 @@
+# hydflood 0.5.11
+
+* migrate repository from github.com to opencode.de
+* fully reproduce contents of `docs/`
+* install source packages using `pak:pak()`
+* remove dependencies to deprecated `devtools::`-functions
+* updated slurm computations
+* remove dependency to the deprecated R-package `leaflet.esri`
+* capture errors caused by missing gauging data during daily flood extent computation
+* deploy shinyapps automatically using `make shiny`
+* general updates
+
 # hydflood 0.5.10
 
 * require R >= 4.1.0

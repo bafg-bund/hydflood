@@ -17,11 +17,11 @@ update.packages(lib.loc = .libPaths()[1], ask = FALSE, checkBuilt = TRUE)
 packages <- c("hyd1d", "sf", "tidyverse", "raster", "terra", "Rdpack", 
               "rmarkdown", "devtools", "pkgdown", "roxygen2", "testthat",
               "plot3D", "plotrix", "shiny", "shinyjs", "shinycssloaders",
-              "leaflet", "leaflet.extras", "leaflet.esri", "htmltools",
-              "usethis", "lattice", "pangaear", "rgrass", "knitr",
-              "shiny.i18n", "prettymapr", "ggplot2", "maps", "rosm",
-              "sfheaders", "rnaturalearth", "rnaturalearthdata", "ggspatial",
-              "ggmap", "xml2", "bslib", "urlchecker")
+              "leaflet", "leaflet.extras", "htmltools", "usethis", "lattice",
+              "pangaear", "rgrass", "knitr", "shiny.i18n", "prettymapr",
+              "ggplot2", "maps", "rosm", "sfheaders", "rnaturalearth",
+              "rnaturalearthdata", "ggspatial", "ggmap", "xml2", "bslib",
+              "urlchecker", "rsconnect")
 
 for (a_package in packages) {
     if (! (a_package %in% installed.packages()[, "Package"])) {
@@ -30,8 +30,8 @@ for (a_package in packages) {
 }
 
 # install the local package
-library(devtools)
-devtools::install(".", quick = TRUE)  #, dependencies = TRUE)
+library(pak)
+pak::pak(".")
 
 # rnaturalearthhires
 if (!require("rnaturalearthhires")) {
@@ -41,7 +41,7 @@ if (!require("rnaturalearthhires")) {
 }
 
 # install bfgdown
-devtools::install_github("bafg-bund/bfgdown")
+pak::pak("git::https://gitlab.opencode.de/bafg-bund/bfgdown.git")
 
 # exit
 q("no")

@@ -92,14 +92,13 @@ urlchecker::url_update(".")
 # build vignettes
 write("#####", stdout())
 write(" build vignettes", stdout())
-devtools::build_vignettes(".")
+pkgdown::build_articles(".", quiet = FALSE)
 tools::compactPDF(paths = "doc", gs_quality = "ebook")
 
 #####
 # check the package source
 write("#####", stdout())
 write(" check", stdout())
-Sys.setenv('_R_CHECK_SYSTEM_CLOCK_' = 0)
 devtools::check(".", document = TRUE, manual = TRUE, error_on = "never",
                 build_args = c('--compact-vignettes=both'))
 
@@ -155,7 +154,20 @@ if (!(file.exists("README.md"))) {
 # render the package website
 pkgdown::build_site(".", examples = TRUE, preview = FALSE, new_process = TRUE)
 
-# insert the BfG logo into the header
+# copy presentations from ../hyd1d/presentation
+from <- c("../hyd1d/presentation/presentation_DE.html",
+          "../hyd1d/presentation/presentation_aow.html")
+from <- append(from, list.files(path = "../hyd1d/presentation",
+                                pattern = "*\\.png", full.names = TRUE))
+from <- append(from, list.files(path = "../hyd1d/presentation",
+                                pattern = "*\\.css", full.names = TRUE))
+from <- append(from, list.files(path = "../hyd1d/presentation",
+                                pattern = "*\\.mp4", full.names = TRUE))
+to <- gsub("../hyd1d/presentation/", paste0(public, "articles/"), from)
+file.copy(from = from, to = to, overwrite = TRUE, copy.date = TRUE)
+rm(from, to)
+
+# add imprint link to the footer
 files <- list.files(path = public, pattern = "*[.]html",
                     all.files = TRUE, full.names = FALSE, recursive = TRUE,
                     ignore.case = FALSE, include.dirs = TRUE, no.. = FALSE)
@@ -167,10 +179,8 @@ for (a_file in files){
     # skip presentations
     if (startsWith(a_file, "articles/presentation")) {next}
 
-    # place logo in navbar
-    x <- readLines(paste0(public, a_file))
-    
     # edit footer
+    x <- readLines(paste0(public, a_file))
     y <- gsub('Developed by Arnd Weber.',
               paste0('Developed by Arnd Weber. <a href="https://www.bafg.de/EN',
                      '/Service/Imprint/imprint_node.html">Imprint</a>.'), x)
@@ -195,14 +205,36 @@ bfgdown::insertLogo(public, "pkgdown/bfg_logo.png",
 # create docs/downloads directory and copy hydflood_*.tar.gz-files into it
 downloads <- paste0(public, "downloads")
 dir.create(downloads, FALSE, TRUE)
-from <- list.files(path = build,
-                   pattern = "hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
-                   full.names = TRUE)
-file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
+
+# copy old package versions
+vers <- list.dirs("built", FALSE, FALSE)
+for (a_vers in vers) {
+    from <- list.files(path = paste0("built/", a_vers),
+                       pattern = "hydflood\\_[:0-9:]\\.[:0-9:]\\.[:0-9:]\\.tar\\.gz",
+                       full.names = TRUE)
+    file.copy(from = from, to = downloads, overwrite = TRUE, copy.date = TRUE)
+}
+rm(from, a_vers, vers)
+
+# copy sf.af*
 file.copy(from = "data-raw/sf.afe_csa.rda", to = downloads, overwrite = FALSE,
           copy.date = TRUE)
 file.copy(from = "data-raw/sf.afr_csa.rda", to = downloads, overwrite = FALSE,
           copy.date = TRUE)
+
+# copy DEM datasets
+dem <- paste0(public, "downloads/dem/")
+dir.create(dem, FALSE, TRUE)
+from <- list.files(
+    path = "~/.hydflood", full.names= TRUE,
+    pattern = "^[er][0][:0-9:]{2}\\_[[:alnum:]_]{4,}\\_DEM\\.tif")
+to <- gsub(path.expand("~/.hydflood/"), dem, from)
+file.copy(from = from, to = to, overwrite = FALSE, copy.date = TRUE)
+rm(dem, from, to)
+
+# create directory for daily flood extent images
+dir.create(paste0(public, "apps"), FALSE, TRUE)
+dir.create(paste0(public, "apps/flood3daily"), FALSE, TRUE)
 
 #####
 # export the documentation as pdf
@@ -221,10 +253,11 @@ write(" web", stdout())
 
 host <- Sys.info()["nodename"]
 user <- Sys.info()["user"]
-if (host == "pvil-rr.bafg.de" & user == "WeberA" & R_version == "4.4.2") {
+if (host == "pvil-rr.bafg.de" & user == "WeberA" & R_version == "4.6.1") {
     # copy html output to ~/public_html
-    system(paste0("cp -rp ", public, "* /home/", user, "/public_htm",
-                  "l/hydflood/"))
+    wd <- getwd()
+    system(paste0("rsync -av --delete --exclude=apps --exclude=downloads/dem ",
+                  wd, "/", public, " /home/", user, "/public_html/hydflood/"))
     system("permissions_html")
     
     # copy shinyapps to ~/ShinyApps
@@ -241,6 +274,4 @@ if (host == "pvil-rr.bafg.de" & user == "WeberA" & R_version == "4.4.2") {
                   " ] && cp -rp ", public, "downloads/hydflood_*.tar.gz /home/",
                   user, "/freigaben_r/_packages/package_sources"))
 }
-
-#q("no")
 

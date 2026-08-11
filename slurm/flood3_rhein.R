@@ -4,7 +4,7 @@ i <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 #####
 # output directory
-o <- "/scratch/webera/flood3"
+o <- "~/flood3_rhine/"
 dir.create(o, FALSE, FALSE)
 
 #####
@@ -13,9 +13,9 @@ options("hyd1d.datadir" = "~/.hyd1d")
 library(hyd1d, lib.loc = paste0("~/R/", getRversion()))
 options("hydflood.datadir" = "~/.hydflood")
 library(hydflood, lib.loc = paste0("~/R/", getRversion()))
-terraOptions(tempdir = "/scratch/webera/terra//")
+terraOptions(tempdir = "~/tmp/")
 terraOptions(memmax = 15)
-terraOptions(memfrac = 0.25)
+terraOptions(memfrac = 0.1)
 terraOptions()
 
 # subset spdf.tiles_elbe
@@ -147,6 +147,19 @@ if (file.exists(f_depth_mq)) {
     x <- hydSpatRaster(filename_dem = dem, filename_csa = csa)
     waterDepth(x = x, value = "MQ", filename = f_depth_mq,
                filetype = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
+}
+
+# fink et al 2025
+# reference period 1971 - 2000
+f_mean <- paste0(o, "/", n, "_flood3_mean_1971_2000.tif")
+
+if (file.exists(f_mean)) {
+    print(paste0(f_mean, " exists already"))
+} else {
+    print(paste0(f_mean, " will be computed"))
+    raster::calc(raster::stack(products[paste0("flood3_", 1971:2000)]),
+                 fun = mean, na.rm = TRUE, filename = f_mean,
+                 format = "GTiff", options = c("COMPRESS=LZW", "TFW=NO"))
 }
 
 #####

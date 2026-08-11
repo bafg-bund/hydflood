@@ -4,7 +4,7 @@ i <- as.numeric(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 
 #####
 # output directory
-o <- "/scratch/webera/flood3"
+o <- "~/flood3_elbe/"
 dir.create(o, FALSE, FALSE)
 
 #####
@@ -13,23 +13,15 @@ options("hyd1d.datadir" = "~/.hyd1d")
 library(hyd1d, lib.loc = paste0("~/R/", getRversion()))
 options("hydflood.datadir" = "~/.hydflood")
 library(hydflood, lib.loc = paste0("~/R/", getRversion()))
-terraOptions(tempdir = "/scratch/webera/terra//")
+terraOptions(tempdir = "~/tmp/")
 terraOptions(memmax = 15)
-terraOptions(memfrac = 0.25)
+terraOptions(memfrac = 0.1)
 terraOptions()
 
 # subset spdf.tiles_elbe
 sf.tile <- sf.tiles("Elbe")[i, ]
 hfc <- options()$hydflood.datadir
 n <- sf.tile$name
-# if (!n %in% c(#"e036_SANDAU2", "e038_WITTENBERGE", "e039_MUEGGENDORF",
-#              #"e040_SCHNACKENBURG", "e041_LENZEN", "e042_GORLEBEN",
-#              "e043_DOEMITZ" #, "e044_HITZACKER", "e045_NEU_DARCHAU",
-#              #"e046_BLECKEDE")) {
-#              )) {
-#   stdout("not included in the computations")
-#   q("no")
-# }
 dem <- paste0(hfc, "/", n, "_DEM.tif")
 csa <- paste0(hfc, "/", n, "_CSA.tif")
 

@@ -1,5 +1,9 @@
 title: hydflood
 url: https://hydflood.bafg.de/
+repo:
+  url:
+    home: https://gitlab.opencode.de/bafg-bund/hydflood/
+    source: https://gitlab.opencode.de/bafg-bund/hydflood/-/tree/main/
 destination: docs
 template:
   bootstrap: 5
@@ -75,9 +79,9 @@ navbar:
     - text: BfG
       href: https://www.bafg.de
       aria-label: BfG Website
-    - icon: fa-github
-      href: https://github.com/bafg-bund/hyd1d
-      aria-label: View source code on github.com
+    - icon: fa-gitlab
+      href: https://gitlab.opencode.de/bafg-bund/hydflood/
+      aria-label: View source code on opencode.de
 footer:
   structure: 
     left: built_with
