@@ -1,4 +1,4 @@
-# hydflood
+# hydflood 0.5.11
 
 * migrate repository from github.com to opencode.de
 * fully reproduce contents of `docs/`

@@ -1,8 +1,8 @@
 Package: hydflood
 Type: Package
 Title: Flood Extents and Duration along the Rivers Elbe and Rhine
-Version: 0.5.10
-Date: 2025-02-26
+Version: 0.5.11
+Date: 2026-08-11
 Authors@R: c(person("Arnd", "Weber", email = "arnd.weber@bafg.de",
                     role = c("aut", "cre"), 
                     comment = c(ORCID = "0000-0002-5973-2770")),
@@ -46,4 +46,4 @@ Collate:
 VignetteBuilder: knitr
 BugReports: https://gitlab.opencode.de/bafg-bund/hydflood/-/work_items
 URL: https://hydflood.bafg.de, https://gitlab.opencode.de/bafg-bund/hydflood
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0
